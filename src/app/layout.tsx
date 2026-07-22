@@ -17,8 +17,8 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Software Engineer Portfolio",
-  description: "A premium engineering portfolio and technical journal.",
+  title: "Prateek Singh | Portfolio",
+  description: "Portfolio of Prateek Singh, aspiring software engineer and competitive programmer. Showcasing projects, skills, and achievements in algorithms, systems, and software development.",
 };
 
 export default function RootLayout({

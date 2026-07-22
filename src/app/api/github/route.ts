@@ -177,7 +177,7 @@ export async function GET() {
       const eventsData = await eventsRes.json();
       if (Array.isArray(eventsData)) {
         for (const event of eventsData) {
-          if (event.type === "PushEvent" && event.payload?.commits) {
+          if (event.type === "PushEvent") {
             const repoName = event.repo.name;
             const date = new Date(event.created_at).toLocaleDateString("en-US", {
               month: "short",
@@ -187,16 +187,30 @@ export async function GET() {
               minute: "2-digit",
             });
 
-            for (const commit of event.payload.commits) {
-              latestCommits.push({
-                id: commit.sha.substring(0, 7),
-                message: commit.message,
+            if (event.payload?.commits && event.payload.commits.length > 0) {
+              for (const commit of event.payload.commits) {
+                latestCommits.push({
+                  id: commit.sha.substring(0, 7),
+                  message: commit.message,
+                  repo: repoName.split("/")[1] || repoName,
+                  repoUrl: `https://github.com/${repoName}`,
+                  commitUrl: `https://github.com/${repoName}/commit/${commit.sha}`,
+                  date,
+                });
+                if (latestCommits.length >= 6) break;
+              }
+            } else if (event.payload?.head) {
+              // Fallback for PushEvents that don't expose the commits array directly
+              const sha = event.payload.head;
+              const ref = event.payload.ref ? event.payload.ref.replace('refs/heads/', '') : 'branch';
+              latestCommits.push({ 
+                id: sha.substring(0, 7), 
+                message: `Pushed to ${ref}`, 
                 repo: repoName.split("/")[1] || repoName,
                 repoUrl: `https://github.com/${repoName}`,
-                commitUrl: `https://github.com/${repoName}/commit/${commit.sha}`,
+                commitUrl: `https://github.com/${repoName}/commit/${sha}`,
                 date,
               });
-              if (latestCommits.length >= 6) break;
             }
           }
           if (latestCommits.length >= 6) break;
