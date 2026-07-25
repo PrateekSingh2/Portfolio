@@ -50,8 +50,8 @@ export async function GET() {
           stats.following = parseInt(followingText.replace(/,/g, '')) || 0;
           stats.repositories = parseInt(reposText.replace(/,/g, '')) || 0;
         }
-      } catch (e) {
-        console.warn("Cheerio user stats fallback failed", e);
+      } catch {
+        // Cheerio user stats fallback failed silently
       }
     }
 
@@ -197,7 +197,7 @@ export async function GET() {
                   commitUrl: `https://github.com/${repoName}/commit/${commit.sha}`,
                   date,
                 });
-                if (latestCommits.length >= 6) break;
+                if (latestCommits.length >= 10) break;
               }
             } else if (event.payload?.head) {
               // Fallback for PushEvents that don't expose the commits array directly
@@ -213,7 +213,7 @@ export async function GET() {
               });
             }
           }
-          if (latestCommits.length >= 6) break;
+          if (latestCommits.length >= 10) break;
         }
       }
     }
@@ -263,8 +263,7 @@ export async function GET() {
       latestCommits,
       calendarData
     });
-  } catch (error) {
-    console.error("Github API Error:", error);
+  } catch {
     return NextResponse.json({ error: "Failed to fetch Github data" }, { status: 500 });
   }
 }

@@ -4,6 +4,7 @@ import { HeroSection }         from "@/components/sections/HeroSection";
 import { Education }           from "@/components/sections/Education";
 import { EngineeringSnapshot } from "@/components/sections/EngineeringSnapshot";
 import { CPDashboard }         from "@/components/sections/CPDashboard";
+import { Certifications }       from "@/components/sections/Certifications";
 import { CoreSkills }          from "@/components/sections/CoreSkills";
 import { GithubAnalytics }     from "@/components/sections/GithubAnalytics";
 import { Experience }          from "@/components/sections/Experience";
@@ -53,6 +54,8 @@ export default function Home() {
             <EngineeringSnapshot />
             <Divider />
             <CPDashboard />
+            <Divider />
+            <Certifications />
             <Divider />
             <CoreSkills />
             <Divider />

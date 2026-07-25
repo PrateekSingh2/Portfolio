@@ -367,7 +367,7 @@ export function HeroSection() {
               <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
               <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
             </div>
-            <span className="mx-auto text-xs text-muted-foreground/60 dark:text-[#555]">interactive-zsh — RajawatPrateekSingh</span>
+            <span className="mx-auto text-xs text-muted-foreground/60 dark:text-[#555] truncate max-w-[180px] sm:max-w-none">interactive-zsh — RajawatPrateekSingh</span>
           </div>
 
           {/* Shell Output + Input (Scrollable Container) */}
@@ -376,26 +376,26 @@ export function HeroSection() {
               if (line.type === "command") {
                 return (
                   <div key={index} className="flex items-center gap-2">
-                    <span className="text-foreground dark:text-white">{line.text}</span>
+                    <span className="text-emerald-400 font-bold">{line.text}</span>
                   </div>
                 );
               }
               if (line.type === "system") {
                 return (
-                  <div key={index} className="text-muted-foreground font-semibold text-xs py-1">
+                  <div key={index} className="text-emerald-500/80 font-semibold text-xs py-1">
                     {line.text}
                   </div>
                 );
               }
               if (line.type === "error") {
                 return (
-                  <div key={index} className="text-red-500 text-xs">
+                  <div key={index} className="text-red-400 text-xs font-semibold">
                     {line.text}
                   </div>
                 );
               }
               return (
-                <div key={index} className="pl-5 text-blue-600/90 dark:text-primary/90 space-y-0.5">
+                <div key={index} className="pl-5 text-emerald-400/90 font-medium space-y-0.5">
                   <p>{line.text}</p>
                 </div>
               );
@@ -404,14 +404,14 @@ export function HeroSection() {
 
           {/* Active Terminal Input Field */}
           <form onSubmit={handleCommandSubmit} className="p-4 pt-0 flex items-center gap-2 shrink-0 select-none">
-            <span className="text-blue-600 dark:text-primary font-bold">{currentPath} ❯</span>
+            <span className="text-emerald-400 font-bold">{currentPath} ❯</span>
             <input
               ref={inputRef}
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="flex-1 bg-transparent border-none outline-none focus:ring-0 p-0 text-foreground dark:text-white caret-primary animate-blink-placeholder"
+              className="flex-1 bg-transparent border-none outline-none focus:ring-0 p-0 text-emerald-400 caret-emerald-400 font-semibold animate-blink-placeholder"
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"

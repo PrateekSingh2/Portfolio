@@ -93,28 +93,28 @@ export function CoreSkills() {
 
       {/* Split-pane Dashboard Layout */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 min-h-[340px]">
-        {/* Left Side: Sidebar navigation */}
-        <div className="md:col-span-4 flex flex-col gap-2">
+        {/* Left Side: Sidebar / Mobile horizontal scroll navigation */}
+        <div className="md:col-span-4 flex md:flex-col overflow-x-auto pb-2 md:pb-0 scrollbar-none gap-2 shrink-0">
           {skillCategories.map((cat) => {
             const isActive = activeCategory.id === cat.id;
             return (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat)}
-                className={`flex items-center justify-between p-4 rounded-lg font-mono text-xs transition-all text-left border ${
+                className={`flex items-center justify-between p-3 sm:p-4 rounded-lg font-mono text-xs transition-all text-left border shrink-0 ${
                   isActive
                     ? "bg-primary/10 border-primary/30 text-primary font-bold shadow-sm"
                     : "bg-card/20 border-border/30 text-muted-foreground hover:bg-card/40 hover:text-foreground"
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <span className={isActive ? "text-primary animate-pulse" : "text-muted-foreground"}>
                     {cat.icon}
                   </span>
-                  <span>{cat.name}</span>
+                  <span className="whitespace-nowrap">{cat.name}</span>
                 </div>
                 <ChevronRight
-                  className={`w-3.5 h-3.5 transition-transform duration-300 ${
+                  className={`w-3.5 h-3.5 hidden md:block transition-transform duration-300 ${
                     isActive ? "translate-x-1 text-primary" : "text-muted-foreground/30"
                   }`}
                 />

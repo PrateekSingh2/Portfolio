@@ -5,9 +5,16 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buttonVariants } from "@/components/ui/button";
-import { GitBranch, Star, Code2, ExternalLink, Users, GitPullRequest, GitCommit, AlertCircle } from "lucide-react";
+import { GitBranch, Star, Code2, ExternalLink, Users, GitPullRequest, GitCommit, AlertCircle, ChevronRight, Layers } from "lucide-react";
 import { ActivityCalendar } from "react-activity-calendar";
 import { useTheme } from "next-themes";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 async function fetchGithubData() {
   const res = await fetch("/api/github");
@@ -18,6 +25,8 @@ async function fetchGithubData() {
 export function GithubAnalytics() {
   const { theme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
   
   React.useEffect(() => {
     setMounted(true);
@@ -28,6 +37,20 @@ export function GithubAnalytics() {
     queryFn: fetchGithubData,
     staleTime: 1000 * 60 * 5,
   });
+
+  const calendarData = data?.calendarData || [];
+
+  // Auto scroll to the rightmost edge (current month) on load
+  React.useEffect(() => {
+    if (calendarData.length > 0 && scrollRef.current) {
+      const timer = setTimeout(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [calendarData]);
 
   if (isLoading) {
     return (
@@ -52,7 +75,8 @@ export function GithubAnalytics() {
   const stats = data.stats || {};
   const langs: any[] = data.languages || [];
   const latestCommits: any[] = data.latestCommits || [];
-  const calendarData = data.calendarData || [];
+  const frontCommits = latestCommits.slice(0, 3);
+  const top10Commits = latestCommits.slice(0, 10);
 
   return (
     <section className="py-12 px-4 max-w-3xl mx-auto w-full" id="github">
@@ -89,26 +113,34 @@ export function GithubAnalytics() {
       {calendarData.length > 0 && (
         <Card className="bg-card border-border/50 mb-6 overflow-hidden">
           <CardHeader className="pb-2 pt-4 px-4">
-            <CardTitle className="text-xs font-mono flex items-center gap-1.5 text-muted-foreground">
-              <GitBranch className="w-3.5 h-3.5" /> Contribution Heatmap
+            <CardTitle className="text-xs font-mono flex items-center justify-between text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <GitBranch className="w-3.5 h-3.5 text-primary" /> Contribution Heatmap
+              </span>
+              <span className="text-[10px] text-muted-foreground/70 font-mono">Last 365 days</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-4 pb-4 overflow-x-auto">
-            <div className="min-w-[700px] pt-2">
-              <ActivityCalendar
-                data={calendarData}
-                theme={{
-                  light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
-                  dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
-                }}
-                colorScheme={mounted ? (theme === "dark" ? "dark" : "light") : "dark"}
-                blockSize={11}
-                blockMargin={3}
-                showWeekdayLabels={false}
-                labels={{
-                  totalCount: `{{count}} contributions in the last year`,
-                }}
-              />
+          <CardContent className="px-4 pb-4">
+            <div 
+              ref={scrollRef}
+              className="overflow-x-auto scrollbar-none pt-2 flex justify-start sm:justify-center w-full"
+            >
+              <div className="shrink-0 p-1">
+                <ActivityCalendar
+                  data={calendarData}
+                  theme={{
+                    light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+                    dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
+                  }}
+                  colorScheme={mounted ? (theme === "dark" ? "dark" : "light") : "dark"}
+                  blockSize={11}
+                  blockMargin={3}
+                  showWeekdayLabels={false}
+                  labels={{
+                    totalCount: `{{count}} contributions in the last year`,
+                  }}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -139,26 +171,32 @@ export function GithubAnalytics() {
           </Card>
         )}
 
-        {/* Latest Commits Activity Feed */}
-        <Card className="bg-card border-border/50">
+        {/* Latest Commits Activity Feed Card */}
+        <Card 
+          className="bg-card border-border/50 transition-all duration-300 hover:border-primary/40 group cursor-pointer flex flex-col justify-between"
+          onClick={() => setIsDialogOpen(true)}
+        >
           <CardHeader className="pb-2 pt-4 px-4">
             <CardTitle className="text-xs font-mono flex items-center justify-between text-muted-foreground">
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 font-bold text-foreground">
                 <GitCommit className="w-3.5 h-3.5 text-primary" /> Latest Commit Activity
               </span>
-              <span className="text-[10px] text-muted-foreground">Live Feed</span>
+              <span className="text-[10px] text-muted-foreground bg-muted/40 px-2 py-0.5 rounded font-mono group-hover:text-primary transition-colors">
+                Tap to View Top 10
+              </span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-4 pb-4">
-            {latestCommits.length > 0 ? (
+          <CardContent className="px-4 pb-4 flex flex-col justify-between flex-1">
+            {frontCommits.length > 0 ? (
               <div className="space-y-3">
-                {latestCommits.map((c: any, i: number) => (
+                {frontCommits.map((c: any, i: number) => (
                   <div key={i} className="text-xs font-mono border-b border-border/20 pb-2.5 last:border-0 last:pb-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <a 
                         href={c.repoUrl} 
                         target="_blank" 
                         rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="font-semibold text-primary hover:underline truncate max-w-[180px]"
                       >
                         {c.repo}
@@ -167,6 +205,7 @@ export function GithubAnalytics() {
                         href={c.commitUrl} 
                         target="_blank" 
                         rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1 shrink-0 bg-muted/40 px-1.5 py-0.5 rounded"
                       >
                         <code>{c.id}</code>
@@ -181,9 +220,81 @@ export function GithubAnalytics() {
             ) : (
               <p className="text-xs text-muted-foreground font-mono py-4 text-center">No recent commit activity found.</p>
             )}
+
+            {latestCommits.length > 0 && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDialogOpen(true);
+                }}
+                className="w-full mt-3 pt-2 text-center text-xs font-mono text-primary hover:text-primary/80 flex items-center justify-center gap-1.5 border-t border-border/30 group-hover:bg-primary/5 rounded-b py-1.5 transition-all font-semibold"
+              >
+                <span>Expand Top 10 Commits Log</span>
+                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            )}
           </CardContent>
         </Card>
       </div>
+
+      {/* External Dialog Modal for Top 10 Commits */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-lg bg-card/95 backdrop-blur-xl border-border/50 shadow-2xl p-6 rounded-2xl border-t-2 border-t-primary/50">
+          <DialogHeader className="pb-3 border-b border-border/30">
+            <DialogTitle className="text-sm font-mono flex items-center justify-between">
+              <span className="flex items-center gap-2 text-foreground font-bold text-base">
+                <GitCommit className="w-4 h-4 text-primary animate-pulse" /> Commit Activity Feed
+              </span>
+              <span className="text-[10px] text-primary bg-primary/10 border border-primary/20 px-2.5 py-0.5 rounded-full font-mono font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+                Top 10 Commits
+              </span>
+            </DialogTitle>
+            <DialogDescription className="text-xs font-mono text-muted-foreground mt-1">
+              Live GitHub repository commit stream and code pushes.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="max-h-[55vh] overflow-y-auto space-y-3 pr-1 pt-3 scrollbar-thin">
+            {top10Commits.map((c: any, i: number) => (
+              <div 
+                key={i} 
+                className="text-xs font-mono p-3.5 rounded-xl bg-muted/20 border border-border/30 hover:border-primary/40 hover:bg-muted/30 transition-all space-y-2 group/commit"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <a 
+                    href={c.repoUrl} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="font-bold text-primary hover:underline truncate max-w-[200px] flex items-center gap-1.5 text-xs cursor-pointer"
+                  >
+                    <GitBranch className="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover/commit:text-primary transition-colors" />
+                    {c.repo}
+                  </a>
+                  <a 
+                    href={c.commitUrl} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1 shrink-0 bg-muted/60 hover:bg-primary/20 hover:border-primary/40 border border-border/40 px-2 py-0.5 rounded-md font-mono transition-colors cursor-pointer"
+                  >
+                    <code>{c.id}</code>
+                    <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
+                </div>
+                <p className="text-foreground/90 font-medium line-clamp-2 leading-relaxed text-[11px]">
+                  {c.message}
+                </p>
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground/70 pt-1.5 border-t border-border/15">
+                  <span className="flex items-center gap-1">
+                    <span className="w-1 h-1 rounded-full bg-emerald-400" /> {c.date}
+                  </span>
+                  <span className="font-bold text-muted-foreground/80 font-mono">Commit #{i + 1}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

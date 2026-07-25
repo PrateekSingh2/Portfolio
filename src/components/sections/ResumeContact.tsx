@@ -51,7 +51,7 @@ export function ResumeContact() {
     <section className="py-16 px-4 max-w-3xl mx-auto w-full relative" id="contact">
       <div className="mb-12">
         <h2 className="text-xl font-bold font-mono mb-2 flex items-center gap-2">
-          <Mail className="w-5 h-5 text-primary" /> ~/contact
+          <Mail className="w-5 h-5 text-primary" /> Contact
         </h2>
         <p className="text-sm text-muted-foreground font-mono">
           Let&apos;s build something impactful. Open to SDE-1, AI, and CP opportunities.

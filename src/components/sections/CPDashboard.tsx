@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, TrendingUp, Star, Award, ExternalLink, Activity, Sparkles, GraduationCap } from "lucide-react";
 import {
-  LineChart, Line, XAxis, YAxis,
+  AreaChart, Area, XAxis, YAxis,
   Tooltip as RTooltip, ResponsiveContainer, CartesianGrid,
   PieChart, Pie, Cell
 } from "recharts";
@@ -29,13 +29,14 @@ function StatRow({ label, value }: { label: string; value: string | number }) {
 
 const TOOLTIP_STYLE = {
   contentStyle: {
-    background: "rgba(13, 13, 13, 0.9)",
+    background: "rgba(13, 13, 13, 0.95)",
     backdropFilter: "blur(8px)",
     border: "1px solid rgba(255, 255, 255, 0.1)",
     borderRadius: 8,
     fontSize: 11,
     fontFamily: "monospace",
     color: "#fff",
+    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.5)",
   },
   labelStyle: { color: "#888", marginBottom: 4 },
 };
@@ -48,7 +49,7 @@ const PLATFORM_LINKS: Record<string, string> = {
 };
 
 export function CPDashboard() {
-  const [activeTab, setActiveTab] = React.useState<"leetcode" | "codeforces" | "codechef">("leetcode");
+  const [activeTab, setActiveTab] = React.useState<"leetcode" | "codeforces" | "codechef" | "codechef-dsa">("leetcode");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["cpData"],
@@ -76,115 +77,232 @@ export function CPDashboard() {
     );
   }
 
+  const easyCount = data.leetcode.easy || 0;
+  const mediumCount = data.leetcode.medium || 0;
+  const hardCount = data.leetcode.hard || 0;
+  const lcTotal = easyCount + mediumCount + hardCount;
+
+  const easyPct = lcTotal > 0 ? Math.round((easyCount / lcTotal) * 100) : 0;
+  const mediumPct = lcTotal > 0 ? Math.round((mediumCount / lcTotal) * 100) : 0;
+  const hardPct = lcTotal > 0 ? Math.round((hardCount / lcTotal) * 100) : 0;
+
   const lcPie = [
-    { name: "Easy",   value: data.leetcode.easy || 0,   color: "#10b981" },
-    { name: "Medium", value: data.leetcode.medium || 0,  color: "#f59e0b" },
-    { name: "Hard",   value: data.leetcode.hard || 0,    color: "#ef4444" },
+    { name: "Easy",   value: easyCount || 1,   color: "#10b981" },
+    { name: "Medium", value: mediumCount || 1,  color: "#f59e0b" },
+    { name: "Hard",   value: hardCount || 1,    color: "#ef4444" },
   ];
-  const lcTotal = (data.leetcode.easy || 0) + (data.leetcode.medium || 0) + (data.leetcode.hard || 0);
-  
+  const totalSolvedAcrossPlatforms = (lcTotal || 0) + (data.codeforces.solved || 0) + (data.gfg.problemsSolved ?? data.gfg.solved ?? 0);
+  const peakRating = Math.max(
+    data.leetcode.rating || 0,
+    data.codeforces.rating || 0,
+    data.codeforces.maxRating || 0,
+    data.codechef.rating || 0,
+    data.codechef.maxRating || 0,
+    data.codechef.dsaRating || 0
+  );
+  const totalContestsAcrossPlatforms = (data.leetcode.contests || 0) + (data.codeforces.contests || 0) + (data.codechef.contests || 0);
+
   // Format history data to map title to name for Recharts tooltip fallback if any
   const lcHistory = (data.lcHistory || []).map((h: any) => ({ ...h, name: h.title }));
   const cfHistory = (data.cfHistory || []).map((h: any) => ({ ...h, name: h.title }));
   const ccHistory = (data.ccHistory || []).map((h: any) => ({ ...h, name: h.title }));
+  const ccDsaHistory = (data.ccDsaHistory || []).map((h: any) => ({ ...h, name: h.title }));
 
   const activeHistory = activeTab === "leetcode" 
     ? lcHistory 
     : activeTab === "codeforces" 
       ? cfHistory 
-      : ccHistory;
+      : activeTab === "codechef"
+        ? ccHistory
+        : ccDsaHistory;
       
   const activeColor = activeTab === "leetcode" 
     ? "#eab308" 
     : activeTab === "codeforces" 
       ? "#3b82f6" 
-      : "#f97316";
+      : activeTab === "codechef"
+        ? "#f97316"
+        : "#10b981";
 
   return (
     <section className="py-16 px-4 max-w-3xl mx-auto w-full relative" id="achievements">
-      <div className="mb-12">
+      <div className="mb-8">
         <h2 className="text-xl font-bold font-mono mb-2 flex items-center gap-2">
           <Trophy className="w-5 h-5 text-primary" /> Competitive Programming
         </h2>
         <p className="text-sm text-muted-foreground font-mono">Real-time benchmarks and profiles across algorithmic hubs.</p>
       </div>
 
+      {/* Codolio-Inspired Top Aggregate Summary Banner */}
+      <div className="mb-8 p-5 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-md shadow-lg relative overflow-hidden">
+        <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-primary via-primary/50 to-primary/10" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Total Solved</span>
+            <div className="text-2xl font-black font-mono text-foreground flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              {totalSolvedAcrossPlatforms.toLocaleString()}+
+            </div>
+          </div>
+          <div className="space-y-1 border-l border-border/20 pl-4">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Peak Rating</span>
+            <div className="text-2xl font-black font-mono text-amber-400 flex items-center gap-1.5">
+              <Trophy className="w-4 h-4 text-amber-400" />
+              {peakRating}
+            </div>
+          </div>
+          <div className="space-y-1 border-l border-border/20 pl-4">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Contests</span>
+            <div className="text-2xl font-black font-mono text-cyan-400 flex items-center gap-1.5">
+              <Activity className="w-4 h-4 text-cyan-400" />
+              {totalContestsAcrossPlatforms}+
+            </div>
+          </div>
+          <div className="space-y-1 border-l border-border/20 pl-4">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Platforms</span>
+            <div className="text-2xl font-black font-mono text-blue-400 flex items-center gap-1.5">
+              <GraduationCap className="w-4 h-4 text-blue-400" />
+              4 Active
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Grid Layout of Platforms */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-stretch">
         
         {/* LeetCode Card */}
-        <Card className="bg-card/30 backdrop-blur-sm border-border/40 hover:border-yellow-500/30 transition-all duration-300 relative overflow-hidden group">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Card className="bg-card/40 backdrop-blur-sm border-border/50 hover:border-yellow-500/40 hover:shadow-xl hover:shadow-yellow-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
                 <Trophy className="w-4 h-4 text-yellow-500" /> LeetCode
               </span>
-              <a href={PLATFORM_LINKS.LeetCode} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-yellow-500 transition-colors">
+              <a 
+                href={PLATFORM_LINKS.LeetCode} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="text-muted-foreground hover:text-yellow-500 transition-colors p-1 rounded-md hover:bg-yellow-500/10"
+              >
                 <ExternalLink className="w-4 h-4" />
               </a>
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-5 pb-5">
-            <div className="flex items-center gap-6 mb-4">
-              <div className="relative w-20 h-20 shrink-0">
+          <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
+            <div className="flex items-center gap-5 mb-4">
+              <div className="relative w-24 h-24 shrink-0 drop-shadow-[0_0_12px_rgba(234,179,8,0.15)]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={lcPie} cx="50%" cy="50%" innerRadius={22} outerRadius={30} paddingAngle={2} dataKey="value" stroke="none">
+                    <Pie 
+                      data={lcPie} 
+                      cx="50%" 
+                      cy="50%" 
+                      innerRadius={28} 
+                      outerRadius={38} 
+                      paddingAngle={3} 
+                      dataKey="value" 
+                      stroke="none"
+                      cornerRadius={4}
+                    >
                       {lcPie.map((e, i) => <Cell key={i} fill={e.color} />)}
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-sm font-extrabold font-mono">{lcTotal || "—"}</span>
-                  <span className="text-[8px] text-muted-foreground uppercase font-bold">solved</span>
+                  <span className="text-base font-black font-mono tracking-tight text-foreground">{lcTotal || "—"}</span>
+                  <span className="text-[7.5px] text-muted-foreground uppercase font-mono font-bold tracking-widest -mt-0.5">solved</span>
                 </div>
               </div>
-              <div className="flex-1 space-y-1">
-                <div className="flex items-center justify-between text-[11px] font-mono">
-                  <span className="text-emerald-400 font-semibold">Easy</span>
-                  <span>{data.leetcode.easy}</span>
+              <div className="flex-1 space-y-2">
+                <div>
+                  <div className="flex items-center justify-between text-[11px] font-mono mb-1">
+                    <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Easy
+                    </span>
+                    <span className="font-semibold">{easyCount} <span className="text-[10px] text-muted-foreground font-normal">({easyPct}%)</span></span>
+                  </div>
+                  <div className="w-full h-1.5 bg-emerald-950/40 rounded-full overflow-hidden border border-emerald-500/20">
+                    <div className="h-full bg-emerald-400 rounded-full transition-all duration-500" style={{ width: `${easyPct}%` }} />
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-[11px] font-mono">
-                  <span className="text-amber-400 font-semibold">Medium</span>
-                  <span>{data.leetcode.medium}</span>
+
+                <div>
+                  <div className="flex items-center justify-between text-[11px] font-mono mb-1">
+                    <span className="text-amber-400 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Medium
+                    </span>
+                    <span className="font-semibold">{mediumCount} <span className="text-[10px] text-muted-foreground font-normal">({mediumPct}%)</span></span>
+                  </div>
+                  <div className="w-full h-1.5 bg-amber-950/40 rounded-full overflow-hidden border border-amber-500/20">
+                    <div className="h-full bg-amber-400 rounded-full transition-all duration-500" style={{ width: `${mediumPct}%` }} />
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-[11px] font-mono">
-                  <span className="text-red-400 font-semibold">Hard</span>
-                  <span>{data.leetcode.hard}</span>
+
+                <div>
+                  <div className="flex items-center justify-between text-[11px] font-mono mb-1">
+                    <span className="text-red-400 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span> Hard
+                    </span>
+                    <span className="font-semibold">{hardCount} <span className="text-[10px] text-muted-foreground font-normal">({hardPct}%)</span></span>
+                  </div>
+                  <div className="w-full h-1.5 bg-red-950/40 rounded-full overflow-hidden border border-red-500/20">
+                    <div className="h-full bg-red-400 rounded-full transition-all duration-500" style={{ width: `${hardPct}%` }} />
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-1 pt-2 border-t border-border/10">
+            <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
               <StatRow label="Rating" value={data.leetcode.rating || "—"} />
               <StatRow label="Rank" value={data.leetcode.rating >= 1600 ? "Knight" : "Coder"} />
               <StatRow label="Contests Attended" value={data.leetcode.contests || "—"} />
+              <StatRow label="Total Active Days" value={data.leetcode.activeDays ? `${data.leetcode.activeDays} days` : "—"} />
             </div>
           </CardContent>
         </Card>
 
         {/* Codeforces Card */}
-        <Card className="bg-card/30 backdrop-blur-sm border-border/40 hover:border-blue-500/30 transition-all duration-300 relative overflow-hidden group">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Card className="bg-card/40 backdrop-blur-sm border-border/50 hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
                 <TrendingUp className="w-4 h-4 text-blue-400" /> Codeforces
               </span>
-              <a href={PLATFORM_LINKS.Codeforces} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-blue-400 transition-colors">
+              <a 
+                href={PLATFORM_LINKS.Codeforces} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="text-muted-foreground hover:text-blue-400 transition-colors p-1 rounded-md hover:bg-blue-500/10"
+              >
                 <ExternalLink className="w-4 h-4" />
               </a>
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-5 pb-5">
-            <div className="flex items-baseline gap-2 mb-3">
-              <span className="text-3xl font-extrabold font-mono text-blue-400">{data.codeforces.rating || "—"}</span>
-              <Badge variant="outline" className="font-mono text-[10px] uppercase border-blue-500/20 bg-blue-500/5 text-blue-400">
-                {data.codeforces.rank || "Newbie"}
-              </Badge>
+          <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
+            {/* Codeforces Top Box */}
+            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-black/30 border border-border/20 shadow-inner">
+              <div>
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Current Rating</span>
+                <div className="flex items-baseline gap-1.5 mb-0.5">
+                  <span className="text-2xl font-black font-mono text-blue-400">{data.codeforces.rating || "—"}</span>
+                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-blue-500/30 bg-blue-500/10 text-blue-400 font-bold uppercase">
+                    {data.codeforces.rank || "Newbie"}
+                  </Badge>
+                </div>
+                <span className="text-[10px] text-muted-foreground/80 font-mono">Max: {data.codeforces.maxRating || "—"}</span>
+              </div>
+              <div className="border-l border-border/25 pl-3">
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Problems Solved</span>
+                <div className="flex items-baseline gap-1.5 mb-0.5">
+                  <span className="text-2xl font-black font-mono text-blue-400">{data.codeforces.solved || "—"}</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground/80 font-mono">{data.codeforces.contests || 0} Contests</span>
+              </div>
             </div>
-            <div className="space-y-1 pt-2 border-t border-border/10">
+
+            <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
               <StatRow label="Problems Solved" value={data.codeforces.solved || "—"} />
               <StatRow label="Max Rating" value={data.codeforces.maxRating || "—"} />
               <StatRow label="Max Rank" value={data.codeforces.maxRank || "—"} />
@@ -194,27 +312,47 @@ export function CPDashboard() {
         </Card>
 
         {/* CodeChef Card */}
-        <Card className="bg-card/30 backdrop-blur-sm border-border/40 hover:border-orange-500/30 transition-all duration-300 relative overflow-hidden group">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Card className="bg-card/40 backdrop-blur-sm border-border/50 hover:border-orange-500/40 hover:shadow-xl hover:shadow-orange-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
                 <Star className="w-4 h-4 text-orange-400 animate-pulse" /> CodeChef
               </span>
-              <a href={PLATFORM_LINKS.CodeChef} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-orange-400 transition-colors">
+              <a 
+                href={PLATFORM_LINKS.CodeChef} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="text-muted-foreground hover:text-orange-400 transition-colors p-1 rounded-md hover:bg-orange-500/10"
+              >
                 <ExternalLink className="w-4 h-4" />
               </a>
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-5 pb-5">
-            <div className="flex items-baseline gap-2 mb-3">
-              <span className="text-3xl font-extrabold font-mono text-orange-400">{data.codechef.rating || "—"}</span>
-              <Badge variant="outline" className="font-mono text-[10px] border-orange-500/20 bg-orange-500/5 text-orange-400">
-                {data.codechef.rank || "1★"}
-              </Badge>
+          <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
+            {/* Dual Ratings Display: CP / Starters & DSA */}
+            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-black/30 border border-border/20 shadow-inner">
+              <div>
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Starters (CP)</span>
+                <div className="flex items-baseline gap-1.5 mb-0.5">
+                  <span className="text-2xl font-black font-mono text-orange-400">{data.codechef.rating || "—"}</span>
+                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-orange-500/30 bg-orange-500/10 text-orange-400 font-bold">
+                    {data.codechef.rank || "1★"}
+                  </Badge>
+                </div>
+                <span className="text-[10px] text-muted-foreground/80 font-mono">Max: {data.codechef.maxRating || "—"}</span>
+              </div>
+              <div className="border-l border-border/25 pl-3">
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">DSA Rating</span>
+                <div className="flex items-baseline gap-1.5 mb-0.5">
+                  <span className="text-2xl font-black font-mono text-emerald-400">{data.codechef.dsaRating || "—"}</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground/80 font-mono">Max: {data.codechef.dsaMaxRating || "—"}</span>
+              </div>
             </div>
-            <div className="space-y-1 pt-2 border-t border-border/10">
-              <StatRow label="Highest Rating" value={data.codechef.maxRating || "—"} />
+
+            <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
+              <StatRow label="Contests Attended" value={data.codechef.contests ? `${data.codechef.contests} (${data.codechef.startersContests || 0} CP, ${data.codechef.dsaContests || 0} DSA)` : "—"} />
               <StatRow label="Global Rank" value={data.codechef.globalRank ? `#${data.codechef.globalRank}` : "—"} />
               <StatRow label="Country Rank" value={data.codechef.countryRank ? `#${data.codechef.countryRank}` : "—"} />
             </div>
@@ -222,25 +360,47 @@ export function CPDashboard() {
         </Card>
 
         {/* GFG Card */}
-        <Card className="bg-card/30 backdrop-blur-sm border-border/40 hover:border-emerald-500/30 transition-all duration-300 relative overflow-hidden group">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Card className="bg-card/40 backdrop-blur-sm border-border/50 hover:border-emerald-500/40 hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
                 <Award className="w-4 h-4 text-emerald-400" /> GeeksForGeeks
               </span>
-              <a href={PLATFORM_LINKS.GFG} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-emerald-400 transition-colors">
+              <a 
+                href={PLATFORM_LINKS.GFG} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="text-muted-foreground hover:text-emerald-400 transition-colors p-1 rounded-md hover:bg-emerald-500/10"
+              >
                 <ExternalLink className="w-4 h-4" />
               </a>
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-5 pb-5">
-            <div className="flex items-baseline gap-2 mb-3">
-              <span className="text-3xl font-extrabold font-mono text-emerald-400">{data.gfg.codingScore || "—"}</span>
-              <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">Coding Score</span>
+          <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
+            {/* GFG Top Box */}
+            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-black/30 border border-border/20 shadow-inner">
+              <div>
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Coding Score</span>
+                <div className="flex items-baseline gap-1.5 mb-0.5">
+                  <span className="text-2xl font-black font-mono text-emerald-400">{data.gfg.codingScore ?? data.gfg.rating ?? "—"}</span>
+                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold">
+                    Coder
+                  </Badge>
+                </div>
+                <span className="text-[10px] text-muted-foreground/80 font-mono">GeeksforGeeks</span>
+              </div>
+              <div className="border-l border-border/25 pl-3">
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Practice Streak</span>
+                <div className="flex items-baseline gap-1.5 mb-0.5">
+                  <span className="text-2xl font-black font-mono text-emerald-400">{data.gfg.streak ? `${data.gfg.streak}d` : "—"}</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground/80 font-mono">{data.gfg.problemsSolved ?? data.gfg.solved ?? 0} Solved</span>
+              </div>
             </div>
-            <div className="space-y-1 pt-2 border-t border-border/10">
-              <StatRow label="Problems Solved" value={data.gfg.problemsSolved || "—"} />
+
+            <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
+              <StatRow label="Problems Solved" value={data.gfg.problemsSolved ?? data.gfg.solved ?? "—"} />
               <StatRow label="Monthly Streak" value={data.gfg.streak ? `${data.gfg.streak} days` : "—"} />
               <StatRow label="Rank" value="Coder" />
             </div>
@@ -249,80 +409,104 @@ export function CPDashboard() {
       </div>
 
       {/* Ratings Progression Chart Card */}
-      <Card className="bg-card/30 backdrop-blur-sm border-border/40 p-6">
+      <Card className="bg-card/40 backdrop-blur-sm border-border/50 hover:border-primary/30 transition-all duration-300 p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h3 className="text-sm font-bold font-mono text-foreground flex items-center gap-2">
               <Activity className="w-4 h-4 text-primary" /> Rating Progression
             </h3>
-            <p className="text-[11px] text-muted-foreground font-mono mt-0.5">Interactive history of rated contests.</p>
+            <p className="text-[11px] text-muted-foreground font-mono mt-0.5">Interactive history of rated contests across platforms.</p>
           </div>
 
-          {/* Toggle Tabs */}
-          <div className="flex bg-muted/40 p-1 rounded-lg border border-border/20 w-fit">
+          {/* Organized Platform Selection Tabs */}
+          <div className="flex flex-wrap bg-black/40 p-1.5 rounded-xl border border-border/30 w-full sm:w-fit gap-1 shadow-inner">
             <button
               onClick={() => setActiveTab("leetcode")}
-              className={`px-3 py-1 text-xs font-mono rounded-md transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all ${
                 activeTab === "leetcode" 
-                  ? "bg-background text-yellow-500 font-semibold shadow-sm border border-border/30" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-amber-500/10 text-amber-400 font-bold shadow-sm border border-amber-500/30" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
               }`}
             >
+              <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
               LeetCode
             </button>
             <button
               onClick={() => setActiveTab("codeforces")}
-              className={`px-3 py-1 text-xs font-mono rounded-md transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all ${
                 activeTab === "codeforces" 
-                  ? "bg-background text-blue-400 font-semibold shadow-sm border border-border/30" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-blue-500/10 text-blue-400 font-bold shadow-sm border border-blue-500/30" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
               }`}
             >
+              <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0"></span>
               Codeforces
             </button>
             <button
               onClick={() => setActiveTab("codechef")}
-              className={`px-3 py-1 text-xs font-mono rounded-md transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all ${
                 activeTab === "codechef" 
-                  ? "bg-background text-orange-400 font-semibold shadow-sm border border-border/30" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-orange-500/10 text-orange-400 font-bold shadow-sm border border-orange-500/30" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
               }`}
             >
-              CodeChef
+              <span className="w-2 h-2 rounded-full bg-orange-400 shrink-0"></span>
+              CodeChef (CP)
+            </button>
+            <button
+              onClick={() => setActiveTab("codechef-dsa")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all ${
+                activeTab === "codechef-dsa" 
+                  ? "bg-emerald-500/10 text-emerald-400 font-bold shadow-sm border border-emerald-500/30" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+              CodeChef (DSA)
             </button>
           </div>
         </div>
 
-        <div className="h-64 w-full">
-          {activeHistory.length >= 2 ? (
+        <div className="h-64 w-full relative pt-2">
+          <div className="absolute top-0 left-0 text-[10px] text-muted-foreground/70 font-mono uppercase tracking-wider font-semibold">
+            Rating ↑
+          </div>
+          {activeHistory.length >= 1 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={activeHistory} margin={{ top: 10, right: 10, bottom: 5, left: -20 }}>
+              <AreaChart data={activeHistory} margin={{ top: 15, right: 10, bottom: 5, left: -10 }}>
+                <defs>
+                  <linearGradient id="colorRatingGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={activeColor} stopOpacity={0.4} />
+                    <stop offset="95%" stopColor={activeColor} stopOpacity={0.0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
                 <XAxis 
                   dataKey="title" 
-                  stroke="#444" 
-                  fontSize={9} 
-                  tickLine={false} 
-                  axisLine={false}
-                  dy={10}
+                  hide={true}
                 />
                 <YAxis 
-                  stroke="#444" 
-                  fontSize={9} 
+                  stroke="#a1a1aa" 
+                  fontSize={11} 
+                  fontWeight={600}
                   tickLine={false} 
                   axisLine={false} 
                   domain={["auto", "auto"]}
+                  tick={{ fill: "#a1a1aa", fontSize: 11, fontFamily: "monospace" }}
+                  width={45}
                 />
                 <RTooltip {...TOOLTIP_STYLE} />
-                <Line
+                <Area
                   type="monotone"
                   dataKey="rating"
                   stroke={activeColor}
-                  strokeWidth={2}
+                  strokeWidth={2.5}
+                  fillOpacity={1}
+                  fill="url(#colorRatingGrad)"
                   dot={{ r: 3, fill: activeColor, strokeWidth: 0 }}
-                  activeDot={{ r: 5, strokeWidth: 0 }}
+                  activeDot={{ r: 6, stroke: activeColor, strokeWidth: 2, fill: "#111" }}
                 />
-              </LineChart>
+              </AreaChart>
             </ResponsiveContainer>
           ) : (
             <div className="h-full flex items-center justify-center border border-dashed border-border/40 rounded-lg">
@@ -334,3 +518,5 @@ export function CPDashboard() {
     </section>
   );
 }
+
+

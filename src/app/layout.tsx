@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Navbar } from "@/components/layout/Navbar";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
 
 import { Providers } from "@/components/providers/Providers";
 
@@ -32,12 +33,13 @@ export default function RootLayout({
       className={`${inter.variable} ${jetBrainsMono.variable} antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+      <body className="min-h-screen bg-background text-foreground flex flex-col font-sans overflow-x-hidden">
         <Providers>
           <TooltipProvider>
+            <ScrollProgress />
             <Navbar />
 
-            <main className="flex-1 flex flex-col">{children}</main>
+            <main className="flex-1 flex flex-col overflow-x-hidden">{children}</main>
           </TooltipProvider>
         </Providers>
       </body>

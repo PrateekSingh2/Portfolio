@@ -8,7 +8,10 @@ export function CustomCursor() {
   const { theme } = useTheme();
 
   useEffect(() => {
-    if (window.matchMedia("(pointer: coarse)").matches) return; // Disable on touch/mobile
+    if (
+      window.matchMedia("(pointer: coarse)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) return; // Disable on touch/mobile or when reduced motion requested
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -139,16 +142,22 @@ export function CustomCursor() {
       mouse.scale = 1.0;
     };
 
+    const handleMouseLeave = () => {
+      mouse.x = -100;
+      mouse.y = -100;
+    };
+
     window.addEventListener("resize", handleResize);
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("mouseleave", handleMouseLeave);
     handleResize();
 
-    // Thematic Color Matching (Amber for dark mode premium feel, Blue for clean developer light theme)
+    // Thematic Color Matching (Sky Cyan for dark mode, Electric Indigo Blue for light theme)
     const activeColor = theme === "dark" 
-      ? "#f59e0b"  // Amber
-      : "#2563eb"; // Blue 
+      ? "#38bdf8"  // Sky Cyan
+      : "#3b82f6"; // Vibrant Indigo Blue
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -197,13 +206,14 @@ export function CustomCursor() {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [theme]);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-50 w-full h-full"
+      className="fixed inset-0 pointer-events-none z-[99999] w-full h-full"
     />
   );
 }
