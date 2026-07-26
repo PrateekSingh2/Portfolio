@@ -141,7 +141,7 @@ export function Certifications() {
       {/* PDF Lightbox Modal Dialog */}
       <Dialog open={selectedCert !== null} onOpenChange={(open) => !open && setSelectedCert(null)}>
         {selectedCert && (
-          <DialogContent className="max-w-4xl sm:max-w-4xl w-[calc(100%-1rem)] sm:w-[calc(100%-1.5rem)] max-h-[88vh] sm:max-h-[95vh] bg-card/95 backdrop-blur-xl border-border/50 shadow-2xl p-4 sm:p-6 rounded-2xl border-t-2 border-t-primary/50 overflow-y-auto flex flex-col justify-between space-y-3">
+          <DialogContent className="w-[calc(100%-1rem)] sm:w-[calc(100%-1.5rem)] max-w-4xl md:max-w-5xl lg:max-w-6xl max-h-[88vh] md:max-h-[92vh] bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-4 sm:p-6 md:p-8 rounded-2xl border-t-2 border-t-primary/60 overflow-y-auto flex flex-col justify-between space-y-3.5 transition-all duration-300">
             <DialogHeader className="pb-2.5 border-b border-border/30 shrink-0 space-y-2 pr-6">
               <DialogTitle className="text-sm sm:text-lg font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-foreground font-bold leading-tight">
                 <span className="flex items-center gap-2 pr-1">

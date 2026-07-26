@@ -154,10 +154,10 @@ export function FeaturedProjects() {
       {/* Project Deep-Dive Modal Overlay (Shadcn Dialog) */}
       <Dialog open={selectedProject !== null} onOpenChange={(open) => !open && setSelectedProject(null)}>
         {selectedProject && (
-          <DialogContent className="max-w-3xl sm:max-w-3xl w-[calc(100%-1.5rem)] bg-card/95 backdrop-blur-xl border-border/50 shadow-2xl p-4 sm:p-6 rounded-2xl border-t-2 border-t-primary/50 overflow-hidden">
+          <DialogContent className="w-[calc(100%-1.5rem)] max-w-3xl md:max-w-4xl lg:max-w-5xl bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-5 md:p-8 rounded-2xl border-t-2 border-t-primary/60 transition-all duration-300 overflow-hidden">
             <DialogHeader className="pb-3 border-b border-border/30">
-              <DialogTitle className="text-base sm:text-lg font-mono flex items-start gap-2.5 text-foreground font-bold leading-snug">
-                <TerminalSquare className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <DialogTitle className="text-base sm:text-lg md:text-xl font-mono flex items-start gap-2.5 text-foreground font-bold leading-snug">
+                <TerminalSquare className="w-5 h-5 md:w-6 md:h-6 text-primary shrink-0 mt-0.5" />
                 <span className="break-words font-extrabold">{selectedProject.title}</span>
               </DialogTitle>
               <DialogDescription className="text-xs font-mono text-muted-foreground mt-1">
@@ -166,21 +166,21 @@ export function FeaturedProjects() {
             </DialogHeader>
 
             {/* Modal Body */}
-            <div className="py-3 font-mono space-y-5 text-xs max-h-[70vh] overflow-y-auto pr-1 sm:pr-2">
+            <div className="py-3 font-mono space-y-5 text-xs max-h-[70vh] md:max-h-[75vh] overflow-y-auto pr-1 sm:pr-2 scrollbar-thin">
               
               {/* Overview */}
               <div>
                 <h4 className="text-xs text-primary mb-1.5 flex items-center gap-1.5 uppercase tracking-wider font-bold">
                   <FileText className="w-4 h-4" /> Project Overview
                 </h4>
-                <p className="text-foreground/90 leading-relaxed bg-muted/20 p-3.5 sm:p-4 rounded-xl border border-border/30 break-words font-sans text-xs sm:text-sm">
+                <p className="text-foreground/90 leading-relaxed bg-muted/20 p-4 sm:p-5 rounded-2xl border border-border/30 break-words font-sans text-xs sm:text-sm shadow-inner">
                   {selectedProject.description}
                 </p>
               </div>
 
-              {/* Challenges & Impact */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="bg-primary/5 border border-primary/15 rounded-xl p-3.5 sm:p-4 space-y-1.5 flex flex-col justify-between">
+              {/* Challenges & Impact (2 Columns on Desktop) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 sm:p-5 space-y-2 flex flex-col justify-between hover:border-primary/30 transition-colors">
                   <h4 className="text-xs text-primary flex items-center gap-1.5 font-bold">
                     <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" /> Engineering Challenges
                   </h4>
@@ -189,7 +189,7 @@ export function FeaturedProjects() {
                   </p>
                 </div>
 
-                <div className="bg-primary/5 border border-primary/15 rounded-xl p-3.5 sm:p-4 space-y-1.5 flex flex-col justify-between">
+                <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 sm:p-5 space-y-2 flex flex-col justify-between hover:border-primary/30 transition-colors">
                   <h4 className="text-xs text-primary flex items-center gap-1.5 font-bold">
                     <Zap className="w-4 h-4 text-emerald-400 shrink-0" /> Impact & Benchmark Metrics
                   </h4>
@@ -200,13 +200,13 @@ export function FeaturedProjects() {
               </div>
 
               {/* Tech Stack */}
-              <div>
+              <div className="p-4 rounded-2xl bg-muted/15 border border-border/25">
                 <h4 className="text-xs text-primary mb-2 font-bold flex items-center gap-1.5 uppercase tracking-wider">
                   <Layers className="w-4 h-4" /> Technology Stack
                 </h4>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-2">
                   {selectedProject.tech.map((t) => (
-                    <Badge key={t} variant="outline" className="font-mono text-[10.5px] sm:text-xs px-3 py-1 rounded-lg bg-primary/10 text-primary border-primary/20 font-bold">
+                    <Badge key={t} variant="outline" className="font-mono text-[10.5px] sm:text-xs px-3 py-1 rounded-xl bg-primary/10 text-primary border-primary/20 font-bold hover:bg-primary/20 transition-colors">
                       {t}
                     </Badge>
                   ))}
@@ -215,15 +215,15 @@ export function FeaturedProjects() {
             </div>
 
             {/* Modal Footer Links */}
-            <div className="pt-3 border-t border-border/30 flex flex-wrap gap-2.5 justify-end">
+            <div className="pt-3.5 border-t border-border/30 flex flex-wrap items-center justify-end gap-3">
               {selectedProject.github && (
                 <a 
                   href={selectedProject.github} 
                   target="_blank" 
                   rel="noreferrer" 
-                  className={buttonVariants({ variant: "outline", size: "sm", className: "font-mono gap-1.5 text-xs cursor-pointer rounded-xl" })}
+                  className={buttonVariants({ variant: "outline", size: "sm", className: "font-mono gap-2 text-xs cursor-pointer rounded-xl font-bold border-border/50 hover:bg-muted" })}
                 >
-                  <GitBranch className="w-4 h-4" /> View Source Code
+                  <GitBranch className="w-4 h-4 text-primary" /> View Source Code
                 </a>
               )}
               {selectedProject.live && (
@@ -231,7 +231,7 @@ export function FeaturedProjects() {
                   href={selectedProject.live} 
                   target="_blank" 
                   rel="noreferrer" 
-                  className={buttonVariants({ size: "sm", className: "font-mono gap-1.5 text-xs cursor-pointer rounded-xl" })}
+                  className={buttonVariants({ size: "sm", className: "font-mono gap-2 text-xs cursor-pointer rounded-xl font-bold shadow-md" })}
                 >
                   <ExternalLink className="w-4 h-4" /> Launch Live Application
                 </a>

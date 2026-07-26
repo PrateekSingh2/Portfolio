@@ -239,9 +239,9 @@ export function GithubAnalytics() {
 
       {/* External Dialog Modal for Top 10 Commits */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-lg bg-card/95 backdrop-blur-xl border-border/50 shadow-2xl p-6 rounded-2xl border-t-2 border-t-primary/50">
+        <DialogContent className="w-[calc(100%-1.5rem)] max-w-lg md:max-w-2xl lg:max-w-3xl bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-5 md:p-7 rounded-2xl border-t-2 border-t-primary/60 transition-all duration-300">
           <DialogHeader className="pb-3 border-b border-border/30">
-            <DialogTitle className="text-sm font-mono flex items-center justify-between">
+            <DialogTitle className="text-sm md:text-base font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 text-foreground font-bold text-base">
                 <GitCommit className="w-4 h-4 text-primary animate-pulse" /> Commit Activity Feed
               </span>
@@ -255,18 +255,18 @@ export function GithubAnalytics() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="max-h-[55vh] overflow-y-auto space-y-3 pr-1 pt-3 scrollbar-thin">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto pr-1 pt-3 scrollbar-thin">
             {top10Commits.map((c: any, i: number) => (
               <div 
                 key={i} 
-                className="text-xs font-mono p-3.5 rounded-xl bg-muted/20 border border-border/30 hover:border-primary/40 hover:bg-muted/30 transition-all space-y-2 group/commit"
+                className="text-xs font-mono p-3.5 rounded-xl bg-muted/20 border border-border/30 hover:border-primary/40 hover:bg-muted/30 transition-all space-y-2 group/commit flex flex-col justify-between"
               >
                 <div className="flex items-center justify-between gap-2">
                   <a 
                     href={c.repoUrl} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="font-bold text-primary hover:underline truncate max-w-[200px] flex items-center gap-1.5 text-xs cursor-pointer"
+                    className="font-bold text-primary hover:underline truncate max-w-[160px] sm:max-w-[200px] flex items-center gap-1.5 text-xs cursor-pointer"
                   >
                     <GitBranch className="w-3.5 h-3.5 shrink-0 text-muted-foreground group-hover/commit:text-primary transition-colors" />
                     {c.repo}
@@ -281,7 +281,7 @@ export function GithubAnalytics() {
                     <ExternalLink className="w-2.5 h-2.5" />
                   </a>
                 </div>
-                <p className="text-foreground/90 font-medium line-clamp-2 leading-relaxed text-[11px]">
+                <p className="text-foreground/90 font-medium line-clamp-2 leading-relaxed text-[11px] font-sans">
                   {c.message}
                 </p>
                 <div className="flex items-center justify-between text-[10px] text-muted-foreground/70 pt-1.5 border-t border-border/15">

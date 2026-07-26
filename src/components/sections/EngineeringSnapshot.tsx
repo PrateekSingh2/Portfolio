@@ -116,15 +116,15 @@ export function EngineeringSnapshot() {
 
       {/* Breakdown Dialog Modals */}
       <Dialog open={activeModal !== null} onOpenChange={(open) => !open && setActiveModal(null)}>
-        <DialogContent className="max-w-md bg-card/95 backdrop-blur-xl border-border/50 shadow-2xl p-6 rounded-2xl border-t-2 border-t-primary/50">
+        <DialogContent className="w-[calc(100%-1.5rem)] max-w-md md:max-w-2xl lg:max-w-3xl bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-5 md:p-7 rounded-2xl border-t-2 border-t-primary/60 transition-all duration-300">
           {activeModal === "solved" && (
             <>
               <DialogHeader className="pb-3 border-b border-border/30">
-                <DialogTitle className="text-base font-mono flex items-center justify-between text-foreground font-bold">
+                <DialogTitle className="text-base md:text-lg font-mono flex items-center justify-between text-foreground font-bold">
                   <span className="flex items-center gap-2">
                     <Code2 className="w-5 h-5 text-blue-400" /> Problems Solved Breakdown
                   </span>
-                  <span className="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 rounded-full">
+                  <span className="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
                     1,500+ Solved
                   </span>
                 </DialogTitle>
@@ -133,82 +133,86 @@ export function EngineeringSnapshot() {
                 </DialogDescription>
               </DialogHeader>
 
-              {/* Donut Pie Chart Visual */}
-              <div className="relative w-full h-40 flex items-center justify-center my-1">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={solvedPieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={42}
-                      outerRadius={60}
-                      paddingAngle={4}
-                      dataKey="value"
-                      stroke="none"
-                      cornerRadius={4}
-                    >
-                      {solvedPieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-lg font-black font-mono text-foreground tracking-tight">1,500+</span>
-                  <span className="text-[8px] text-muted-foreground uppercase font-mono font-bold tracking-widest -mt-0.5">Total Solved</span>
-                </div>
-              </div>
-
-              <div className="space-y-2.5 py-2 font-mono text-xs max-h-[50vh] overflow-y-auto pr-1">
-                <div className="p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-orange-500/40 transition-all flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-3 h-3 rounded-full bg-orange-400 shrink-0 shadow-sm" />
-                    <div>
-                      <span className="font-bold text-foreground block">CodeChef</span>
-                      <span className="text-[10px] text-muted-foreground">Starters CP & DSA Mondays</span>
-                    </div>
+              {/* Desktop 2-Column Grid Layout / Mobile Single Column */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-6 py-3 items-center">
+                {/* Donut Pie Chart Visual */}
+                <div className="md:col-span-5 relative w-full h-44 flex items-center justify-center p-3 rounded-2xl bg-muted/10 border border-border/20 shadow-inner">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={solvedPieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={45}
+                        outerRadius={64}
+                        paddingAngle={4}
+                        dataKey="value"
+                        stroke="none"
+                        cornerRadius={4}
+                      >
+                        {solvedPieData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className="text-xl font-black font-mono text-foreground tracking-tight">1,500+</span>
+                    <span className="text-[8px] text-muted-foreground uppercase font-mono font-bold tracking-widest -mt-0.5">Total Solved</span>
                   </div>
-                  <span className="font-black text-orange-400 text-sm">1,000+</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-amber-500/40 transition-all flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-3 h-3 rounded-full bg-amber-400 shrink-0 shadow-sm" />
-                    <div>
-                      <span className="font-bold text-foreground block">LeetCode</span>
-                      <span className="text-[10px] text-muted-foreground">136 Easy • 96 Med • 4 Hard</span>
+                {/* Platforms List Grid */}
+                <div className="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-2.5 font-mono text-xs max-h-[50vh] overflow-y-auto pr-1">
+                  <div className="p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-orange-500/40 transition-all flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-3 h-3 rounded-full bg-orange-400 shrink-0 shadow-sm" />
+                      <div>
+                        <span className="font-bold text-foreground block">CodeChef</span>
+                        <span className="text-[10px] text-muted-foreground">Starters CP & DSA Mondays</span>
+                      </div>
                     </div>
+                    <span className="font-black text-orange-400 text-sm">1,000+</span>
                   </div>
-                  <span className="font-black text-amber-400 text-sm">236</span>
-                </div>
 
-                <div className="p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-emerald-500/40 transition-all flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-3 h-3 rounded-full bg-emerald-400 shrink-0 shadow-sm" />
-                    <div>
-                      <span className="font-bold text-foreground block">GeeksforGeeks</span>
-                      <span className="text-[10px] text-muted-foreground">Practice & Daily Streaks</span>
+                  <div className="p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-amber-500/40 transition-all flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-3 h-3 rounded-full bg-amber-400 shrink-0 shadow-sm" />
+                      <div>
+                        <span className="font-bold text-foreground block">LeetCode</span>
+                        <span className="text-[10px] text-muted-foreground">136 Easy • 96 Med • 4 Hard</span>
+                      </div>
                     </div>
+                    <span className="font-black text-amber-400 text-sm">236</span>
                   </div>
-                  <span className="font-black text-emerald-400 text-sm">115</span>
-                </div>
 
-                <div className="p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-blue-500/40 transition-all flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-3 h-3 rounded-full bg-blue-400 shrink-0 shadow-sm" />
-                    <div>
-                      <span className="font-bold text-foreground block">Codeforces</span>
-                      <span className="text-[10px] text-muted-foreground">Competitive Rounds</span>
+                  <div className="p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-emerald-500/40 transition-all flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-3 h-3 rounded-full bg-emerald-400 shrink-0 shadow-sm" />
+                      <div>
+                        <span className="font-bold text-foreground block">GeeksforGeeks</span>
+                        <span className="text-[10px] text-muted-foreground">Practice & Daily Streaks</span>
+                      </div>
                     </div>
+                    <span className="font-black text-emerald-400 text-sm">115</span>
                   </div>
-                  <span className="font-black text-blue-400 text-sm">100+</span>
+
+                  <div className="p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-blue-500/40 transition-all flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-3 h-3 rounded-full bg-blue-400 shrink-0 shadow-sm" />
+                      <div>
+                        <span className="font-bold text-foreground block">Codeforces</span>
+                        <span className="text-[10px] text-muted-foreground">Competitive Rounds</span>
+                      </div>
+                    </div>
+                    <span className="font-black text-blue-400 text-sm">100+</span>
+                  </div>
                 </div>
               </div>
 
               <button
                 onClick={() => scrollToSection("achievements")}
-                className="w-full mt-2 py-2.5 px-4 bg-primary text-primary-foreground font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-md cursor-pointer"
+                className="w-full mt-3 py-2.5 px-4 bg-primary text-primary-foreground font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-md cursor-pointer"
               >
                 <span>View Full CP Dashboard</span>
                 <ArrowRight className="w-4 h-4" />
@@ -219,21 +223,21 @@ export function EngineeringSnapshot() {
           {activeModal === "hackathon" && (
             <>
               <DialogHeader className="pb-3 border-b border-border/30">
-                <DialogTitle className="text-base font-mono flex items-center justify-between text-foreground font-bold">
+                <DialogTitle className="text-base md:text-lg font-mono flex items-center justify-between text-foreground font-bold">
                   <span className="flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-amber-400" /> Hackathon Champion
                   </span>
-                  <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
-                    1st Place
+                  <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
+                    1st Place Winner
                   </span>
                 </DialogTitle>
                 <DialogDescription className="text-xs font-mono text-muted-foreground mt-1">
-                  Competitive hackathon victory details.
+                  Competitive hackathon victory details and engineering highlights.
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-3 py-3 font-mono text-xs">
-                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-3 font-mono text-xs">
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2 flex flex-col justify-between">
                   <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
                     <CheckCircle2 className="w-4 h-4 text-amber-400" />
                     1x Hackathon Winner
@@ -242,13 +246,22 @@ export function EngineeringSnapshot() {
                     Awarded 1st place for designing, developing, and deploying a functional high-performance software application within a fast-paced 24-hour hackathon.
                   </p>
                 </div>
+
+                <div className="p-4 rounded-xl bg-muted/20 border border-border/30 space-y-2 flex flex-col justify-between">
+                  <span className="text-[11px] font-bold text-foreground uppercase tracking-wider block">Key Engineering Highlights</span>
+                  <ul className="text-muted-foreground text-xs font-sans space-y-1.5 list-disc list-inside">
+                    <li>Built full-stack app from scratch in &lt; 24h</li>
+                    <li>Sub-100ms real-time state management</li>
+                    <li>Deployed live demo with production CI/CD</li>
+                  </ul>
+                </div>
               </div>
 
               <button
                 onClick={() => scrollToSection("projects")}
                 className="w-full mt-2 py-2.5 px-4 bg-amber-400 text-black font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-amber-300 transition-all shadow-md cursor-pointer"
               >
-                <span>Explore Projects</span>
+                <span>Explore Featured Projects</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </>
@@ -257,11 +270,11 @@ export function EngineeringSnapshot() {
           {activeModal === "github" && (
             <>
               <DialogHeader className="pb-3 border-b border-border/30">
-                <DialogTitle className="text-base font-mono flex items-center justify-between text-foreground font-bold">
+                <DialogTitle className="text-base md:text-lg font-mono flex items-center justify-between text-foreground font-bold">
                   <span className="flex items-center gap-2">
                     <GitBranch className="w-5 h-5 text-emerald-400" /> GitHub Activity
                   </span>
-                  <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                  <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
                     400+ Contributions
                   </span>
                 </DialogTitle>
@@ -270,8 +283,8 @@ export function EngineeringSnapshot() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-3 py-3 font-mono text-xs">
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-3 font-mono text-xs">
+                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-2 flex flex-col justify-between">
                   <div className="text-emerald-400 font-bold text-sm flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4" />
                     400+ Yearly Contributions
@@ -279,6 +292,15 @@ export function EngineeringSnapshot() {
                   <p className="text-muted-foreground text-xs leading-relaxed font-sans">
                     Consistent open-source contributions, commit streaks, pull requests, and software builds over the past year.
                   </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-muted/20 border border-border/30 space-y-2 flex flex-col justify-between">
+                  <span className="text-[11px] font-bold text-foreground uppercase tracking-wider block">Activity Highlights</span>
+                  <ul className="text-muted-foreground text-xs font-sans space-y-1.5 list-disc list-inside">
+                    <li>Active open-source repositories</li>
+                    <li>Daily contribution streaks & PRs</li>
+                    <li>Full TypeScript type safety</li>
+                  </ul>
                 </div>
               </div>
 
@@ -306,40 +328,40 @@ export function EngineeringSnapshot() {
           {activeModal === "contests" && (
             <>
               <DialogHeader className="pb-3 border-b border-border/30">
-                <DialogTitle className="text-base font-mono flex items-center justify-between text-foreground font-bold">
+                <DialogTitle className="text-base md:text-lg font-mono flex items-center justify-between text-foreground font-bold">
                   <span className="flex items-center gap-2">
                     <Activity className="w-5 h-5 text-rose-400" /> Contest Breakdown
                   </span>
-                  <span className="text-xs font-mono font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-0.5 rounded-full">
+                  <span className="text-xs font-mono font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-full">
                     30+ Attended
                   </span>
                 </DialogTitle>
                 <DialogDescription className="text-xs font-mono text-muted-foreground mt-1">
-                  Rated contest attendance breakdown.
+                  Rated contest attendance breakdown across platforms.
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-2.5 py-3 font-mono text-xs">
-                <div className="p-3 rounded-xl bg-muted/20 border border-border/30 flex items-center justify-between">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 py-3 font-mono text-xs">
+                <div className="p-3.5 rounded-xl bg-muted/20 border border-border/30 hover:border-orange-500/40 transition-all flex flex-col justify-between">
                   <div>
-                    <span className="font-bold text-foreground block">CodeChef Contests</span>
-                    <span className="text-[10px] text-muted-foreground">23 Starters (CP) + 2 DSA Mondays</span>
+                    <span className="font-bold text-foreground block mb-0.5">CodeChef Contests</span>
+                    <span className="text-[10px] text-muted-foreground">23 Starters + 2 DSA Mondays</span>
                   </div>
-                  <span className="font-black text-orange-400 text-sm">25</span>
+                  <span className="font-black text-orange-400 text-base mt-2">25</span>
                 </div>
-                <div className="p-3 rounded-xl bg-muted/20 border border-border/30 flex items-center justify-between">
+                <div className="p-3.5 rounded-xl bg-muted/20 border border-border/30 hover:border-amber-500/40 transition-all flex flex-col justify-between">
                   <div>
-                    <span className="font-bold text-foreground block">LeetCode Contests</span>
-                    <span className="text-[10px] text-muted-foreground">Weekly & Biweekly Rated Contests</span>
+                    <span className="font-bold text-foreground block mb-0.5">LeetCode Contests</span>
+                    <span className="text-[10px] text-muted-foreground">Weekly & Biweekly Contests</span>
                   </div>
-                  <span className="font-black text-amber-400 text-sm">5</span>
+                  <span className="font-black text-amber-400 text-base mt-2">5</span>
                 </div>
-                <div className="p-3 rounded-xl bg-muted/20 border border-border/30 flex items-center justify-between">
+                <div className="p-3.5 rounded-xl bg-muted/20 border border-border/30 hover:border-blue-500/40 transition-all flex flex-col justify-between">
                   <div>
-                    <span className="font-bold text-foreground block">Codeforces Rounds</span>
-                    <span className="text-[10px] text-muted-foreground">Div. 2 & Div. 3 Contests</span>
+                    <span className="font-bold text-foreground block mb-0.5">Codeforces Rounds</span>
+                    <span className="text-[10px] text-muted-foreground">Div. 2 & Div. 3 Rounds</span>
                   </div>
-                  <span className="font-black text-blue-400 text-sm">5+</span>
+                  <span className="font-black text-blue-400 text-base mt-2">5+</span>
                 </div>
               </div>
 
@@ -356,11 +378,11 @@ export function EngineeringSnapshot() {
           {activeModal === "rating" && (
             <>
               <DialogHeader className="pb-3 border-b border-border/30">
-                <DialogTitle className="text-base font-mono flex items-center justify-between text-foreground font-bold">
+                <DialogTitle className="text-base md:text-lg font-mono flex items-center justify-between text-foreground font-bold">
                   <span className="flex items-center gap-2">
                     <Star className="w-5 h-5 text-purple-400" /> Peak Rating Breakdown
                   </span>
-                  <span className="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2.5 py-0.5 rounded-full">
+                  <span className="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full">
                     1606 Peak
                   </span>
                 </DialogTitle>
@@ -369,27 +391,27 @@ export function EngineeringSnapshot() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-2.5 py-3 font-mono text-xs">
-                <div className="p-3 rounded-xl bg-muted/20 border border-border/30 flex items-center justify-between">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 py-3 font-mono text-xs">
+                <div className="p-3.5 rounded-xl bg-muted/20 border border-border/30 hover:border-amber-500/40 transition-all flex flex-col justify-between">
                   <div>
-                    <span className="font-bold text-foreground block">LeetCode Rating</span>
+                    <span className="font-bold text-foreground block mb-0.5">LeetCode Rating</span>
                     <span className="text-[10px] text-muted-foreground">Knight Rank Benchmark</span>
                   </div>
-                  <span className="font-black text-amber-400 text-sm">1606</span>
+                  <span className="font-black text-amber-400 text-base mt-2">1606</span>
                 </div>
-                <div className="p-3 rounded-xl bg-muted/20 border border-border/30 flex items-center justify-between">
+                <div className="p-3.5 rounded-xl bg-muted/20 border border-border/30 hover:border-emerald-500/40 transition-all flex flex-col justify-between">
                   <div>
-                    <span className="font-bold text-foreground block">CodeChef DSA Rating</span>
-                    <span className="text-[10px] text-muted-foreground">DSA Contest Rating Peak</span>
+                    <span className="font-bold text-foreground block mb-0.5">CodeChef DSA</span>
+                    <span className="text-[10px] text-muted-foreground">DSA Contest Peak</span>
                   </div>
-                  <span className="font-black text-emerald-400 text-sm">1522</span>
+                  <span className="font-black text-emerald-400 text-base mt-2">1522</span>
                 </div>
-                <div className="p-3 rounded-xl bg-muted/20 border border-border/30 flex items-center justify-between">
+                <div className="p-3.5 rounded-xl bg-muted/20 border border-border/30 hover:border-orange-500/40 transition-all flex flex-col justify-between">
                   <div>
-                    <span className="font-bold text-foreground block">CodeChef Starters (CP)</span>
-                    <span className="text-[10px] text-muted-foreground">CP Division Benchmark</span>
+                    <span className="font-bold text-foreground block mb-0.5">CodeChef Starters</span>
+                    <span className="text-[10px] text-muted-foreground">CP Division Peak</span>
                   </div>
-                  <span className="font-black text-orange-400 text-sm">1438 Peak</span>
+                  <span className="font-black text-orange-400 text-base mt-2">1438</span>
                 </div>
               </div>
 
