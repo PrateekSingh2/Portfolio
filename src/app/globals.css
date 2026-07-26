@@ -122,21 +122,6 @@
     scrollbar-width: none;
   }
 
-  /* Hide system mouse cursor on desktop devices with fine pointer when reduced motion is not preferred */
-  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-    html,
-    body,
-    a,
-    button,
-    input,
-    select,
-    textarea,
-    [role="button"],
-    .cursor-pointer {
-      cursor: none !important;
-    }
-  }
-
   /* Reduced motion overrides for performance & accessibility */
   @media (prefers-reduced-motion: reduce) {
     *,

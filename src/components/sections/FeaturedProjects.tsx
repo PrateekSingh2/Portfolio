@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { FolderKanban, GitBranch, ExternalLink, TerminalSquare, ChevronRight, ShieldAlert, Zap, FileText, Code2, Layers } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { ArrowRight, Globe, GitBranch, TerminalSquare, FileText, ShieldAlert, Zap, Layers, FolderKanban } from "lucide-react";
 import { motion } from "framer-motion";
+import { PROJECTS_DATA, Project } from "@/lib/projectsData";
+import { preloadImages } from "@/lib/mediaCache";
 import {
   Dialog,
   DialogContent,
@@ -14,147 +15,148 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 
-type Project = {
-  id: string;
-  title: string;
-  shortDesc: string;
-  description: string;
-  challenges: string;
-  metrics: string;
-  tech: string[];
-  github: string;
-  live: string;
-};
+function LinkedInIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+    </svg>
+  );
+}
 
 export function FeaturedProjects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const projects: Project[] = [
-    {
-      id: "formforge",
-      title: "FormForge: AI-Assisted Dynamic Form Builder",
-      shortDesc: "A web application allowing users to create dynamic forms with AI-assisted prompt interactions.",
-      description: "FormForge simplifies complex multi-step form creation using generative AI prompts, customizable field validation schemas, and real-time live preview rendering.",
-      challenges: "Ensuring real-time state consistency across nested form structures while maintaining sub-50ms reactive input updates. Integrating LLM prompt parsing for structured JSON schema generation.",
-      metrics: "Reduced form generation setup time by 50% with 95% prompt completion accuracy across test user cohorts.",
-      tech: ["Next.js", "TypeScript", "Tailwind CSS", "Node.js"],
-      github: "https://github.com/PrateekSingh2/formsforge",
-      live: "https://formsforge-coral.vercel.app/",
-    },
-    {
-      id: "blo",
-      title: "BLO: Virtual Voter Card System",
-      shortDesc: "A desktop application engineered for local generation and encryption of virtual voter cards.",
-      description: "BLO (Booth Level Officer) virtual voter system provides secure local ID generation, automated barcode creation, and record management with offline-first MySQL storage.",
-      challenges: "Designing an offline-first desktop UI with Tkinter, securing encrypted local databases, and generating vector print-ready PDF export cards.",
-      metrics: "Streamlined local election voter verification workflow with 100% offline uptime and zero data leakage.",
-      tech: ["Python", "Tkinter", "MySQL", "ReportLab"],
-      github: "https://github.com/PrateekSingh2/BLO",
-      live: "", 
-    },
-    {
-      id: "portfolio",
-      title: "Real-Time Algorithmic Developer Portfolio",
-      shortDesc: "A high-performance portfolio featuring live GraphQL scraping, Recharts analytics, and micro-interactions.",
-      description: "Architected with Next.js App Router, custom REST/GraphQL API proxy routes, RegExp HTML scrapers for competitive programming platforms, and real-time commit feeds.",
-      challenges: "Scraping non-API competitive profiles (CodeChef HTML script regex parsing), optimizing client bundle size, and ensuring 60fps glassmorphism rendering across mobile browsers.",
-      metrics: "100% TypeScript type safety, 0 runtime lint errors, sub-second API caching with Next.js SWR revalidation.",
-      tech: ["Next.js 15", "TypeScript", "Recharts", "Tailwind CSS", "GraphQL"],
-      github: "https://github.com/PrateekSingh2/Portfolio",
-      live: "https://portfolio-prateeksingh.vercel.app/",
-    }
-  ];
+  useEffect(() => {
+    // Preload project thumbnail images into browser cache
+    preloadImages(PROJECTS_DATA.map((p) => p.thumbnail));
+  }, []);
+
+  const featuredList = PROJECTS_DATA.filter((p) => p.featured).slice(0, 2);
 
   return (
     <section className="py-16 px-4 max-w-3xl mx-auto w-full relative" id="projects">
-      <div className="mb-10">
-        <h2 className="text-xl font-bold font-mono mb-2 flex items-center gap-2">
-          <FolderKanban className="w-5 h-5 text-primary" /> Featured Projects
-        </h2>
-        <p className="text-sm text-muted-foreground font-mono">
-          Deep dives into complex software systems and engineering challenges. Tap any card for full details.
-        </p>
+      {/* Header with logo icon, featured projects title and view more button */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary shrink-0">
+            <FolderKanban className="w-5 h-5" />
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-bold font-serif tracking-tight text-foreground">
+            Featured projects
+          </h2>
+        </div>
+
+        <Link
+          href="/projects"
+          className="flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-foreground transition-colors group cursor-pointer"
+        >
+          <span>view more</span>
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </Link>
       </div>
 
-      <div className="space-y-6">
-        {projects.map((project, idx) => (
+      {/* Projects 2-Column Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {featuredList.map((project, idx) => (
           <motion.div
             key={project.id}
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: idx * 0.08, duration: 0.4 }}
+            transition={{ delay: idx * 0.1, duration: 0.4 }}
+            className="flex"
           >
-            <Card 
+            <div
               onClick={() => setSelectedProject(project)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setSelectedProject(project);
-                }
-              }}
-              tabIndex={0}
-              role="button"
-              aria-label={`View deep dive for ${project.title}`}
-              className="bg-card/30 backdrop-blur-sm border-border/40 hover:border-primary/50 hover:bg-card/60 transition-all duration-300 shadow-sm hover:shadow-xl relative overflow-hidden group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="w-full bg-card/80 backdrop-blur-md border border-border/80 hover:border-primary/40 rounded-2xl p-5 md:p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 group cursor-pointer relative overflow-hidden"
             >
-              {/* Top Ambient Glow Line */}
-              <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              <CardContent className="p-6 md:p-7 flex flex-col justify-between">
-                <div>
-                  {/* Header */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-border/30">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-primary/10 text-primary rounded-xl shrink-0 group-hover:bg-primary/20 transition-all">
-                        <TerminalSquare className="w-5 h-5" />
-                      </div>
-                      <h3 className="text-base font-bold font-mono leading-tight text-foreground group-hover:text-primary transition-colors">
-                        {project.title}
-                      </h3>
-                    </div>
-                    
-                    {/* View Deep Dive Action Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedProject(project);
-                      }}
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary font-mono text-xs font-bold transition-all border border-primary/20 cursor-pointer self-start sm:self-auto"
-                    >
-                      <span>View Deep Dive</span>
-                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
-                  </div>
+              {/* Top ambient hover accent */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                  {/* Short Description */}
-                  <p className="text-xs sm:text-sm text-foreground/80 mb-5 leading-relaxed font-mono">
-                    {project.shortDesc}
-                  </p>
+              <div>
+                {/* Thumbnail Preview Container */}
+                <div className="w-full aspect-[16/9] rounded-xl overflow-hidden mb-5 border border-border/60 bg-muted/30 relative group-hover:scale-[1.01] transition-transform duration-300">
+                  <img
+                    src={project.thumbnail}
+                    alt={project.title}
+                    className="w-full h-full object-cover object-top"
+                    loading="lazy"
+                  />
                 </div>
-                
-                {/* Tech stack badges */}
-                <div className="flex flex-wrap gap-1.5 pt-2">
+
+                {/* Project Title */}
+                <h3 className="text-lg sm:text-xl font-bold font-sans tracking-tight text-foreground group-hover:text-primary transition-colors mb-2.5 leading-snug">
+                  {project.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-xs text-muted-foreground leading-relaxed font-sans mb-5 line-clamp-3">
+                  {project.shortDesc}
+                </p>
+
+                {/* Tech Stack Pills */}
+                <div className="flex flex-wrap gap-1.5 mb-6">
                   {project.tech.map((t) => (
-                    <span 
-                      key={t} 
-                      className="px-2.5 py-1 text-[10px] font-mono rounded-md bg-primary/5 text-primary/90 border border-primary/15 font-semibold"
+                    <span
+                      key={t}
+                      className="px-2.5 py-1 text-[11px] font-mono rounded-lg bg-muted/60 text-muted-foreground border border-border/50 font-medium"
                     >
                       {t}
                     </span>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-2.5 pt-2">
+                {project.live && (
+                  <a
+                    href={project.live}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/40 font-semibold font-mono text-xs transition-colors shadow-sm cursor-pointer"
+                  >
+                    <Globe className="w-3.5 h-3.5" />
+                    <span>View Website</span>
+                  </a>
+                )}
+
+                {project.github && (
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/40 font-semibold font-mono text-xs transition-colors shadow-sm cursor-pointer"
+                  >
+                    <GitBranch className="w-3.5 h-3.5" />
+                    <span>Source</span>
+                  </a>
+                )}
+
+                {project.linkedin && (
+                  <a
+                    href={project.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/40 font-semibold font-mono text-xs transition-colors shadow-sm cursor-pointer"
+                  >
+                    <LinkedInIcon className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
+                    <span>Post</span>
+                  </a>
+                )}
+              </div>
+            </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Project Deep-Dive Modal Overlay (Shadcn Dialog) */}
+      {/* Project Deep-Dive Modal Overlay */}
       <Dialog open={selectedProject !== null} onOpenChange={(open) => !open && setSelectedProject(null)}>
         {selectedProject && (
-          <DialogContent className="w-[calc(100%-1.5rem)] max-w-3xl md:max-w-4xl lg:max-w-5xl bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-5 md:p-8 rounded-2xl border-t-2 border-t-primary/60 transition-all duration-300 overflow-hidden">
+          <DialogContent className="w-[calc(100%-1.5rem)] max-w-3xl md:max-w-4xl bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-5 md:p-8 rounded-2xl border-t-2 border-t-primary/60 transition-all duration-300 overflow-hidden font-sans">
             <DialogHeader className="pb-3 border-b border-border/30">
               <DialogTitle className="text-base sm:text-lg md:text-xl font-mono flex items-start gap-2.5 text-foreground font-bold leading-snug">
                 <TerminalSquare className="w-5 h-5 md:w-6 md:h-6 text-primary shrink-0 mt-0.5" />
@@ -167,7 +169,15 @@ export function FeaturedProjects() {
 
             {/* Modal Body */}
             <div className="py-3 font-mono space-y-5 text-xs max-h-[70vh] md:max-h-[75vh] overflow-y-auto pr-1 sm:pr-2 scrollbar-thin">
-              
+              {/* Thumbnail Image in Modal */}
+              <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-border">
+                <img
+                  src={selectedProject.thumbnail}
+                  alt={selectedProject.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
               {/* Overview */}
               <div>
                 <h4 className="text-xs text-primary mb-1.5 flex items-center gap-1.5 uppercase tracking-wider font-bold">
@@ -178,11 +188,11 @@ export function FeaturedProjects() {
                 </p>
               </div>
 
-              {/* Challenges & Impact (2 Columns on Desktop) */}
+              {/* Challenges & Impact */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                 <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 sm:p-5 space-y-2 flex flex-col justify-between hover:border-primary/30 transition-colors">
                   <h4 className="text-xs text-primary flex items-center gap-1.5 font-bold">
-                    <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" /> Engineering Challenges
+                    <ShieldAlert className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0" /> Engineering Challenges
                   </h4>
                   <p className="text-[11.5px] sm:text-xs text-muted-foreground leading-relaxed break-words font-sans">
                     {selectedProject.challenges}
@@ -191,7 +201,7 @@ export function FeaturedProjects() {
 
                 <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 sm:p-5 space-y-2 flex flex-col justify-between hover:border-primary/30 transition-colors">
                   <h4 className="text-xs text-primary flex items-center gap-1.5 font-bold">
-                    <Zap className="w-4 h-4 text-emerald-400 shrink-0" /> Impact & Benchmark Metrics
+                    <Zap className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0" /> Impact & Benchmark Metrics
                   </h4>
                   <p className="text-[11.5px] sm:text-xs text-muted-foreground leading-relaxed break-words font-sans">
                     {selectedProject.metrics}
@@ -215,13 +225,13 @@ export function FeaturedProjects() {
             </div>
 
             {/* Modal Footer Links */}
-            <div className="pt-3.5 border-t border-border/30 flex flex-wrap items-center justify-end gap-3">
+            <div className="pt-3.5 border-t border-border/30 flex flex-wrap items-center justify-end gap-3 font-sans">
               {selectedProject.github && (
                 <a 
                   href={selectedProject.github} 
                   target="_blank" 
                   rel="noreferrer" 
-                  className={buttonVariants({ variant: "outline", size: "sm", className: "font-mono gap-2 text-xs cursor-pointer rounded-xl font-bold border-border/50 hover:bg-muted" })}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary border border-border text-secondary-foreground font-mono text-xs font-bold hover:bg-secondary/80 transition-colors"
                 >
                   <GitBranch className="w-4 h-4 text-primary" /> View Source Code
                 </a>
@@ -231,13 +241,12 @@ export function FeaturedProjects() {
                   href={selectedProject.live} 
                   target="_blank" 
                   rel="noreferrer" 
-                  className={buttonVariants({ size: "sm", className: "font-mono gap-2 text-xs cursor-pointer rounded-xl font-bold shadow-md" })}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-mono text-xs font-bold shadow-md hover:bg-primary/90 transition-colors"
                 >
-                  <ExternalLink className="w-4 h-4" /> Launch Live Application
+                  <Globe className="w-4 h-4" /> Launch Application
                 </a>
               )}
             </div>
-
           </DialogContent>
         )}
       </Dialog>

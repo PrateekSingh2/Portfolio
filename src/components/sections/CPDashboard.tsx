@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -27,20 +28,6 @@ function StatRow({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-const TOOLTIP_STYLE = {
-  contentStyle: {
-    background: "rgba(13, 13, 13, 0.95)",
-    backdropFilter: "blur(8px)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: 8,
-    fontSize: 11,
-    fontFamily: "monospace",
-    color: "#fff",
-    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.5)",
-  },
-  labelStyle: { color: "#888", marginBottom: 4 },
-};
-
 const PLATFORM_LINKS: Record<string, string> = {
   LeetCode:   "https://leetcode.com/u/prateek_singh7/",
   Codeforces: "https://codeforces.com/profile/RajawatPrateekSingh",
@@ -50,6 +37,8 @@ const PLATFORM_LINKS: Record<string, string> = {
 
 export function CPDashboard() {
   const [activeTab, setActiveTab] = React.useState<"leetcode" | "codeforces" | "codechef" | "codechef-dsa">("leetcode");
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["cpData"],
@@ -57,13 +46,29 @@ export function CPDashboard() {
     staleTime: 1000 * 60 * 10,
   });
 
+  const tooltipStyle = React.useMemo(() => {
+    return {
+      contentStyle: {
+        background: isDark ? "rgba(13, 13, 13, 0.95)" : "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(8px)",
+        border: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(0, 0, 0, 0.1)",
+        borderRadius: 8,
+        fontSize: 11,
+        fontFamily: "monospace",
+        color: isDark ? "#fff" : "#0f172a",
+        boxShadow: "0 10px 25px -5px rgba(0,0,0,0.15)",
+      },
+      labelStyle: { color: isDark ? "#a1a1aa" : "#64748b", marginBottom: 4 },
+    };
+  }, [isDark]);
+
   if (isLoading) {
     return (
       <section className="py-16 px-4 max-w-3xl mx-auto w-full font-mono" id="achievements">
-        <h2 className="text-xl font-bold mb-2">~/competitive-programming</h2>
+        <h2 className="text-xl font-bold mb-2 text-foreground">~/competitive-programming</h2>
         <p className="text-sm text-muted-foreground mb-8">Loading live stats…</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-48 rounded-xl" />)}
+          {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-48 rounded-xl bg-muted/50" />)}
         </div>
       </section>
     );
@@ -102,11 +107,12 @@ export function CPDashboard() {
   );
   const totalContestsAcrossPlatforms = (data.leetcode.contests || 0) + (data.codeforces.contests || 0) + (data.codechef.contests || 0);
 
-  // Format history data to map title to name for Recharts tooltip fallback if any
-  const lcHistory = (data.lcHistory || []).map((h: any) => ({ ...h, name: h.title }));
-  const cfHistory = (data.cfHistory || []).map((h: any) => ({ ...h, name: h.title }));
-  const ccHistory = (data.ccHistory || []).map((h: any) => ({ ...h, name: h.title }));
-  const ccDsaHistory = (data.ccDsaHistory || []).map((h: any) => ({ ...h, name: h.title }));
+  // Format history data to map title to name for Recharts tooltip fallback
+  type HistoryItem = { title?: string; rating?: number; [key: string]: unknown };
+  const lcHistory = (data.lcHistory || []).map((h: HistoryItem) => ({ ...h, name: h.title }));
+  const cfHistory = (data.cfHistory || []).map((h: HistoryItem) => ({ ...h, name: h.title }));
+  const ccHistory = (data.ccHistory || []).map((h: HistoryItem) => ({ ...h, name: h.title }));
+  const ccDsaHistory = (data.ccDsaHistory || []).map((h: HistoryItem) => ({ ...h, name: h.title }));
 
   const activeHistory = activeTab === "leetcode" 
     ? lcHistory 
@@ -117,51 +123,51 @@ export function CPDashboard() {
         : ccDsaHistory;
       
   const activeColor = activeTab === "leetcode" 
-    ? "#eab308" 
+    ? (isDark ? "#eab308" : "#d97706") 
     : activeTab === "codeforces" 
-      ? "#3b82f6" 
+      ? (isDark ? "#38bdf8" : "#2563eb") 
       : activeTab === "codechef"
-        ? "#f97316"
-        : "#10b981";
+        ? (isDark ? "#f97316" : "#ea580c")
+        : (isDark ? "#10b981" : "#059669");
 
   return (
     <section className="py-16 px-4 max-w-3xl mx-auto w-full relative" id="achievements">
       <div className="mb-8">
-        <h2 className="text-xl font-bold font-mono mb-2 flex items-center gap-2">
+        <h2 className="text-xl font-bold font-mono mb-2 flex items-center gap-2 text-foreground">
           <Trophy className="w-5 h-5 text-primary" /> Competitive Programming
         </h2>
         <p className="text-sm text-muted-foreground font-mono">Real-time benchmarks and profiles across algorithmic hubs.</p>
       </div>
 
       {/* Codolio-Inspired Top Aggregate Summary Banner */}
-      <div className="mb-8 p-5 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-md shadow-lg relative overflow-hidden">
+      <div className="mb-8 p-5 rounded-2xl bg-card/80 border border-border/80 backdrop-blur-md shadow-lg relative overflow-hidden">
         <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-primary via-primary/50 to-primary/10" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="space-y-1">
             <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Total Solved</span>
-            <div className="text-2xl font-black font-mono text-foreground flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
+            <div className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
               {totalSolvedAcrossPlatforms.toLocaleString()}+
             </div>
           </div>
           <div className="space-y-1 border-l border-border/20 pl-4">
             <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Peak Rating</span>
-            <div className="text-2xl font-black font-mono text-amber-400 flex items-center gap-1.5">
-              <Trophy className="w-4 h-4 text-amber-400" />
+            <div className="text-2xl font-black font-mono text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+              <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400" />
               {peakRating}
             </div>
           </div>
           <div className="space-y-1 border-l border-border/20 pl-4">
             <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Contests</span>
-            <div className="text-2xl font-black font-mono text-cyan-400 flex items-center gap-1.5">
-              <Activity className="w-4 h-4 text-cyan-400" />
+            <div className="text-2xl font-black font-mono text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">
+              <Activity className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
               {totalContestsAcrossPlatforms}+
             </div>
           </div>
           <div className="space-y-1 border-l border-border/20 pl-4">
             <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Platforms</span>
-            <div className="text-2xl font-black font-mono text-blue-400 flex items-center gap-1.5">
-              <GraduationCap className="w-4 h-4 text-blue-400" />
+            <div className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+              <GraduationCap className="w-4 h-4 text-blue-500 dark:text-blue-400" />
               4 Active
             </div>
           </div>
@@ -172,18 +178,18 @@ export function CPDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-stretch">
         
         {/* LeetCode Card */}
-        <Card className="bg-card/40 backdrop-blur-sm border-border/50 hover:border-yellow-500/40 hover:shadow-xl hover:shadow-yellow-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
-          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
-                <Trophy className="w-4 h-4 text-yellow-500" /> LeetCode
+                <Trophy className="w-4 h-4 text-amber-500" /> LeetCode
               </span>
               <a 
                 href={PLATFORM_LINKS.LeetCode} 
                 target="_blank" 
                 rel="noreferrer" 
-                className="text-muted-foreground hover:text-yellow-500 transition-colors p-1 rounded-md hover:bg-yellow-500/10"
+                className="text-muted-foreground hover:text-amber-500 transition-colors p-1 rounded-md hover:bg-amber-500/10"
               >
                 <ExternalLink className="w-4 h-4" />
               </a>
@@ -191,7 +197,7 @@ export function CPDashboard() {
           </CardHeader>
           <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
             <div className="flex items-center gap-5 mb-4">
-              <div className="relative w-24 h-24 shrink-0 drop-shadow-[0_0_12px_rgba(234,179,8,0.15)]">
+              <div className="relative w-24 h-24 shrink-0 drop-shadow-sm">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie 
@@ -217,37 +223,37 @@ export function CPDashboard() {
               <div className="flex-1 space-y-2">
                 <div>
                   <div className="flex items-center justify-between text-[11px] font-mono mb-1">
-                    <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Easy
+                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Easy
                     </span>
-                    <span className="font-semibold">{easyCount} <span className="text-[10px] text-muted-foreground font-normal">({easyPct}%)</span></span>
+                    <span className="font-semibold text-foreground">{easyCount} <span className="text-[10px] text-muted-foreground font-normal">({easyPct}%)</span></span>
                   </div>
-                  <div className="w-full h-1.5 bg-emerald-950/40 rounded-full overflow-hidden border border-emerald-500/20">
-                    <div className="h-full bg-emerald-400 rounded-full transition-all duration-500" style={{ width: `${easyPct}%` }} />
+                  <div className="w-full h-1.5 bg-emerald-100 dark:bg-emerald-950/40 rounded-full overflow-hidden border border-emerald-500/20">
+                    <div className="h-full bg-emerald-500 rounded-full transition-all duration-500" style={{ width: `${easyPct}%` }} />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between text-[11px] font-mono mb-1">
-                    <span className="text-amber-400 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Medium
+                    <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Medium
                     </span>
-                    <span className="font-semibold">{mediumCount} <span className="text-[10px] text-muted-foreground font-normal">({mediumPct}%)</span></span>
+                    <span className="font-semibold text-foreground">{mediumCount} <span className="text-[10px] text-muted-foreground font-normal">({mediumPct}%)</span></span>
                   </div>
-                  <div className="w-full h-1.5 bg-amber-950/40 rounded-full overflow-hidden border border-amber-500/20">
-                    <div className="h-full bg-amber-400 rounded-full transition-all duration-500" style={{ width: `${mediumPct}%` }} />
+                  <div className="w-full h-1.5 bg-amber-100 dark:bg-amber-950/40 rounded-full overflow-hidden border border-amber-500/20">
+                    <div className="h-full bg-amber-500 rounded-full transition-all duration-500" style={{ width: `${mediumPct}%` }} />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between text-[11px] font-mono mb-1">
-                    <span className="text-red-400 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span> Hard
+                    <span className="text-red-600 dark:text-red-400 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Hard
                     </span>
-                    <span className="font-semibold">{hardCount} <span className="text-[10px] text-muted-foreground font-normal">({hardPct}%)</span></span>
+                    <span className="font-semibold text-foreground">{hardCount} <span className="text-[10px] text-muted-foreground font-normal">({hardPct}%)</span></span>
                   </div>
-                  <div className="w-full h-1.5 bg-red-950/40 rounded-full overflow-hidden border border-red-500/20">
-                    <div className="h-full bg-red-400 rounded-full transition-all duration-500" style={{ width: `${hardPct}%` }} />
+                  <div className="w-full h-1.5 bg-red-100 dark:bg-red-950/40 rounded-full overflow-hidden border border-red-500/20">
+                    <div className="h-full bg-red-500 rounded-full transition-all duration-500" style={{ width: `${hardPct}%` }} />
                   </div>
                 </div>
               </div>
@@ -263,18 +269,18 @@ export function CPDashboard() {
         </Card>
 
         {/* Codeforces Card */}
-        <Card className="bg-card/40 backdrop-blur-sm border-border/50 hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+        <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
           <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
-                <TrendingUp className="w-4 h-4 text-blue-400" /> Codeforces
+                <TrendingUp className="w-4 h-4 text-blue-500 dark:text-blue-400" /> Codeforces
               </span>
               <a 
                 href={PLATFORM_LINKS.Codeforces} 
                 target="_blank" 
                 rel="noreferrer" 
-                className="text-muted-foreground hover:text-blue-400 transition-colors p-1 rounded-md hover:bg-blue-500/10"
+                className="text-muted-foreground hover:text-blue-500 transition-colors p-1 rounded-md hover:bg-blue-500/10"
               >
                 <ExternalLink className="w-4 h-4" />
               </a>
@@ -282,23 +288,23 @@ export function CPDashboard() {
           </CardHeader>
           <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
             {/* Codeforces Top Box */}
-            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-black/30 border border-border/20 shadow-inner">
+            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-muted/40 border border-border/40 shadow-inner">
               <div>
                 <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Current Rating</span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-blue-400">{data.codeforces.rating || "—"}</span>
-                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-blue-500/30 bg-blue-500/10 text-blue-400 font-bold uppercase">
+                  <span className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400">{data.codeforces.rating || "—"}</span>
+                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold uppercase">
                     {data.codeforces.rank || "Newbie"}
                   </Badge>
                 </div>
-                <span className="text-[10px] text-muted-foreground/80 font-mono">Max: {data.codeforces.maxRating || "—"}</span>
+                <span className="text-[10px] text-muted-foreground font-mono">Max: {data.codeforces.maxRating || "—"}</span>
               </div>
               <div className="border-l border-border/25 pl-3">
                 <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Problems Solved</span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-blue-400">{data.codeforces.solved || "—"}</span>
+                  <span className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400">{data.codeforces.solved || "—"}</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground/80 font-mono">{data.codeforces.contests || 0} Contests</span>
+                <span className="text-[10px] text-muted-foreground font-mono">{data.codeforces.contests || 0} Contests</span>
               </div>
             </div>
 
@@ -312,18 +318,18 @@ export function CPDashboard() {
         </Card>
 
         {/* CodeChef Card */}
-        <Card className="bg-card/40 backdrop-blur-sm border-border/50 hover:border-orange-500/40 hover:shadow-xl hover:shadow-orange-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+        <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-orange-500/40 hover:shadow-xl hover:shadow-orange-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
           <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
-                <Star className="w-4 h-4 text-orange-400 animate-pulse" /> CodeChef
+                <Star className="w-4 h-4 text-orange-500 dark:text-orange-400 animate-pulse" /> CodeChef
               </span>
               <a 
                 href={PLATFORM_LINKS.CodeChef} 
                 target="_blank" 
                 rel="noreferrer" 
-                className="text-muted-foreground hover:text-orange-400 transition-colors p-1 rounded-md hover:bg-orange-500/10"
+                className="text-muted-foreground hover:text-orange-500 transition-colors p-1 rounded-md hover:bg-orange-500/10"
               >
                 <ExternalLink className="w-4 h-4" />
               </a>
@@ -331,23 +337,23 @@ export function CPDashboard() {
           </CardHeader>
           <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
             {/* Dual Ratings Display: CP / Starters & DSA */}
-            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-black/30 border border-border/20 shadow-inner">
+            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-muted/40 border border-border/40 shadow-inner">
               <div>
                 <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Starters (CP)</span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-orange-400">{data.codechef.rating || "—"}</span>
-                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-orange-500/30 bg-orange-500/10 text-orange-400 font-bold">
+                  <span className="text-2xl font-black font-mono text-orange-600 dark:text-orange-400">{data.codechef.rating || "—"}</span>
+                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold">
                     {data.codechef.rank || "1★"}
                   </Badge>
                 </div>
-                <span className="text-[10px] text-muted-foreground/80 font-mono">Max: {data.codechef.maxRating || "—"}</span>
+                <span className="text-[10px] text-muted-foreground font-mono">Max: {data.codechef.maxRating || "—"}</span>
               </div>
               <div className="border-l border-border/25 pl-3">
                 <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">DSA Rating</span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-emerald-400">{data.codechef.dsaRating || "—"}</span>
+                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">{data.codechef.dsaRating || "—"}</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground/80 font-mono">Max: {data.codechef.dsaMaxRating || "—"}</span>
+                <span className="text-[10px] text-muted-foreground font-mono">Max: {data.codechef.dsaMaxRating || "—"}</span>
               </div>
             </div>
 
@@ -360,18 +366,18 @@ export function CPDashboard() {
         </Card>
 
         {/* GFG Card */}
-        <Card className="bg-card/40 backdrop-blur-sm border-border/50 hover:border-emerald-500/40 hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+        <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-emerald-500/40 hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
           <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
-                <Award className="w-4 h-4 text-emerald-400" /> GeeksForGeeks
+                <Award className="w-4 h-4 text-emerald-500 dark:text-emerald-400" /> GeeksForGeeks
               </span>
               <a 
                 href={PLATFORM_LINKS.GFG} 
                 target="_blank" 
                 rel="noreferrer" 
-                className="text-muted-foreground hover:text-emerald-400 transition-colors p-1 rounded-md hover:bg-emerald-500/10"
+                className="text-muted-foreground hover:text-emerald-500 transition-colors p-1 rounded-md hover:bg-emerald-500/10"
               >
                 <ExternalLink className="w-4 h-4" />
               </a>
@@ -379,23 +385,23 @@ export function CPDashboard() {
           </CardHeader>
           <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
             {/* GFG Top Box */}
-            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-black/30 border border-border/20 shadow-inner">
+            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-muted/40 border border-border/40 shadow-inner">
               <div>
                 <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Coding Score</span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-emerald-400">{data.gfg.codingScore ?? data.gfg.rating ?? "—"}</span>
-                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold">
+                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">{data.gfg.codingScore ?? data.gfg.rating ?? "—"}</span>
+                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
                     Coder
                   </Badge>
                 </div>
-                <span className="text-[10px] text-muted-foreground/80 font-mono">GeeksforGeeks</span>
+                <span className="text-[10px] text-muted-foreground font-mono">GeeksforGeeks</span>
               </div>
               <div className="border-l border-border/25 pl-3">
                 <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Practice Streak</span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-emerald-400">{data.gfg.streak ? `${data.gfg.streak}d` : "—"}</span>
+                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">{data.gfg.streak ? `${data.gfg.streak}d` : "—"}</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground/80 font-mono">{data.gfg.problemsSolved ?? data.gfg.solved ?? 0} Solved</span>
+                <span className="text-[10px] text-muted-foreground font-mono">{data.gfg.problemsSolved ?? data.gfg.solved ?? 0} Solved</span>
               </div>
             </div>
 
@@ -409,7 +415,7 @@ export function CPDashboard() {
       </div>
 
       {/* Ratings Progression Chart Card */}
-      <Card className="bg-card/40 backdrop-blur-sm border-border/50 hover:border-primary/30 transition-all duration-300 p-6">
+      <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-primary/30 transition-all duration-300 p-6 shadow-lg">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h3 className="text-sm font-bold font-mono text-foreground flex items-center gap-2">
@@ -418,57 +424,57 @@ export function CPDashboard() {
             <p className="text-[11px] text-muted-foreground font-mono mt-0.5">Interactive history of rated contests across platforms.</p>
           </div>
 
-          {/* Organized Platform Selection Tabs */}
-          <div className="flex flex-wrap bg-black/40 p-1.5 rounded-xl border border-border/30 w-full sm:w-fit gap-1 shadow-inner">
+          {/* Organized Platform Selection Tabs - Theme Optimized */}
+          <div className="flex flex-wrap bg-muted/50 p-1.5 rounded-xl border border-border/50 w-full sm:w-fit gap-1 shadow-inner backdrop-blur-sm">
             <button
               onClick={() => setActiveTab("leetcode")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
                 activeTab === "leetcode" 
-                  ? "bg-amber-500/10 text-amber-400 font-bold shadow-sm border border-amber-500/30" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold shadow-sm border border-amber-500/40" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+              <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
               LeetCode
             </button>
             <button
               onClick={() => setActiveTab("codeforces")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
                 activeTab === "codeforces" 
-                  ? "bg-blue-500/10 text-blue-400 font-bold shadow-sm border border-blue-500/30" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  ? "bg-blue-500/15 text-blue-600 dark:text-blue-400 font-bold shadow-sm border border-blue-500/40" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0"></span>
+              <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
               Codeforces
             </button>
             <button
               onClick={() => setActiveTab("codechef")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
                 activeTab === "codechef" 
-                  ? "bg-orange-500/10 text-orange-400 font-bold shadow-sm border border-orange-500/30" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  ? "bg-orange-500/15 text-orange-600 dark:text-orange-400 font-bold shadow-sm border border-orange-500/40" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-orange-400 shrink-0"></span>
+              <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0"></span>
               CodeChef (CP)
             </button>
             <button
               onClick={() => setActiveTab("codechef-dsa")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
                 activeTab === "codechef-dsa" 
-                  ? "bg-emerald-500/10 text-emerald-400 font-bold shadow-sm border border-emerald-500/30" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold shadow-sm border border-emerald-500/40" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
               CodeChef (DSA)
             </button>
           </div>
         </div>
 
         <div className="h-64 w-full relative pt-2">
-          <div className="absolute top-0 left-0 text-[10px] text-muted-foreground/70 font-mono uppercase tracking-wider font-semibold">
+          <div className="absolute top-0 left-0 text-[10px] text-muted-foreground/80 font-mono uppercase tracking-wider font-semibold">
             Rating ↑
           </div>
           {activeHistory.length >= 1 ? (
@@ -476,26 +482,26 @@ export function CPDashboard() {
               <AreaChart data={activeHistory} margin={{ top: 15, right: 10, bottom: 5, left: -10 }}>
                 <defs>
                   <linearGradient id="colorRatingGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={activeColor} stopOpacity={0.4} />
+                    <stop offset="5%" stopColor={activeColor} stopOpacity={0.35} />
                     <stop offset="95%" stopColor={activeColor} stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"} vertical={false} />
                 <XAxis 
                   dataKey="title" 
                   hide={true}
                 />
                 <YAxis 
-                  stroke="#a1a1aa" 
+                  stroke={isDark ? "#a1a1aa" : "#64748b"} 
                   fontSize={11} 
                   fontWeight={600}
                   tickLine={false} 
                   axisLine={false} 
                   domain={["auto", "auto"]}
-                  tick={{ fill: "#a1a1aa", fontSize: 11, fontFamily: "monospace" }}
+                  tick={{ fill: isDark ? "#a1a1aa" : "#64748b", fontSize: 11, fontFamily: "monospace" }}
                   width={45}
                 />
-                <RTooltip {...TOOLTIP_STYLE} />
+                <RTooltip {...tooltipStyle} />
                 <Area
                   type="monotone"
                   dataKey="rating"
@@ -504,7 +510,7 @@ export function CPDashboard() {
                   fillOpacity={1}
                   fill="url(#colorRatingGrad)"
                   dot={{ r: 3, fill: activeColor, strokeWidth: 0 }}
-                  activeDot={{ r: 6, stroke: activeColor, strokeWidth: 2, fill: "#111" }}
+                  activeDot={{ r: 6, stroke: activeColor, strokeWidth: 2, fill: isDark ? "#111" : "#fff" }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -518,5 +524,3 @@ export function CPDashboard() {
     </section>
   );
 }
-
-
