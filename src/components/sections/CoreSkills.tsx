@@ -32,7 +32,13 @@ export interface SkillItem {
   highlighted?: boolean;
 }
 
-const MONO_SLUGS = new Set(["nextdotjs", "github", "vercel", "express", "prisma"]);
+const MONO_SLUGS = new Set([
+  "nextdotjs",
+  "github",
+  "vercel",
+  "express",
+  "prisma",
+]);
 
 const SKILL_DATABASE: SkillItem[] = [
   // Row 1 / Languages & Web Core
@@ -42,7 +48,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "languages",
     slug: "typescript",
     proficiency: "Expert",
-    description: "Strict typing, generics, AST transformations, enterprise fullstack development.",
+    description:
+      "Strict typing, generics, AST transformations, enterprise fullstack development.",
   },
   {
     id: "js",
@@ -50,15 +57,18 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "languages",
     slug: "javascript",
     proficiency: "Expert",
-    description: "ES6+, async/await queues, event loop optimization, DOM execution contexts.",
+    description:
+      "ES6+, async/await queues, event loop optimization, DOM execution contexts.",
   },
   {
     id: "java",
     name: "Java",
     category: "languages",
-    customLogoUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg",
+    customLogoUrl:
+      "https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg",
     proficiency: "Advanced",
-    description: "OOP patterns, JVM tuning, multi-threading, competitive programming.",
+    description:
+      "OOP patterns, JVM tuning, multi-threading, competitive programming.",
   },
   {
     id: "cpp",
@@ -66,7 +76,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "languages",
     slug: "cplusplus",
     proficiency: "Expert",
-    description: "STL, memory management, low-level algorithm optimization, competitive programming.",
+    description:
+      "STL, memory management, low-level algorithm optimization, competitive programming.",
   },
   {
     id: "python",
@@ -74,7 +85,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "languages",
     slug: "python",
     proficiency: "Expert",
-    description: "Data science, AI models, PyTorch, automation scripts, backend services.",
+    description:
+      "Data science, AI models, PyTorch, automation scripts, backend services.",
   },
   {
     id: "nextjs",
@@ -82,7 +94,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "nextdotjs",
     proficiency: "Expert",
-    description: "App Router, SSR, SSG, Server Actions, edge runtime optimization.",
+    description:
+      "App Router, SSR, SSG, Server Actions, edge runtime optimization.",
   },
   {
     id: "react",
@@ -90,7 +103,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "react",
     proficiency: "Expert",
-    description: "Custom hooks, Virtual DOM tuning, state management, concurrent rendering.",
+    description:
+      "Custom hooks, Virtual DOM tuning, state management, concurrent rendering.",
   },
   {
     id: "tailwind",
@@ -98,7 +112,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "tailwindcss",
     proficiency: "Expert",
-    description: "Design systems, responsive layouts, dark mode, custom animation utilities.",
+    description:
+      "Design systems, responsive layouts, dark mode, custom animation utilities.",
   },
   {
     id: "nodejs",
@@ -106,7 +121,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "nodejs",
     proficiency: "Advanced",
-    description: "Event-driven microservices, streams, REST APIs, asynchronous I/O.",
+    description:
+      "Event-driven microservices, streams, REST APIs, asynchronous I/O.",
   },
   {
     id: "express",
@@ -114,7 +130,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "express",
     proficiency: "Advanced",
-    description: "RESTful architecture, middleware pipelines, JWT auth, routing.",
+    description:
+      "RESTful architecture, middleware pipelines, JWT auth, routing.",
   },
   {
     id: "prisma",
@@ -122,7 +139,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "prisma",
     proficiency: "Advanced",
-    description: "Type-safe ORM, migrations, schema modeling, relational data querying.",
+    description:
+      "Type-safe ORM, migrations, schema modeling, relational data querying.",
   },
   {
     id: "mongodb",
@@ -130,7 +148,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "mongodb",
     proficiency: "Advanced",
-    description: "Document storage, aggregation frameworks, indexing, NoSQL schemas.",
+    description:
+      "Document storage, aggregation frameworks, indexing, NoSQL schemas.",
   },
 
   // Row 2 / AI, ML & Data
@@ -140,7 +159,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "postgresql",
     proficiency: "Advanced",
-    description: "ACID transactions, relational indexing, complex joins, query planning.",
+    description:
+      "ACID transactions, relational indexing, complex joins, query planning.",
   },
   {
     id: "mysql",
@@ -148,7 +168,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "mysql",
     proficiency: "Advanced",
-    description: "Relational database management, stored procedures, indexing, relational design.",
+    description:
+      "Relational database management, stored procedures, indexing, relational design.",
   },
   {
     id: "huggingface",
@@ -164,7 +185,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "devops",
     slug: "docker",
     proficiency: "Advanced",
-    description: "Containerization, Dockerfiles, multi-stage builds, compose orchestration.",
+    description:
+      "Containerization, Dockerfiles, multi-stage builds, compose orchestration.",
   },
   {
     id: "kubernetes",
@@ -172,7 +194,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "devops",
     slug: "kubernetes",
     proficiency: "Proficient",
-    description: "Cluster management, pod deployments, service routing, scaling.",
+    description:
+      "Cluster management, pod deployments, service routing, scaling.",
   },
   {
     id: "git",
@@ -180,7 +203,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "devops",
     slug: "git",
     proficiency: "Expert",
-    description: "Branching strategies, rebase workflows, version control, submodules.",
+    description:
+      "Branching strategies, rebase workflows, version control, submodules.",
   },
   {
     id: "github",
@@ -188,7 +212,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "devops",
     slug: "github",
     proficiency: "Expert",
-    description: "GitHub Actions CI/CD pipelines, PR workflows, code security audits.",
+    description:
+      "GitHub Actions CI/CD pipelines, PR workflows, code security audits.",
   },
   {
     id: "vscode",
@@ -196,7 +221,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "devops",
     slug: "visualstudiocode",
     proficiency: "Expert",
-    description: "Custom configurations, remote SSH debugging, extension ecosystems.",
+    description:
+      "Custom configurations, remote SSH debugging, extension ecosystems.",
   },
 
   // Row 3 / Cloud, DevOps & CS Core
@@ -206,7 +232,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "devops",
     slug: "vercel",
     proficiency: "Expert",
-    description: "Edge deployment pipelines, analytics, preview environments, domain routing.",
+    description:
+      "Edge deployment pipelines, analytics, preview environments, domain routing.",
   },
   {
     id: "Netlify",
@@ -214,7 +241,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "devops",
     slug: "netlify",
     proficiency: "Expert",
-    description: "Edge deployment pipelines, analytics, preview environments, domain routing.",
+    description:
+      "Edge deployment pipelines, analytics, preview environments, domain routing.",
   },
   {
     id: "linux",
@@ -222,7 +250,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "devops",
     slug: "linux",
     proficiency: "Advanced",
-    description: "Bash scripting, systemctl services, permission models, shell utilities.",
+    description:
+      "Bash scripting, systemctl services, permission models, shell utilities.",
   },
   {
     id: "html",
@@ -230,7 +259,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "html5",
     proficiency: "Expert",
-    description: "Semantic markup, accessibility (a11y), DOM structure, Web APIs.",
+    description:
+      "Semantic markup, accessibility (a11y), DOM structure, Web APIs.",
   },
   {
     id: "css",
@@ -238,7 +268,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "web",
     slug: "css3",
     proficiency: "Expert",
-    description: "Flexbox, CSS Grid, custom properties, responsive design, animations.",
+    description:
+      "Flexbox, CSS Grid, custom properties, responsive design, animations.",
   },
   {
     id: "dp",
@@ -246,7 +277,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "cs",
     customIcon: <Workflow className="w-5 h-5" />,
     proficiency: "Expert",
-    description: "Memoization, tabulations, state transitions, subproblem optimization.",
+    description:
+      "Memoization, tabulations, state transitions, subproblem optimization.",
   },
   {
     id: "graphs",
@@ -254,7 +286,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "cs",
     customIcon: <Network className="w-5 h-5" />,
     proficiency: "Expert",
-    description: "Dijkstra, Segment Trees, Trie structures, BFS/DFS, Union-Find.",
+    description:
+      "Dijkstra, Segment Trees, Trie structures, BFS/DFS, Union-Find.",
   },
   {
     id: "sysdesign",
@@ -262,7 +295,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "cs",
     customIcon: <Layers className="w-5 h-5" />,
     proficiency: "Proficient",
-    description: "Load balancing, caching, sharding, distributed consensus, microservices.",
+    description:
+      "Load balancing, caching, sharding, distributed consensus, microservices.",
   },
   {
     id: "os",
@@ -270,7 +304,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "cs",
     customIcon: <Cpu className="w-5 h-5" />,
     proficiency: "Advanced",
-    description: "Process synchronization, memory paging, deadlocks, thread scheduling.",
+    description:
+      "Process synchronization, memory paging, deadlocks, thread scheduling.",
   },
   {
     id: "dbms",
@@ -278,7 +313,8 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "cs",
     customIcon: <Database className="w-5 h-5" />,
     proficiency: "Advanced",
-    description: "B+ Trees, concurrency control, WAL logs, normalization, query optimization.",
+    description:
+      "B+ Trees, concurrency control, WAL logs, normalization, query optimization.",
   },
   {
     id: "cn",
@@ -286,28 +322,39 @@ const SKILL_DATABASE: SkillItem[] = [
     category: "cs",
     customIcon: <Globe className="w-5 h-5" />,
     proficiency: "Advanced",
-    description: "TCP/IP stack, HTTP/2 & HTTP/3, sockets, TLS/SSL, DNS resolution.",
+    description:
+      "TCP/IP stack, HTTP/2 & HTTP/3, sockets, TLS/SSL, DNS resolution.",
   },
 ];
 
 const CATEGORIES = [
-  { id: "all", label: "All Skills", icon: <Sparkles className="w-3.5 h-3.5" /> },
-  { id: "languages", label: "Languages", icon: <Code2 className="w-3.5 h-3.5" /> },
-  { id: "web", label: "Web & Databases", icon: <Monitor className="w-3.5 h-3.5" /> },
-  { id: "aiml", label: "AI & Machine Learning", icon: <BrainCircuit className="w-3.5 h-3.5" /> },
-  { id: "devops", label: "DevOps & Cloud", icon: <Server className="w-3.5 h-3.5" /> },
+  { id: "all", label: "All", icon: <Sparkles className="w-3.5 h-3.5" /> },
+  {
+    id: "languages",
+    label: "Languages",
+    icon: <Code2 className="w-3.5 h-3.5" />,
+  },
+  { id: "web", label: "Web & DB", icon: <Monitor className="w-3.5 h-3.5" /> },
+  {
+    id: "aiml",
+    label: "AI & ML",
+    icon: <BrainCircuit className="w-3.5 h-3.5" />,
+  },
+  {
+    id: "devops",
+    label: "DevOps & Cloud",
+    icon: <Server className="w-3.5 h-3.5" />,
+  },
   { id: "cs", label: "CS & Systems", icon: <Cpu className="w-3.5 h-3.5" /> },
 ];
 
 function SkillIconBadge({
   skill,
-  isActiveCategory,
   isSelected,
   onSelect,
   isDark,
 }: {
   skill: SkillItem;
-  isActiveCategory: boolean;
   isSelected: boolean;
   onSelect: () => void;
   isDark: boolean;
@@ -317,13 +364,13 @@ function SkillIconBadge({
   const iconUrl = skill.customLogoUrl
     ? skill.customLogoUrl
     : skill.slug
-    ? MONO_SLUGS.has(skill.slug)
-      ? `https://cdn.simpleicons.org/${skill.slug}/${isDark ? "ffffff" : "000000"}`
-      : `https://cdn.simpleicons.org/${skill.slug}`
-    : null;
+      ? MONO_SLUGS.has(skill.slug)
+        ? `https://cdn.simpleicons.org/${skill.slug}/${isDark ? "ffffff" : "000000"}`
+        : `https://cdn.simpleicons.org/${skill.slug}`
+      : null;
 
-  // Highlight only when category tab is filtered OR user clicks/hovers specific tile
-  const isHighlighted = isSelected || isActiveCategory;
+  // Highlight only when user clicks specific skill tile
+  const isHighlighted = isSelected;
 
   return (
     <motion.div
@@ -352,7 +399,9 @@ function SkillIconBadge({
         ) : skill.customIcon ? (
           <div
             className={`transition-colors ${
-              isHighlighted ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+              isHighlighted
+                ? "text-primary"
+                : "text-muted-foreground group-hover:text-foreground"
             }`}
           >
             {skill.customIcon}
@@ -367,7 +416,9 @@ function SkillIconBadge({
       {/* Skill Title */}
       <span
         className={`text-[10px] sm:text-[11px] font-mono mt-1 font-medium truncate max-w-full text-center px-1 ${
-          isHighlighted ? "text-primary font-semibold" : "text-muted-foreground group-hover:text-foreground"
+          isHighlighted
+            ? "text-primary font-semibold"
+            : "text-muted-foreground group-hover:text-foreground"
         }`}
       >
         {skill.name}
@@ -378,28 +429,29 @@ function SkillIconBadge({
 
 export function CoreSkills() {
   const [activeCategory, setActiveCategory] = React.useState<string>("all");
-  const [selectedSkill, setSelectedSkill] = React.useState<SkillItem | null>(null);
+  const [selectedSkill, setSelectedSkill] = React.useState<SkillItem | null>(
+    null,
+  );
   const [searchQuery, setSearchQuery] = React.useState<string>("");
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
   React.useEffect(() => {
     // Preload all SVG icons into memory cache for zero latency
-    const urls = SKILL_DATABASE
-      .map((s) => {
-        if (s.customLogoUrl) return s.customLogoUrl;
-        if (!s.slug) return null;
-        return MONO_SLUGS.has(s.slug)
-          ? `https://cdn.simpleicons.org/${s.slug}/${isDark ? "ffffff" : "000000"}`
-          : `https://cdn.simpleicons.org/${s.slug}`;
-      })
-      .filter(Boolean) as string[];
+    const urls = SKILL_DATABASE.map((s) => {
+      if (s.customLogoUrl) return s.customLogoUrl;
+      if (!s.slug) return null;
+      return MONO_SLUGS.has(s.slug)
+        ? `https://cdn.simpleicons.org/${s.slug}/${isDark ? "ffffff" : "000000"}`
+        : `https://cdn.simpleicons.org/${s.slug}`;
+    }).filter(Boolean) as string[];
     preloadImages(urls);
   }, [isDark]);
 
   const filteredSkills = React.useMemo(() => {
     return SKILL_DATABASE.filter((skill) => {
-      const matchesCategory = activeCategory === "all" || skill.category === activeCategory;
+      const matchesCategory =
+        activeCategory === "all" || skill.category === activeCategory;
       const matchesSearch =
         skill.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         skill.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -408,15 +460,15 @@ export function CoreSkills() {
   }, [activeCategory, searchQuery]);
 
   return (
-    <section className="py-16 px-4 max-w-3xl mx-auto w-full relative" id="skills">
+    <section
+      className="py-16 px-4 max-w-3xl mx-auto w-full relative"
+      id="skills"
+    >
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-mono text-primary mb-3">
-            <Terminal className="w-3.5 h-3.5" /> Technical Competencies
-          </div>
-          <h2 className="text-2xl font-bold font-mono tracking-tight text-foreground flex items-center gap-2">
-            Skills & Tech Stack
+          <h2 className="text-xl sm:text-2xl font-bold font-mono tracking-tight text-foreground flex items-center gap-2 mb-1">
+            <Code2 className="w-5 h-5 text-primary" /> Skills & Tech Stack
           </h2>
           <p className="text-sm text-muted-foreground font-mono mt-1">
             Languages, frameworks, tools, and systems engineering benchmarks.
@@ -437,20 +489,22 @@ export function CoreSkills() {
       </div>
 
       {/* Category Filter Tabs */}
-      <div className="flex overflow-x-auto pb-3 mb-6 scrollbar-none gap-2">
+      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-6">
         {CATEGORIES.map((cat) => {
           const isActive = activeCategory === cat.id;
           return (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-mono text-xs whitespace-nowrap transition-all duration-300 border cursor-pointer ${
+              className={`flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-mono text-xs transition-all duration-300 border cursor-pointer ${
                 isActive
                   ? "bg-primary/10 border-primary/40 text-primary font-semibold shadow-sm"
                   : "bg-card/40 border-border/30 text-muted-foreground hover:bg-card/80 hover:text-foreground"
               }`}
             >
-              <span className={isActive ? "text-primary" : "text-muted-foreground"}>
+              <span
+                className={isActive ? "text-primary" : "text-muted-foreground"}
+              >
                 {cat.icon}
               </span>
               <span>{cat.label}</span>
@@ -465,13 +519,11 @@ export function CoreSkills() {
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-2.5 sm:gap-3 relative z-10">
           {filteredSkills.map((skill) => {
             const isSelected = selectedSkill?.id === skill.id;
-            const isActiveCat = activeCategory !== "all" && skill.category === activeCategory;
 
             return (
               <SkillIconBadge
                 key={skill.id}
                 skill={skill}
-                isActiveCategory={isActiveCat}
                 isSelected={isSelected}
                 onSelect={() => setSelectedSkill(skill)}
                 isDark={isDark}

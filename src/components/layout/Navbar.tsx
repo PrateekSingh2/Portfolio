@@ -9,8 +9,16 @@ import { useTheme } from "next-themes";
 
 const navLinks = [
   { label: "Home", href: "/", icon: <Home className="w-3.5 h-3.5" /> },
-  { label: "Projects", href: "/projects", icon: <FolderKanban className="w-3.5 h-3.5" /> },
-  { label: "Contact", href: "/contact", icon: <Mail className="w-3.5 h-3.5" /> },
+  {
+    label: "Projects",
+    href: "/projects",
+    icon: <FolderKanban className="w-3.5 h-3.5" />,
+  },
+  {
+    label: "Contact",
+    href: "/contact",
+    icon: <Mail className="w-3.5 h-3.5" />,
+  },
 ];
 
 export function Navbar() {
@@ -33,10 +41,10 @@ export function Navbar() {
     <header className="fixed top-4 left-0 right-0 z-50 flex flex-col items-center px-4 pointer-events-none">
       <div
         className={cn(
-          "w-full max-w-3xl h-12 flex items-center justify-between px-4 sm:px-6 rounded-full border transition-all duration-300 shadow-sm pointer-events-auto",
+          "w-full max-w-3xl h-12 flex items-center justify-between px-4 sm:px-6 rounded-full border transition-all duration-300 shadow-sm pointer-events-auto backdrop-blur-xl",
           scrolled || mobileMenuOpen
-            ? "bg-background/85 backdrop-blur-md border-border/50 shadow-lg"
-            : "bg-background/40 backdrop-blur-md border-border/30"
+            ? "bg-background/35 border-border/40 shadow-lg shadow-black/5"
+            : "bg-background/20 border-border/20 shadow-none",
         )}
       >
         {/* Logo (Home Icon Link) */}
@@ -60,7 +68,7 @@ export function Navbar() {
                   "text-xs font-mono font-semibold transition-all py-1 border-b-2 cursor-pointer",
                   isActive
                     ? "text-primary border-primary font-bold"
-                    : "text-muted-foreground hover:text-primary border-transparent"
+                    : "text-muted-foreground hover:text-primary border-transparent",
                 )}
               >
                 {link.label}
@@ -90,14 +98,18 @@ export function Navbar() {
             className="md:hidden p-1.5 rounded-full hover:bg-muted/40 transition-colors text-muted-foreground hover:text-foreground shrink-0 border border-border/20 flex items-center justify-center h-8 w-8 cursor-pointer"
             aria-label="Toggle navigation menu"
           >
-            {mobileMenuOpen ? <X className="h-4 w-4 text-primary" /> : <Menu className="h-4 w-4" />}
+            {mobileMenuOpen ? (
+              <X className="h-4 w-4 text-primary" />
+            ) : (
+              <Menu className="h-4 w-4" />
+            )}
           </button>
         </div>
       </div>
 
       {/* Mobile Nav Dropdown Drawer */}
       {mobileMenuOpen && (
-        <div className="w-full max-w-3xl mt-2 p-3 rounded-2xl bg-card/95 backdrop-blur-xl border border-border/50 shadow-2xl md:hidden pointer-events-auto space-y-1 animate-in fade-in-0 zoom-in-95 duration-200">
+        <div className="w-full max-w-3xl mt-2 p-3 rounded-2xl bg-background/40 backdrop-blur-xl border border-border/40 shadow-2xl md:hidden pointer-events-auto space-y-1 animate-in fade-in-0 zoom-in-95 duration-200">
           <div className="grid grid-cols-3 gap-2">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
@@ -110,7 +122,7 @@ export function Navbar() {
                     "flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all border cursor-pointer",
                     isActive
                       ? "bg-primary/10 text-primary border-primary/30 font-bold"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30 border-transparent"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/30 border-transparent",
                   )}
                 >
                   {link.icon}
@@ -124,4 +136,3 @@ export function Navbar() {
     </header>
   );
 }
-

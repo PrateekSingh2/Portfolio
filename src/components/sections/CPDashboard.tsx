@@ -6,11 +6,27 @@ import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, TrendingUp, Star, Award, ExternalLink, Activity, Sparkles, GraduationCap } from "lucide-react";
 import {
-  AreaChart, Area, XAxis, YAxis,
-  Tooltip as RTooltip, ResponsiveContainer, CartesianGrid,
-  PieChart, Pie, Cell
+  Trophy,
+  TrendingUp,
+  Star,
+  Award,
+  ExternalLink,
+  Activity,
+  Sparkles,
+  GraduationCap,
+} from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip as RTooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
 async function fetchCPData() {
@@ -29,14 +45,16 @@ function StatRow({ label, value }: { label: string; value: string | number }) {
 }
 
 const PLATFORM_LINKS: Record<string, string> = {
-  LeetCode:   "https://leetcode.com/u/prateek_singh7/",
+  LeetCode: "https://leetcode.com/u/prateek_singh7/",
   Codeforces: "https://codeforces.com/profile/RajawatPrateekSingh",
-  CodeChef:   "https://www.codechef.com/users/nice_trail_87",
-  GFG:        "https://www.geeksforgeeks.org/profile/rajawatprateeksingh",
+  CodeChef: "https://www.codechef.com/users/nice_trail_87",
+  GFG: "https://www.geeksforgeeks.org/profile/rajawatprateeksingh",
 };
 
 export function CPDashboard() {
-  const [activeTab, setActiveTab] = React.useState<"leetcode" | "codeforces" | "codechef" | "codechef-dsa">("leetcode");
+  const [activeTab, setActiveTab] = React.useState<
+    "leetcode" | "codeforces" | "codechef" | "codechef-dsa"
+  >("leetcode");
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -49,9 +67,13 @@ export function CPDashboard() {
   const tooltipStyle = React.useMemo(() => {
     return {
       contentStyle: {
-        background: isDark ? "rgba(13, 13, 13, 0.95)" : "rgba(255, 255, 255, 0.95)",
+        background: isDark
+          ? "rgba(26, 26, 30, 0.95)"
+          : "rgba(255, 255, 255, 0.95)",
         backdropFilter: "blur(8px)",
-        border: isDark ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(0, 0, 0, 0.1)",
+        border: isDark
+          ? "1px solid rgba(255, 255, 255, 0.1)"
+          : "1px solid rgba(0, 0, 0, 0.1)",
         borderRadius: 8,
         fontSize: 11,
         fontFamily: "monospace",
@@ -64,11 +86,20 @@ export function CPDashboard() {
 
   if (isLoading) {
     return (
-      <section className="py-16 px-4 max-w-3xl mx-auto w-full font-mono" id="achievements">
-        <h2 className="text-xl font-bold mb-2 text-foreground">~/competitive-programming</h2>
-        <p className="text-sm text-muted-foreground mb-8">Loading live stats…</p>
+      <section
+        className="py-16 px-4 max-w-3xl mx-auto w-full font-mono"
+        id="achievements"
+      >
+        <h2 className="text-xl font-bold mb-2 text-foreground">
+          ~/competitive-programming
+        </h2>
+        <p className="text-sm text-muted-foreground mb-8">
+          Loading live stats…
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-48 rounded-xl bg-muted/50" />)}
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-48 rounded-xl bg-muted/50" />
+          ))}
         </div>
       </section>
     );
@@ -76,8 +107,13 @@ export function CPDashboard() {
 
   if (error || !data) {
     return (
-      <section className="py-16 px-4 max-w-3xl mx-auto w-full" id="achievements">
-        <p className="text-sm text-muted-foreground font-mono">Could not load competitive programming data.</p>
+      <section
+        className="py-16 px-4 max-w-3xl mx-auto w-full"
+        id="achievements"
+      >
+        <p className="text-sm text-muted-foreground font-mono">
+          Could not load competitive programming data.
+        </p>
       </section>
     );
   }
@@ -92,51 +128,88 @@ export function CPDashboard() {
   const hardPct = lcTotal > 0 ? Math.round((hardCount / lcTotal) * 100) : 0;
 
   const lcPie = [
-    { name: "Easy",   value: easyCount || 1,   color: "#10b981" },
-    { name: "Medium", value: mediumCount || 1,  color: "#f59e0b" },
-    { name: "Hard",   value: hardCount || 1,    color: "#ef4444" },
+    { name: "Easy", value: easyCount || 1, color: "#10b981" },
+    { name: "Medium", value: mediumCount || 1, color: "#f59e0b" },
+    { name: "Hard", value: hardCount || 1, color: "#ef4444" },
   ];
-  const totalSolvedAcrossPlatforms = (lcTotal || 0) + (data.codeforces.solved || 0) + (data.gfg.problemsSolved ?? data.gfg.solved ?? 0);
+  const totalSolvedAcrossPlatforms =
+    (lcTotal || 0) +
+    (data.codeforces.solved || 0) +
+    (data.gfg.problemsSolved ?? data.gfg.solved ?? 0);
   const peakRating = Math.max(
     data.leetcode.rating || 0,
     data.codeforces.rating || 0,
     data.codeforces.maxRating || 0,
     data.codechef.rating || 0,
     data.codechef.maxRating || 0,
-    data.codechef.dsaRating || 0
+    data.codechef.dsaRating || 0,
   );
-  const totalContestsAcrossPlatforms = (data.leetcode.contests || 0) + (data.codeforces.contests || 0) + (data.codechef.contests || 0);
+  const totalContestsAcrossPlatforms =
+    (data.leetcode.contests || 0) +
+    (data.codeforces.contests || 0) +
+    (data.codechef.contests || 0);
 
   // Format history data to map title to name for Recharts tooltip fallback
-  type HistoryItem = { title?: string; rating?: number; [key: string]: unknown };
-  const lcHistory = (data.lcHistory || []).map((h: HistoryItem) => ({ ...h, name: h.title }));
-  const cfHistory = (data.cfHistory || []).map((h: HistoryItem) => ({ ...h, name: h.title }));
-  const ccHistory = (data.ccHistory || []).map((h: HistoryItem) => ({ ...h, name: h.title }));
-  const ccDsaHistory = (data.ccDsaHistory || []).map((h: HistoryItem) => ({ ...h, name: h.title }));
+  type HistoryItem = {
+    title?: string;
+    rating?: number;
+    [key: string]: unknown;
+  };
+  const lcHistory = (data.lcHistory || []).map((h: HistoryItem) => ({
+    ...h,
+    name: h.title,
+  }));
+  const cfHistory = (data.cfHistory || []).map((h: HistoryItem) => ({
+    ...h,
+    name: h.title,
+  }));
+  const ccHistory = (data.ccHistory || []).map((h: HistoryItem) => ({
+    ...h,
+    name: h.title,
+  }));
+  const ccDsaHistory = (data.ccDsaHistory || []).map((h: HistoryItem) => ({
+    ...h,
+    name: h.title,
+  }));
 
-  const activeHistory = activeTab === "leetcode" 
-    ? lcHistory 
-    : activeTab === "codeforces" 
-      ? cfHistory 
-      : activeTab === "codechef"
-        ? ccHistory
-        : ccDsaHistory;
-      
-  const activeColor = activeTab === "leetcode" 
-    ? (isDark ? "#eab308" : "#d97706") 
-    : activeTab === "codeforces" 
-      ? (isDark ? "#38bdf8" : "#2563eb") 
-      : activeTab === "codechef"
-        ? (isDark ? "#f97316" : "#ea580c")
-        : (isDark ? "#10b981" : "#059669");
+  const activeHistory =
+    activeTab === "leetcode"
+      ? lcHistory
+      : activeTab === "codeforces"
+        ? cfHistory
+        : activeTab === "codechef"
+          ? ccHistory
+          : ccDsaHistory;
+
+  const activeColor =
+    activeTab === "leetcode"
+      ? isDark
+        ? "#eab308"
+        : "#d97706"
+      : activeTab === "codeforces"
+        ? isDark
+          ? "#38bdf8"
+          : "#2563eb"
+        : activeTab === "codechef"
+          ? isDark
+            ? "#f97316"
+            : "#ea580c"
+          : isDark
+            ? "#10b981"
+            : "#059669";
 
   return (
-    <section className="py-16 px-4 max-w-3xl mx-auto w-full relative" id="achievements">
+    <section
+      className="py-16 px-4 max-w-3xl mx-auto w-full relative"
+      id="achievements"
+    >
       <div className="mb-8">
         <h2 className="text-xl font-bold font-mono mb-2 flex items-center gap-2 text-foreground">
           <Trophy className="w-5 h-5 text-primary" /> Competitive Programming
         </h2>
-        <p className="text-sm text-muted-foreground font-mono">Real-time benchmarks and profiles across algorithmic hubs.</p>
+        <p className="text-sm text-muted-foreground font-mono">
+          Real-time benchmarks and profiles across algorithmic hubs.
+        </p>
       </div>
 
       {/* Codolio-Inspired Top Aggregate Summary Banner */}
@@ -144,28 +217,36 @@ export function CPDashboard() {
         <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-primary via-primary/50 to-primary/10" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="space-y-1">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Total Solved</span>
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
+              Total Solved
+            </span>
             <div className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
               {totalSolvedAcrossPlatforms.toLocaleString()}+
             </div>
           </div>
           <div className="space-y-1 border-l border-border/20 pl-4">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Peak Rating</span>
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
+              Peak Rating
+            </span>
             <div className="text-2xl font-black font-mono text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
               <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400" />
               {peakRating}
             </div>
           </div>
           <div className="space-y-1 border-l border-border/20 pl-4">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Contests</span>
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
+              Contests
+            </span>
             <div className="text-2xl font-black font-mono text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">
               <Activity className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
               {totalContestsAcrossPlatforms}+
             </div>
           </div>
           <div className="space-y-1 border-l border-border/20 pl-4">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">Platforms</span>
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
+              Platforms
+            </span>
             <div className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
               <GraduationCap className="w-4 h-4 text-blue-500 dark:text-blue-400" />
               4 Active
@@ -176,7 +257,6 @@ export function CPDashboard() {
 
       {/* Grid Layout of Platforms */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-stretch">
-        
         {/* LeetCode Card */}
         <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
           <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -185,10 +265,10 @@ export function CPDashboard() {
               <span className="flex items-center gap-2 font-bold text-foreground">
                 <Trophy className="w-4 h-4 text-amber-500" /> LeetCode
               </span>
-              <a 
-                href={PLATFORM_LINKS.LeetCode} 
-                target="_blank" 
-                rel="noreferrer" 
+              <a
+                href={PLATFORM_LINKS.LeetCode}
+                target="_blank"
+                rel="noreferrer"
                 className="text-muted-foreground hover:text-amber-500 transition-colors p-1 rounded-md hover:bg-amber-500/10"
               >
                 <ExternalLink className="w-4 h-4" />
@@ -200,60 +280,93 @@ export function CPDashboard() {
               <div className="relative w-24 h-24 shrink-0 drop-shadow-sm">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie 
-                      data={lcPie} 
-                      cx="50%" 
-                      cy="50%" 
-                      innerRadius={28} 
-                      outerRadius={38} 
-                      paddingAngle={3} 
-                      dataKey="value" 
+                    <Pie
+                      data={lcPie}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={28}
+                      outerRadius={38}
+                      paddingAngle={3}
+                      dataKey="value"
                       stroke="none"
                       cornerRadius={4}
                     >
-                      {lcPie.map((e, i) => <Cell key={i} fill={e.color} />)}
+                      {lcPie.map((e, i) => (
+                        <Cell key={i} fill={e.color} />
+                      ))}
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-base font-black font-mono tracking-tight text-foreground">{lcTotal || "—"}</span>
-                  <span className="text-[7.5px] text-muted-foreground uppercase font-mono font-bold tracking-widest -mt-0.5">solved</span>
+                  <span className="text-base font-black font-mono tracking-tight text-foreground">
+                    {lcTotal || "—"}
+                  </span>
+                  <span className="text-[7.5px] text-muted-foreground uppercase font-mono font-bold tracking-widest -mt-0.5">
+                    solved
+                  </span>
                 </div>
               </div>
               <div className="flex-1 space-y-2">
                 <div>
                   <div className="flex items-center justify-between text-[11px] font-mono mb-1">
                     <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Easy
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>{" "}
+                      Easy
                     </span>
-                    <span className="font-semibold text-foreground">{easyCount} <span className="text-[10px] text-muted-foreground font-normal">({easyPct}%)</span></span>
+                    <span className="font-semibold text-foreground">
+                      {easyCount}{" "}
+                      <span className="text-[10px] text-muted-foreground font-normal">
+                        ({easyPct}%)
+                      </span>
+                    </span>
                   </div>
                   <div className="w-full h-1.5 bg-emerald-100 dark:bg-emerald-950/40 rounded-full overflow-hidden border border-emerald-500/20">
-                    <div className="h-full bg-emerald-500 rounded-full transition-all duration-500" style={{ width: `${easyPct}%` }} />
+                    <div
+                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                      style={{ width: `${easyPct}%` }}
+                    />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between text-[11px] font-mono mb-1">
                     <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Medium
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>{" "}
+                      Medium
                     </span>
-                    <span className="font-semibold text-foreground">{mediumCount} <span className="text-[10px] text-muted-foreground font-normal">({mediumPct}%)</span></span>
+                    <span className="font-semibold text-foreground">
+                      {mediumCount}{" "}
+                      <span className="text-[10px] text-muted-foreground font-normal">
+                        ({mediumPct}%)
+                      </span>
+                    </span>
                   </div>
                   <div className="w-full h-1.5 bg-amber-100 dark:bg-amber-950/40 rounded-full overflow-hidden border border-amber-500/20">
-                    <div className="h-full bg-amber-500 rounded-full transition-all duration-500" style={{ width: `${mediumPct}%` }} />
+                    <div
+                      className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                      style={{ width: `${mediumPct}%` }}
+                    />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between text-[11px] font-mono mb-1">
                     <span className="text-red-600 dark:text-red-400 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Hard
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>{" "}
+                      Hard
                     </span>
-                    <span className="font-semibold text-foreground">{hardCount} <span className="text-[10px] text-muted-foreground font-normal">({hardPct}%)</span></span>
+                    <span className="font-semibold text-foreground">
+                      {hardCount}{" "}
+                      <span className="text-[10px] text-muted-foreground font-normal">
+                        ({hardPct}%)
+                      </span>
+                    </span>
                   </div>
                   <div className="w-full h-1.5 bg-red-100 dark:bg-red-950/40 rounded-full overflow-hidden border border-red-500/20">
-                    <div className="h-full bg-red-500 rounded-full transition-all duration-500" style={{ width: `${hardPct}%` }} />
+                    <div
+                      className="h-full bg-red-500 rounded-full transition-all duration-500"
+                      style={{ width: `${hardPct}%` }}
+                    />
                   </div>
                 </div>
               </div>
@@ -261,9 +374,22 @@ export function CPDashboard() {
 
             <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
               <StatRow label="Rating" value={data.leetcode.rating || "—"} />
-              <StatRow label="Rank" value={data.leetcode.rating >= 1600 ? "Knight" : "Coder"} />
-              <StatRow label="Contests Attended" value={data.leetcode.contests || "—"} />
-              <StatRow label="Total Active Days" value={data.leetcode.activeDays ? `${data.leetcode.activeDays} days` : "—"} />
+              <StatRow
+                label="Rank"
+                value={data.leetcode.rating >= 1600 ? "Knight" : "Coder"}
+              />
+              <StatRow
+                label="Contests Attended"
+                value={data.leetcode.contests || "—"}
+              />
+              <StatRow
+                label="Total Active Days"
+                value={
+                  data.leetcode.activeDays
+                    ? `${data.leetcode.activeDays} days`
+                    : "—"
+                }
+              />
             </div>
           </CardContent>
         </Card>
@@ -274,12 +400,13 @@ export function CPDashboard() {
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
-                <TrendingUp className="w-4 h-4 text-blue-500 dark:text-blue-400" /> Codeforces
+                <TrendingUp className="w-4 h-4 text-blue-500 dark:text-blue-400" />{" "}
+                Codeforces
               </span>
-              <a 
-                href={PLATFORM_LINKS.Codeforces} 
-                target="_blank" 
-                rel="noreferrer" 
+              <a
+                href={PLATFORM_LINKS.Codeforces}
+                target="_blank"
+                rel="noreferrer"
                 className="text-muted-foreground hover:text-blue-500 transition-colors p-1 rounded-md hover:bg-blue-500/10"
               >
                 <ExternalLink className="w-4 h-4" />
@@ -290,29 +417,56 @@ export function CPDashboard() {
             {/* Codeforces Top Box */}
             <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-muted/40 border border-border/40 shadow-inner">
               <div>
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Current Rating</span>
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
+                  Current Rating
+                </span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400">{data.codeforces.rating || "—"}</span>
-                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold uppercase">
+                  <span className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400">
+                    {data.codeforces.rating || "—"}
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className="font-mono text-[9px] px-1 py-0 border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold uppercase"
+                  >
                     {data.codeforces.rank || "Newbie"}
                   </Badge>
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono">Max: {data.codeforces.maxRating || "—"}</span>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  Max: {data.codeforces.maxRating || "—"}
+                </span>
               </div>
               <div className="border-l border-border/25 pl-3">
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Problems Solved</span>
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
+                  Problems Solved
+                </span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400">{data.codeforces.solved || "—"}</span>
+                  <span className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400">
+                    {data.codeforces.solved || "—"}
+                  </span>
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono">{data.codeforces.contests || 0} Contests</span>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  {data.codeforces.contests || 0} Contests
+                </span>
               </div>
             </div>
 
             <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
-              <StatRow label="Problems Solved" value={data.codeforces.solved || "—"} />
-              <StatRow label="Max Rating" value={data.codeforces.maxRating || "—"} />
-              <StatRow label="Max Rank" value={data.codeforces.maxRank || "—"} />
-              <StatRow label="Contests Attended" value={data.codeforces.contests || "—"} />
+              <StatRow
+                label="Problems Solved"
+                value={data.codeforces.solved || "—"}
+              />
+              <StatRow
+                label="Max Rating"
+                value={data.codeforces.maxRating || "—"}
+              />
+              <StatRow
+                label="Max Rank"
+                value={data.codeforces.maxRank || "—"}
+              />
+              <StatRow
+                label="Contests Attended"
+                value={data.codeforces.contests || "—"}
+              />
             </div>
           </CardContent>
         </Card>
@@ -323,12 +477,13 @@ export function CPDashboard() {
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
-                <Star className="w-4 h-4 text-orange-500 dark:text-orange-400 animate-pulse" /> CodeChef
+                <Star className="w-4 h-4 text-orange-500 dark:text-orange-400 animate-pulse" />{" "}
+                CodeChef
               </span>
-              <a 
-                href={PLATFORM_LINKS.CodeChef} 
-                target="_blank" 
-                rel="noreferrer" 
+              <a
+                href={PLATFORM_LINKS.CodeChef}
+                target="_blank"
+                rel="noreferrer"
                 className="text-muted-foreground hover:text-orange-500 transition-colors p-1 rounded-md hover:bg-orange-500/10"
               >
                 <ExternalLink className="w-4 h-4" />
@@ -339,28 +494,64 @@ export function CPDashboard() {
             {/* Dual Ratings Display: CP / Starters & DSA */}
             <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-muted/40 border border-border/40 shadow-inner">
               <div>
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Starters (CP)</span>
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
+                  Starters (CP)
+                </span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-orange-600 dark:text-orange-400">{data.codechef.rating || "—"}</span>
-                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold">
+                  <span className="text-2xl font-black font-mono text-orange-600 dark:text-orange-400">
+                    {data.codechef.rating || "—"}
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className="font-mono text-[9px] px-1 py-0 border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold"
+                  >
                     {data.codechef.rank || "1★"}
                   </Badge>
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono">Max: {data.codechef.maxRating || "—"}</span>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  Max: {data.codechef.maxRating || "—"}
+                </span>
               </div>
               <div className="border-l border-border/25 pl-3">
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">DSA Rating</span>
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
+                  DSA Rating
+                </span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">{data.codechef.dsaRating || "—"}</span>
+                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">
+                    {data.codechef.dsaRating || "—"}
+                  </span>
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono">Max: {data.codechef.dsaMaxRating || "—"}</span>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  Max: {data.codechef.dsaMaxRating || "—"}
+                </span>
               </div>
             </div>
 
             <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
-              <StatRow label="Contests Attended" value={data.codechef.contests ? `${data.codechef.contests} (${data.codechef.startersContests || 0} CP, ${data.codechef.dsaContests || 0} DSA)` : "—"} />
-              <StatRow label="Global Rank" value={data.codechef.globalRank ? `#${data.codechef.globalRank}` : "—"} />
-              <StatRow label="Country Rank" value={data.codechef.countryRank ? `#${data.codechef.countryRank}` : "—"} />
+              <StatRow
+                label="Contests Attended"
+                value={
+                  data.codechef.contests
+                    ? `${data.codechef.contests} (${data.codechef.startersContests || 0} CP, ${data.codechef.dsaContests || 0} DSA)`
+                    : "—"
+                }
+              />
+              <StatRow
+                label="Global Rank"
+                value={
+                  data.codechef.globalRank
+                    ? `#${data.codechef.globalRank}`
+                    : "—"
+                }
+              />
+              <StatRow
+                label="Country Rank"
+                value={
+                  data.codechef.countryRank
+                    ? `#${data.codechef.countryRank}`
+                    : "—"
+                }
+              />
             </div>
           </CardContent>
         </Card>
@@ -371,12 +562,13 @@ export function CPDashboard() {
           <CardHeader className="pb-2 pt-5 px-5">
             <CardTitle className="text-sm font-mono flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-foreground">
-                <Award className="w-4 h-4 text-emerald-500 dark:text-emerald-400" /> GeeksForGeeks
+                <Award className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />{" "}
+                GeeksForGeeks
               </span>
-              <a 
-                href={PLATFORM_LINKS.GFG} 
-                target="_blank" 
-                rel="noreferrer" 
+              <a
+                href={PLATFORM_LINKS.GFG}
+                target="_blank"
+                rel="noreferrer"
                 className="text-muted-foreground hover:text-emerald-500 transition-colors p-1 rounded-md hover:bg-emerald-500/10"
               >
                 <ExternalLink className="w-4 h-4" />
@@ -387,27 +579,48 @@ export function CPDashboard() {
             {/* GFG Top Box */}
             <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-muted/40 border border-border/40 shadow-inner">
               <div>
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Coding Score</span>
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
+                  Coding Score
+                </span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">{data.gfg.codingScore ?? data.gfg.rating ?? "—"}</span>
-                  <Badge variant="outline" className="font-mono text-[9px] px-1 py-0 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">
+                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">
+                    {data.gfg.codingScore ?? data.gfg.rating ?? "—"}
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className="font-mono text-[9px] px-1 py-0 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold"
+                  >
                     Coder
                   </Badge>
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono">GeeksforGeeks</span>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  GeeksforGeeks
+                </span>
               </div>
               <div className="border-l border-border/25 pl-3">
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">Practice Streak</span>
+                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
+                  Practice Streak
+                </span>
                 <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">{data.gfg.streak ? `${data.gfg.streak}d` : "—"}</span>
+                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">
+                    {data.gfg.streak ? `${data.gfg.streak}d` : "—"}
+                  </span>
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono">{data.gfg.problemsSolved ?? data.gfg.solved ?? 0} Solved</span>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  {data.gfg.problemsSolved ?? data.gfg.solved ?? 0} Solved
+                </span>
               </div>
             </div>
 
             <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
-              <StatRow label="Problems Solved" value={data.gfg.problemsSolved ?? data.gfg.solved ?? "—"} />
-              <StatRow label="Monthly Streak" value={data.gfg.streak ? `${data.gfg.streak} days` : "—"} />
+              <StatRow
+                label="Problems Solved"
+                value={data.gfg.problemsSolved ?? data.gfg.solved ?? "—"}
+              />
+              <StatRow
+                label="Monthly Streak"
+                value={data.gfg.streak ? `${data.gfg.streak} days` : "—"}
+              />
               <StatRow label="Rank" value="Coder" />
             </div>
           </CardContent>
@@ -421,7 +634,9 @@ export function CPDashboard() {
             <h3 className="text-sm font-bold font-mono text-foreground flex items-center gap-2">
               <Activity className="w-4 h-4 text-primary" /> Rating Progression
             </h3>
-            <p className="text-[11px] text-muted-foreground font-mono mt-0.5">Interactive history of rated contests across platforms.</p>
+            <p className="text-[11px] text-muted-foreground font-mono mt-0.5">
+              Interactive history of rated contests across platforms.
+            </p>
           </div>
 
           {/* Organized Platform Selection Tabs - Theme Optimized */}
@@ -429,8 +644,8 @@ export function CPDashboard() {
             <button
               onClick={() => setActiveTab("leetcode")}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
-                activeTab === "leetcode" 
-                  ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold shadow-sm border border-amber-500/40" 
+                activeTab === "leetcode"
+                  ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold shadow-sm border border-amber-500/40"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
               }`}
             >
@@ -440,8 +655,8 @@ export function CPDashboard() {
             <button
               onClick={() => setActiveTab("codeforces")}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
-                activeTab === "codeforces" 
-                  ? "bg-blue-500/15 text-blue-600 dark:text-blue-400 font-bold shadow-sm border border-blue-500/40" 
+                activeTab === "codeforces"
+                  ? "bg-blue-500/15 text-blue-600 dark:text-blue-400 font-bold shadow-sm border border-blue-500/40"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
               }`}
             >
@@ -451,8 +666,8 @@ export function CPDashboard() {
             <button
               onClick={() => setActiveTab("codechef")}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
-                activeTab === "codechef" 
-                  ? "bg-orange-500/15 text-orange-600 dark:text-orange-400 font-bold shadow-sm border border-orange-500/40" 
+                activeTab === "codechef"
+                  ? "bg-orange-500/15 text-orange-600 dark:text-orange-400 font-bold shadow-sm border border-orange-500/40"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
               }`}
             >
@@ -462,8 +677,8 @@ export function CPDashboard() {
             <button
               onClick={() => setActiveTab("codechef-dsa")}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
-                activeTab === "codechef-dsa" 
-                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold shadow-sm border border-emerald-500/40" 
+                activeTab === "codechef-dsa"
+                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold shadow-sm border border-emerald-500/40"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
               }`}
             >
@@ -479,26 +694,50 @@ export function CPDashboard() {
           </div>
           {activeHistory.length >= 1 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={activeHistory} margin={{ top: 15, right: 10, bottom: 5, left: -10 }}>
+              <AreaChart
+                data={activeHistory}
+                margin={{ top: 15, right: 10, bottom: 5, left: -10 }}
+              >
                 <defs>
-                  <linearGradient id="colorRatingGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={activeColor} stopOpacity={0.35} />
-                    <stop offset="95%" stopColor={activeColor} stopOpacity={0.0} />
+                  <linearGradient
+                    id="colorRatingGrad"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor={activeColor}
+                      stopOpacity={0.35}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={activeColor}
+                      stopOpacity={0.0}
+                    />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"} vertical={false} />
-                <XAxis 
-                  dataKey="title" 
-                  hide={true}
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={
+                    isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"
+                  }
+                  vertical={false}
                 />
-                <YAxis 
-                  stroke={isDark ? "#a1a1aa" : "#64748b"} 
-                  fontSize={11} 
+                <XAxis dataKey="title" hide={true} />
+                <YAxis
+                  stroke={isDark ? "#a1a1aa" : "#64748b"}
+                  fontSize={11}
                   fontWeight={600}
-                  tickLine={false} 
-                  axisLine={false} 
+                  tickLine={false}
+                  axisLine={false}
                   domain={["auto", "auto"]}
-                  tick={{ fill: isDark ? "#a1a1aa" : "#64748b", fontSize: 11, fontFamily: "monospace" }}
+                  tick={{
+                    fill: isDark ? "#a1a1aa" : "#64748b",
+                    fontSize: 11,
+                    fontFamily: "monospace",
+                  }}
                   width={45}
                 />
                 <RTooltip {...tooltipStyle} />
@@ -510,13 +749,20 @@ export function CPDashboard() {
                   fillOpacity={1}
                   fill="url(#colorRatingGrad)"
                   dot={{ r: 3, fill: activeColor, strokeWidth: 0 }}
-                  activeDot={{ r: 6, stroke: activeColor, strokeWidth: 2, fill: isDark ? "#111" : "#fff" }}
+                  activeDot={{
+                    r: 6,
+                    stroke: activeColor,
+                    strokeWidth: 2,
+                    fill: isDark ? "#111" : "#fff",
+                  }}
                 />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
             <div className="h-full flex items-center justify-center border border-dashed border-border/40 rounded-lg">
-              <span className="text-xs text-muted-foreground font-mono">Insufficient contest history to plot progression.</span>
+              <span className="text-xs text-muted-foreground font-mono">
+                Insufficient contest history to plot progression.
+              </span>
             </div>
           )}
         </div>

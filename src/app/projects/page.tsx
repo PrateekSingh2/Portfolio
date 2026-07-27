@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Globe, GitBranch, TerminalSquare, FileText, ShieldAlert, Zap, Layers } from "lucide-react";
+import {
+  Globe,
+  TerminalSquare,
+  FileText,
+  ShieldAlert,
+  Zap,
+  Layers,
+  ExternalLink,
+} from "lucide-react";
+import { GithubIcon } from "@/components/icons/GithubIcon";
 import { motion } from "framer-motion";
 import { PROJECTS_DATA, Project, ProjectCategory } from "@/lib/projectsData";
 import { preloadImages } from "@/lib/mediaCache";
@@ -50,7 +59,6 @@ export default function ProjectsPage() {
 
       {/* Main Content Container matching Homepage width (max-w-3xl) */}
       <main className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-20 sm:py-24 relative z-10 flex-grow">
-
         <div className="mb-8">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-3">
             All Projects
@@ -138,7 +146,7 @@ export default function ProjectsPage() {
                       onClick={(e) => e.stopPropagation()}
                       className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/40 font-semibold font-mono text-xs transition-colors shadow-sm cursor-pointer"
                     >
-                      <Globe className="w-3.5 h-3.5" />
+                      <ExternalLink className="w-3.5 h-3.5" />
                       <span>View Website</span>
                     </a>
                   )}
@@ -151,7 +159,7 @@ export default function ProjectsPage() {
                       onClick={(e) => e.stopPropagation()}
                       className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border/40 font-semibold font-mono text-xs transition-colors shadow-sm cursor-pointer"
                     >
-                      <GitBranch className="w-3.5 h-3.5" />
+                      <GithubIcon className="w-3.5 h-3.5" />
                       <span>Source</span>
                     </a>
                   )}
@@ -176,16 +184,22 @@ export default function ProjectsPage() {
       </main>
 
       {/* Project Deep-Dive Modal Overlay */}
-      <Dialog open={selectedProject !== null} onOpenChange={(open) => !open && setSelectedProject(null)}>
+      <Dialog
+        open={selectedProject !== null}
+        onOpenChange={(open) => !open && setSelectedProject(null)}
+      >
         {selectedProject && (
           <DialogContent className="w-[calc(100%-1.5rem)] max-w-3xl md:max-w-4xl bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-5 md:p-8 rounded-2xl border-t-2 border-t-primary/60 transition-all duration-300 overflow-hidden font-sans">
             <DialogHeader className="pb-3 border-b border-border/30">
               <DialogTitle className="text-base sm:text-lg md:text-xl font-mono flex items-start gap-2.5 text-foreground font-bold leading-snug">
                 <TerminalSquare className="w-5 h-5 md:w-6 md:h-6 text-primary shrink-0 mt-0.5" />
-                <span className="break-words font-extrabold">{selectedProject.title}</span>
+                <span className="break-words font-extrabold">
+                  {selectedProject.title}
+                </span>
               </DialogTitle>
               <DialogDescription className="text-xs font-mono text-muted-foreground mt-1">
-                Detailed architecture breakdown, technical challenges, and key impact.
+                Detailed architecture breakdown, technical challenges, and key
+                impact.
               </DialogDescription>
             </DialogHeader>
 
@@ -210,7 +224,8 @@ export default function ProjectsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                 <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 sm:p-5 space-y-2 flex flex-col justify-between hover:border-primary/30 transition-colors">
                   <h4 className="text-xs text-primary flex items-center gap-1.5 font-bold">
-                    <ShieldAlert className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0" /> Engineering Challenges
+                    <ShieldAlert className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0" />{" "}
+                    Engineering Challenges
                   </h4>
                   <p className="text-[11.5px] sm:text-xs text-muted-foreground leading-relaxed break-words font-sans">
                     {selectedProject.challenges}
@@ -219,7 +234,8 @@ export default function ProjectsPage() {
 
                 <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 sm:p-5 space-y-2 flex flex-col justify-between hover:border-primary/30 transition-colors">
                   <h4 className="text-xs text-primary flex items-center gap-1.5 font-bold">
-                    <Zap className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0" /> Impact & Benchmark Metrics
+                    <Zap className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0" />{" "}
+                    Impact & Benchmark Metrics
                   </h4>
                   <p className="text-[11.5px] sm:text-xs text-muted-foreground leading-relaxed break-words font-sans">
                     {selectedProject.metrics}
@@ -233,7 +249,11 @@ export default function ProjectsPage() {
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedProject.tech.map((t) => (
-                    <Badge key={t} variant="outline" className="font-mono text-[10.5px] sm:text-xs px-3 py-1 rounded-xl bg-primary/10 text-primary border-primary/20 font-bold hover:bg-primary/20 transition-colors">
+                    <Badge
+                      key={t}
+                      variant="outline"
+                      className="font-mono text-[10.5px] sm:text-xs px-3 py-1 rounded-xl bg-primary/10 text-primary border-primary/20 font-bold hover:bg-primary/20 transition-colors"
+                    >
                       {t}
                     </Badge>
                   ))}
@@ -243,23 +263,24 @@ export default function ProjectsPage() {
 
             <div className="pt-3.5 border-t border-border/30 flex flex-wrap items-center justify-end gap-3 font-sans">
               {selectedProject.github && (
-                <a 
-                  href={selectedProject.github} 
-                  target="_blank" 
-                  rel="noreferrer" 
+                <a
+                  href={selectedProject.github}
+                  target="_blank"
+                  rel="noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary border border-border text-secondary-foreground font-mono text-xs font-bold hover:bg-secondary/80 transition-colors"
                 >
-                  <GitBranch className="w-4 h-4 text-primary" /> View Source Code
+                  <GithubIcon className="w-4 h-4 text-primary" /> View Source
+                  Code
                 </a>
               )}
               {selectedProject.live && (
-                <a 
-                  href={selectedProject.live} 
-                  target="_blank" 
-                  rel="noreferrer" 
+                <a
+                  href={selectedProject.live}
+                  target="_blank"
+                  rel="noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-mono text-xs font-bold shadow-md hover:bg-primary/90 transition-colors"
                 >
-                  <Globe className="w-4 h-4" /> Launch Application
+                  <ExternalLink className="w-4 h-4" /> Open in Browser
                 </a>
               )}
             </div>

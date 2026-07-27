@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Mail, 
-  Calendar, 
-  Send, 
-  CheckCircle2, 
+import {
+  Mail,
+  Calendar,
+  Send,
+  CheckCircle2,
   ArrowRight,
   Check,
   MessageSquare,
   Copy,
-  X
+  X,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Footer } from "@/components/layout/Footer";
@@ -46,9 +46,14 @@ export default function ContactPage() {
       document.body.style.overflow = "";
     };
   }, [showScheduler]);
-  
+
   // Contact Form State
-  const [formState, setFormState] = useState({ name: "", email: "", subject: "", message: "" });
+  const [formState, setFormState] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -63,9 +68,11 @@ export default function ContactPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const subject = encodeURIComponent(formState.subject || `Direct Message from ${formState.name}`);
+    const subject = encodeURIComponent(
+      formState.subject || `Direct Message from ${formState.name}`,
+    );
     const body = encodeURIComponent(
-      `Hello Prateek,\n\n${formState.message}\n\n---\nSender: ${formState.name}\nEmail: ${formState.email}`
+      `Hello Prateek,\n\n${formState.message}\n\n---\nSender: ${formState.name}\nEmail: ${formState.email}`,
     );
 
     // Open user's email client with pre-filled message details
@@ -84,70 +91,10 @@ export default function ContactPage() {
 
       {/* Main Content Container matching Homepage width (max-w-3xl) */}
       <main className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-20 sm:py-24 relative z-10 flex-grow space-y-10">
-
         <div>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground mb-3">
             Get in Touch
           </h1>
-        </div>
-
-        {/* Contact Action Cards: Email & LinkedIn */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Email Card */}
-          <div
-            onClick={() => window.open(`mailto:${EMAIL_ID}`, "_self")}
-            className="bg-card/80 backdrop-blur-md border border-border/80 hover:border-primary/40 rounded-2xl p-5 flex items-center justify-between gap-3 group cursor-pointer transition-all duration-300 shadow-lg hover:shadow-xl"
-          >
-            <div className="flex items-center gap-3.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0">
-                <Mail className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] font-mono uppercase text-muted-foreground font-bold tracking-wider">Email Me</p>
-                <span className="text-xs font-sans text-foreground group-hover:text-primary transition-colors truncate block font-semibold">
-                  {EMAIL_ID}
-                </span>
-              </div>
-            </div>
-
-            {/* Copy Button */}
-            <button
-              type="button"
-              onClick={handleCopyEmail}
-              title="Copy Email Address"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-muted/60 border border-border/70 hover:border-primary/40 text-muted-foreground hover:text-foreground text-xs font-mono font-medium transition-all shrink-0 cursor-pointer"
-            >
-              {copied ? (
-                <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
-              ) : (
-                <Copy className="w-3.5 h-3.5" />
-              )}
-            </button>
-          </div>
-
-          {/* LinkedIn Card */}
-          <a
-            href={LINKEDIN_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="bg-card/80 backdrop-blur-md border border-border/80 hover:border-primary/40 rounded-2xl p-5 flex items-center justify-between gap-3 group cursor-pointer transition-all duration-300 shadow-lg hover:shadow-xl"
-          >
-            <div className="flex items-center gap-3.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400 flex items-center justify-center shrink-0">
-                <LinkedInIcon className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] font-mono uppercase text-muted-foreground font-bold tracking-wider">LinkedIn</p>
-                <span className="text-xs font-sans text-foreground group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors truncate block font-semibold">
-                  Connect on LinkedIn &rarr;
-                </span>
-              </div>
-            </div>
-
-            <div className="p-2 rounded-xl bg-muted/60 border border-border/70 text-muted-foreground group-hover:text-foreground transition-colors">
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </div>
-          </a>
         </div>
 
         {/* SECTION 1: Send a Direct Message Form (AT TOP) */}
@@ -166,9 +113,12 @@ export default function ContactPage() {
               <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold font-sans text-foreground">Message Sent!</h3>
+              <h3 className="text-lg font-bold font-sans text-foreground">
+                Message Sent!
+              </h3>
               <p className="text-xs font-sans text-muted-foreground max-w-sm mx-auto">
-                Thank you for reaching out. I will get back to your email as soon as possible.
+                Thank you for reaching out. I will get back to your email as
+                soon as possible.
               </p>
               <button
                 onClick={() => setIsSubmitted(false)}
@@ -178,53 +128,72 @@ export default function ContactPage() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 font-sans text-xs">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 font-sans text-xs"
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-muted-foreground font-semibold mb-1.5">Your name *</label>
+                  <label className="block text-muted-foreground font-semibold mb-1.5">
+                    Your name *
+                  </label>
                   <input
                     type="text"
                     required
                     placeholder="Your Name XYZ"
                     value={formState.name}
-                    onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormState({ ...formState, name: e.target.value })
+                    }
                     className="w-full px-4 py-2.5 bg-background/80 border border-border rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-sans"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-muted-foreground font-semibold mb-1.5">Email address *</label>
+                  <label className="block text-muted-foreground font-semibold mb-1.5">
+                    Email address *
+                  </label>
                   <input
                     type="email"
                     required
                     placeholder="yourmail@xyz.com"
                     value={formState.email}
-                    onChange={(e) => setFormState({ ...formState, email: e.target.value })}
+                    onChange={(e) =>
+                      setFormState({ ...formState, email: e.target.value })
+                    }
                     className="w-full px-4 py-2.5 bg-background/80 border border-border rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-sans"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-muted-foreground font-semibold mb-1.5">Subject</label>
+                <label className="block text-muted-foreground font-semibold mb-1.5">
+                  Subject
+                </label>
                 <input
                   type="text"
                   required
                   placeholder="Intro call / Engineering Opportunity"
                   value={formState.subject}
-                  onChange={(e) => setFormState({ ...formState, subject: e.target.value })}
+                  onChange={(e) =>
+                    setFormState({ ...formState, subject: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 bg-background/80 border border-border rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-sans"
                 />
               </div>
 
               <div>
-                <label className="block text-muted-foreground font-semibold mb-1.5">Additional notes</label>
+                <label className="block text-muted-foreground font-semibold mb-1.5">
+                  Additional notes
+                </label>
                 <textarea
                   rows={4}
                   required
                   placeholder="Leave a feedback, career opportunity, or a simple hello etc."
                   value={formState.message}
-                  onChange={(e) => setFormState({ ...formState, message: e.target.value })}
+                  onChange={(e) =>
+                    setFormState({ ...formState, message: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 bg-background/80 border border-border rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none font-sans"
                 />
               </div>
