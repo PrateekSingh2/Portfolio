@@ -278,13 +278,27 @@ export default function ContactPage() {
       {/* Fullscreen Overlay Popup matching exact screenshot layout */}
       {showScheduler && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 overscroll-none touch-none"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
           onClick={() => setShowScheduler(false)}
         >
-          {/* Top-Right Screen Close X Icon */}
+          {/* Mobile Top Close Header Bar */}
+          <div className="w-full max-w-[960px] flex items-center justify-between pb-2.5 px-1 sm:hidden">
+            <span className="text-sm font-mono font-bold text-white flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-primary" /> Book a Meeting
+            </span>
+            <button
+              onClick={() => setShowScheduler(false)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/10 text-white font-mono text-xs font-bold border border-white/20 active:scale-95 transition-all"
+            >
+              <X className="w-4 h-4" />
+              <span>Close</span>
+            </button>
+          </div>
+
+          {/* Top-Right Screen Close X Icon (for desktop/tablet) */}
           <button
             onClick={() => setShowScheduler(false)}
-            className="fixed top-5 right-5 sm:top-7 sm:right-7 z-50 text-white/80 hover:text-white p-2 transition-all hover:scale-110 cursor-pointer"
+            className="hidden sm:flex fixed top-5 right-5 sm:top-7 sm:right-7 z-50 text-white/80 hover:text-white p-2 transition-all hover:scale-110 cursor-pointer"
             aria-label="Close popup"
           >
             <X className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5]" />
@@ -292,13 +306,14 @@ export default function ContactPage() {
 
           {/* Centered Cal.com Schedule Dialog Box */}
           <div
-            className="relative w-full max-w-[960px] h-[560px] sm:h-[600px] rounded-2xl overflow-hidden shadow-2xl border border-border bg-card"
+            className="relative w-full max-w-[960px] h-[82vh] sm:h-[620px] max-h-[680px] rounded-2xl overflow-hidden shadow-2xl border border-border/60 bg-card touch-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <iframe
-              src={`https://cal.com/${calUsername}?embed=true&layout=month_view&theme=${calTheme}`}
+              src={`https://cal.com/${calUsername}?embed=true&theme=${calTheme}`}
               title="Cal.com Scheduler"
-              className="w-full h-full border-0 rounded-2xl bg-card"
+              className="w-full h-full border-0 rounded-2xl bg-card touch-auto"
+              allow="camera; microphone; autoplay; clipboard-write; encrypted-media; fullscreen"
             />
           </div>
         </div>

@@ -12,6 +12,7 @@ import {
   ChevronRight,
   ExternalLink,
   ArrowRight,
+  ArrowLeft,
   CheckCircle2,
   Sparkles,
   Zap,
@@ -210,7 +211,7 @@ export function EngineeringSnapshot() {
         open={activeModal !== null}
         onOpenChange={(open) => !open && setActiveModal(null)}
       >
-        <DialogContent className="w-[calc(100%-1.5rem)] max-w-md md:max-w-2xl lg:max-w-3xl bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-5 md:p-7 rounded-2xl border-t-2 border-t-primary/60 transition-all duration-300 overflow-hidden">
+        <DialogContent className="w-[calc(100%-1.25rem)] sm:w-[calc(100%-2rem)] max-w-md md:max-w-2xl lg:max-w-3xl max-h-[85vh] sm:max-h-[88vh] bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-4 sm:p-6 md:p-7 rounded-2xl border-t-2 border-t-primary/60 transition-all duration-300 flex flex-col overflow-hidden">
           <AnimatePresence mode="wait">
             {activeModal === "solved" && (
               <motion.div
@@ -219,15 +220,15 @@ export function EngineeringSnapshot() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4"
+                className="space-y-4 overflow-y-auto max-h-[calc(85vh-2.5rem)] sm:max-h-[calc(88vh-3.5rem)] pr-1 sm:pr-1.5 scrollbar-thin scrollbar-thumb-muted-foreground/20 touch-pan-y"
               >
                 <DialogHeader className="pb-3 border-b border-border/30">
-                  <DialogTitle className="text-base md:text-lg font-mono flex items-center justify-between text-foreground font-bold">
+                  <DialogTitle className="text-base md:text-lg font-mono flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-foreground font-bold">
                     <span className="flex items-center gap-2">
-                      <Code2 className="w-5 h-5 text-blue-400" /> Problems
-                      Solved Breakdown
+                      <Code2 className="w-5 h-5 text-blue-400 shrink-0" />{" "}
+                      Problems Solved Breakdown
                     </span>
-                    <span className="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full">
+                    <span className="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1 rounded-full shrink-0">
                       1,500+ Total Solved
                     </span>
                   </DialogTitle>
@@ -275,15 +276,15 @@ export function EngineeringSnapshot() {
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-5 py-1 items-center">
                   {/* Left Column: Donut Pie Chart Visual */}
-                  <div className="md:col-span-5 relative w-full h-48 flex items-center justify-center p-3 rounded-2xl bg-muted/10 border border-border/20 shadow-inner">
+                  <div className="md:col-span-5 relative w-full h-44 sm:h-48 flex items-center justify-center p-3 rounded-2xl bg-muted/10 border border-border/20 shadow-inner">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={solvedPieData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={48}
-                          outerRadius={68}
+                          innerRadius={44}
+                          outerRadius={64}
                           paddingAngle={4}
                           dataKey="value"
                           stroke="none"
@@ -306,7 +307,7 @@ export function EngineeringSnapshot() {
                   </div>
 
                   {/* Right Column: Platform Breakdown Cards */}
-                  <div className="md:col-span-7 space-y-2.5 font-mono text-xs max-h-[46vh] overflow-y-auto pr-1">
+                  <div className="md:col-span-7 space-y-2.5 font-mono text-xs max-h-[46vh] overflow-y-auto pr-1 scrollbar-thin">
                     {/* CodeChef Card */}
                     <div className="p-3 rounded-xl bg-muted/20 border border-border/30 hover:border-orange-500/40 transition-all space-y-1.5">
                       <div className="flex items-center justify-between">
@@ -410,8 +411,8 @@ export function EngineeringSnapshot() {
                 {/* Key Topic Badges */}
                 <div className="pt-2 border-t border-border/30">
                   <div className="text-[10.5px] font-mono text-muted-foreground mb-1.5 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-primary" /> Key Algorithms
-                    & Data Structure Domains
+                    <Zap className="w-3.5 h-3.5 text-primary shrink-0" /> Key
+                    Algorithms & Data Structure Domains
                   </div>
                   <div className="flex flex-wrap gap-1.5 text-[10px] font-mono">
                     <span className="px-2 py-0.5 rounded-md bg-muted/30 border border-border/40 text-foreground font-semibold">
@@ -432,13 +433,26 @@ export function EngineeringSnapshot() {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => scrollToSection("achievements")}
-                  className="w-full mt-2 py-2.5 px-4 bg-primary text-primary-foreground font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-md cursor-pointer"
-                >
-                  <span>View Full CP Dashboard</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                {/* Mobile Friendly Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-1 border-t border-border/20">
+                  <button
+                    onClick={() => setActiveModal(null)}
+                    className="w-full py-2.5 px-4 bg-muted/60 text-foreground font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-muted transition-all border border-border/40 cursor-pointer"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back to Snapshot</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveModal(null);
+                      scrollToSection("achievements");
+                    }}
+                    className="w-full py-2.5 px-4 bg-primary text-primary-foreground font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-md cursor-pointer"
+                  >
+                    <span>View Full CP Dashboard</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </motion.div>
             )}
 
@@ -449,15 +463,15 @@ export function EngineeringSnapshot() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4"
+                className="space-y-4 overflow-y-auto max-h-[calc(85vh-2.5rem)] sm:max-h-[calc(88vh-3.5rem)] pr-1 sm:pr-1.5 scrollbar-thin scrollbar-thumb-muted-foreground/20 touch-pan-y"
               >
                 <DialogHeader className="pb-3 border-b border-border/30">
-                  <DialogTitle className="text-base md:text-lg font-mono flex items-center justify-between text-foreground font-bold">
+                  <DialogTitle className="text-base md:text-lg font-mono flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-foreground font-bold">
                     <span className="flex items-center gap-2">
-                      <Trophy className="w-5 h-5 text-amber-400" /> Hackathon
-                      Champion
+                      <Trophy className="w-5 h-5 text-amber-400 shrink-0" />{" "}
+                      Hackathon Champion
                     </span>
-                    <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
+                    <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full shrink-0">
                       1st Place Winner
                     </span>
                   </DialogTitle>
@@ -530,8 +544,8 @@ export function EngineeringSnapshot() {
                 {/* Tech Stack Chips */}
                 <div className="pt-2 border-t border-border/30">
                   <div className="text-[10.5px] font-mono text-muted-foreground mb-1.5 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-amber-400" /> Technologies
-                    & Architecture
+                    <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />{" "}
+                    Technologies & Architecture
                   </div>
                   <div className="flex flex-wrap gap-1.5 text-[10px] font-mono">
                     <span className="px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/25 text-amber-400 font-bold">
@@ -549,15 +563,25 @@ export function EngineeringSnapshot() {
                   </div>
                 </div>
 
-                <button
-                  onClick={() =>
-                    window.open("https://code-slayers.netlify.app", "_blank")
-                  }
-                  className="w-full mt-2 py-2.5 px-4 bg-amber-400 text-black font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-amber-300 transition-all shadow-md cursor-pointer"
-                >
-                  <span>View Live Demo</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                {/* Mobile Friendly Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-1 border-t border-border/20">
+                  <button
+                    onClick={() => setActiveModal(null)}
+                    className="w-full py-2.5 px-4 bg-muted/60 text-foreground font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-muted transition-all border border-border/40 cursor-pointer"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back to Snapshot</span>
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.open("https://code-slayers.netlify.app", "_blank")
+                    }
+                    className="w-full py-2.5 px-4 bg-amber-400 text-black font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-amber-300 transition-all shadow-md cursor-pointer"
+                  >
+                    <span>View Live Demo</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </motion.div>
             )}
 
@@ -568,15 +592,15 @@ export function EngineeringSnapshot() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4"
+                className="space-y-4 overflow-y-auto max-h-[calc(85vh-2.5rem)] sm:max-h-[calc(88vh-3.5rem)] pr-1 sm:pr-1.5 scrollbar-thin scrollbar-thumb-muted-foreground/20 touch-pan-y"
               >
                 <DialogHeader className="pb-3 border-b border-border/30">
-                  <DialogTitle className="text-base md:text-lg font-mono flex items-center justify-between text-foreground font-bold">
+                  <DialogTitle className="text-base md:text-lg font-mono flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-foreground font-bold">
                     <span className="flex items-center gap-2">
-                      <GithubIcon className="w-5 h-5 text-emerald-400" /> GitHub
-                      Open Source Activity
+                      <GithubIcon className="w-5 h-5 text-emerald-400 shrink-0" />{" "}
+                      GitHub Open Source Activity
                     </span>
-                    <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
+                    <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full shrink-0">
                       400+ Contributions
                     </span>
                   </DialogTitle>
@@ -647,9 +671,20 @@ export function EngineeringSnapshot() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2.5 mt-2">
+                {/* Mobile Friendly Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2 pt-1 border-t border-border/20">
                   <button
-                    onClick={() => scrollToSection("github")}
+                    onClick={() => setActiveModal(null)}
+                    className="py-2.5 px-3 bg-muted/60 text-foreground font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-muted transition-all border border-border/40 cursor-pointer"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Back</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveModal(null);
+                      scrollToSection("github");
+                    }}
                     className="py-2.5 px-3 bg-muted text-foreground font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-muted/80 transition-all border border-border/40 cursor-pointer"
                   >
                     <span>Heatmap Section</span>
@@ -675,15 +710,15 @@ export function EngineeringSnapshot() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4"
+                className="space-y-4 overflow-y-auto max-h-[calc(85vh-2.5rem)] sm:max-h-[calc(88vh-3.5rem)] pr-1 sm:pr-1.5 scrollbar-thin scrollbar-thumb-muted-foreground/20 touch-pan-y"
               >
                 <DialogHeader className="pb-3 border-b border-border/30">
-                  <DialogTitle className="text-base md:text-lg font-mono flex items-center justify-between text-foreground font-bold">
+                  <DialogTitle className="text-base md:text-lg font-mono flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-foreground font-bold">
                     <span className="flex items-center gap-2">
-                      <Activity className="w-5 h-5 text-rose-400" /> Rated
-                      Contest Attendance
+                      <Activity className="w-5 h-5 text-rose-400 shrink-0" />{" "}
+                      Rated Contest Attendance
                     </span>
-                    <span className="text-xs font-mono font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-full">
+                    <span className="text-xs font-mono font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-full shrink-0">
                       40+ Contests Attended
                     </span>
                   </DialogTitle>
@@ -791,13 +826,26 @@ export function EngineeringSnapshot() {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => scrollToSection("achievements")}
-                  className="w-full mt-2 py-2.5 px-4 bg-rose-500 text-white font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-rose-400 transition-all shadow-md cursor-pointer"
-                >
-                  <span>View Rating Progression</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                {/* Mobile Friendly Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-1 border-t border-border/20">
+                  <button
+                    onClick={() => setActiveModal(null)}
+                    className="w-full py-2.5 px-4 bg-muted/60 text-foreground font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-muted transition-all border border-border/40 cursor-pointer"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back to Snapshot</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveModal(null);
+                      scrollToSection("achievements");
+                    }}
+                    className="w-full py-2.5 px-4 bg-rose-500 text-white font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-rose-400 transition-all shadow-md cursor-pointer"
+                  >
+                    <span>View Rating Progression</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </motion.div>
             )}
 
@@ -808,15 +856,15 @@ export function EngineeringSnapshot() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-4"
+                className="space-y-4 overflow-y-auto max-h-[calc(85vh-2.5rem)] sm:max-h-[calc(88vh-3.5rem)] pr-1 sm:pr-1.5 scrollbar-thin scrollbar-thumb-muted-foreground/20 touch-pan-y"
               >
                 <DialogHeader className="pb-3 border-b border-border/30">
-                  <DialogTitle className="text-base md:text-lg font-mono flex items-center justify-between text-foreground font-bold">
+                  <DialogTitle className="text-base md:text-lg font-mono flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-foreground font-bold">
                     <span className="flex items-center gap-2">
-                      <Star className="w-5 h-5 text-purple-400" /> Peak Rating
-                      Benchmarks
+                      <Star className="w-5 h-5 text-purple-400 shrink-0" /> Peak
+                      Rating Benchmarks
                     </span>
-                    <span className="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full">
+                    <span className="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full shrink-0">
                       1606 Peak Rating
                     </span>
                   </DialogTitle>
@@ -924,13 +972,26 @@ export function EngineeringSnapshot() {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => scrollToSection("achievements")}
-                  className="w-full mt-2 py-2.5 px-4 bg-purple-500 text-white font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-purple-400 transition-all shadow-md cursor-pointer"
-                >
-                  <span>View Full CP Dashboard</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                {/* Mobile Friendly Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-1 border-t border-border/20">
+                  <button
+                    onClick={() => setActiveModal(null)}
+                    className="w-full py-2.5 px-4 bg-muted/60 text-foreground font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-muted transition-all border border-border/40 cursor-pointer"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back to Snapshot</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveModal(null);
+                      scrollToSection("achievements");
+                    }}
+                    className="w-full py-2.5 px-4 bg-purple-500 text-white font-mono text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-purple-400 transition-all shadow-md cursor-pointer"
+                  >
+                    <span>View Full CP Dashboard</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
