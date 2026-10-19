@@ -1,363 +1,264 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { preloadImages } from "@/lib/mediaCache";
 import {
-  Code2,
-  Terminal,
-  Workflow,
   Cpu,
-  Monitor,
-  Sparkles,
-  Layers,
-  Search,
   Database,
-  Network,
   Globe,
-  BrainCircuit,
-  Server,
+  Layers,
+  Boxes,
 } from "lucide-react";
 
 export interface SkillItem {
   id: string;
   name: string;
-  category: "languages" | "web" | "aiml" | "devops" | "cs";
   slug?: string;
   customLogoUrl?: string;
   description: string;
   proficiency: "Expert" | "Advanced" | "Proficient";
   customIcon?: React.ReactNode;
-  highlighted?: boolean;
 }
 
 const MONO_SLUGS = new Set([
   "nextdotjs",
   "github",
-  "vercel",
   "express",
-  "prisma",
 ]);
 
+// Merged, interview-centric technical stack for engineering showcase
 const SKILL_DATABASE: SkillItem[] = [
-  // Row 1 / Languages & Web Core
+  // Core Languages
   {
-    id: "ts",
-    name: "TypeScript",
-    category: "languages",
-    slug: "typescript",
+    id: "cpp",
+    name: "C++",
+    slug: "cplusplus",
     proficiency: "Expert",
     description:
-      "Strict typing, generics, AST transformations, enterprise fullstack development.",
-  },
-  {
-    id: "js",
-    name: "JavaScript",
-    category: "languages",
-    slug: "javascript",
-    proficiency: "Expert",
-    description:
-      "ES6+, async/await queues, event loop optimization, DOM execution contexts.",
+      "STL containers, pointers & memory management, low-level algorithm optimization, competitive programming.",
   },
   {
     id: "java",
     name: "Java",
-    category: "languages",
     customLogoUrl:
       "https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg",
     proficiency: "Advanced",
     description:
-      "OOP patterns, JVM tuning, multi-threading, competitive programming.",
-  },
-  {
-    id: "cpp",
-    name: "C++",
-    category: "languages",
-    slug: "cplusplus",
-    proficiency: "Expert",
-    description:
-      "STL, memory management, low-level algorithm optimization, competitive programming.",
+      "OOP design patterns, JVM memory model, multi-threading & concurrency, collections framework.",
   },
   {
     id: "python",
     name: "Python",
-    category: "languages",
     slug: "python",
     proficiency: "Expert",
     description:
-      "Data science, AI models, PyTorch, automation scripts, backend services.",
+      "Data structures, asynchronous programming, backend APIs, automation, AI/ML scripting.",
+  },
+  {
+    id: "ts",
+    name: "TypeScript",
+    slug: "typescript",
+    proficiency: "Expert",
+    description:
+      "Strict typing, generics, utility types, AST transformations, enterprise fullstack development.",
+  },
+  {
+    id: "js",
+    name: "JavaScript",
+    customLogoUrl: "/icons/javascript.svg",
+    proficiency: "Expert",
+    description:
+      "V8 engine, event loop execution model, closures, async/await, DOM & web APIs.",
+  },
+
+  // Fullstack & Backend Core
+  {
+    id: "react",
+    name: "React",
+    customLogoUrl: "/icons/react.svg",
+    proficiency: "Expert",
+    description:
+      "Fiber reconciler, custom hooks, component lifecycle, virtual DOM tuning, state management.",
   },
   {
     id: "nextjs",
     name: "Next.js",
-    category: "web",
     slug: "nextdotjs",
     proficiency: "Expert",
     description:
-      "App Router, SSR, SSG, Server Actions, edge runtime optimization.",
-  },
-  {
-    id: "react",
-    name: "React",
-    category: "web",
-    slug: "react",
-    proficiency: "Expert",
-    description:
-      "Custom hooks, Virtual DOM tuning, state management, concurrent rendering.",
-  },
-  {
-    id: "tailwind",
-    name: "Tailwind CSS",
-    category: "web",
-    slug: "tailwindcss",
-    proficiency: "Expert",
-    description:
-      "Design systems, responsive layouts, dark mode, custom animation utilities.",
+      "App Router, Server Components (RSC), SSR & SSG pipelines, edge runtime optimization.",
   },
   {
     id: "nodejs",
     name: "Node.js",
-    category: "web",
-    slug: "nodejs",
+    customLogoUrl: "/icons/nodejs.svg",
     proficiency: "Advanced",
     description:
-      "Event-driven microservices, streams, REST APIs, asynchronous I/O.",
+      "Event-driven asynchronous I/O, streams & buffers, cluster module, REST microservices.",
   },
   {
     id: "express",
     name: "Express",
-    category: "web",
     slug: "express",
     proficiency: "Advanced",
     description:
-      "RESTful architecture, middleware pipelines, JWT auth, routing.",
+      "RESTful architecture, middleware pipelines, route handling, JWT auth security.",
   },
+
+  // Databases & Storage
   {
-    id: "prisma",
-    name: "Prisma",
-    category: "web",
-    slug: "prisma",
+    id: "postgres",
+    name: "PostgreSQL",
+    slug: "postgresql",
     proficiency: "Advanced",
     description:
-      "Type-safe ORM, migrations, schema modeling, relational data querying.",
+      "ACID transactions, relational schema design, indexing (B-Tree/GIN), query planning & optimization.",
   },
   {
     id: "mongodb",
     name: "MongoDB",
-    category: "web",
     slug: "mongodb",
     proficiency: "Advanced",
     description:
-      "Document storage, aggregation frameworks, indexing, NoSQL schemas.",
+      "NoSQL document modeling, aggregation pipelines, replica sets, indexing strategies.",
   },
 
-  // Row 2 / AI, ML & Data
-  {
-    id: "postgres",
-    name: "PostgreSQL",
-    category: "web",
-    slug: "postgresql",
-    proficiency: "Advanced",
-    description:
-      "ACID transactions, relational indexing, complex joins, query planning.",
-  },
-  {
-    id: "mysql",
-    name: "MySQL",
-    category: "web",
-    slug: "mysql",
-    proficiency: "Advanced",
-    description:
-      "Relational database management, stored procedures, indexing, relational design.",
-  },
-  {
-    id: "huggingface",
-    name: "Hugging Face",
-    category: "aiml",
-    slug: "huggingface",
-    proficiency: "Proficient",
-    description: "Transformer models, tokenizers, LLM fine-tuning, embeddings.",
-  },
-  {
-    id: "docker",
-    name: "Docker",
-    category: "devops",
-    slug: "docker",
-    proficiency: "Advanced",
-    description:
-      "Containerization, Dockerfiles, multi-stage builds, compose orchestration.",
-  },
-  {
-    id: "kubernetes",
-    name: "Kubernetes",
-    category: "devops",
-    slug: "kubernetes",
-    proficiency: "Proficient",
-    description:
-      "Cluster management, pod deployments, service routing, scaling.",
-  },
-  {
-    id: "git",
-    name: "Git",
-    category: "devops",
-    slug: "git",
-    proficiency: "Expert",
-    description:
-      "Branching strategies, rebase workflows, version control, submodules.",
-  },
-  {
-    id: "github",
-    name: "GitHub",
-    category: "devops",
-    slug: "github",
-    proficiency: "Expert",
-    description:
-      "GitHub Actions CI/CD pipelines, PR workflows, code security audits.",
-  },
-  {
-    id: "vscode",
-    name: "VS Code",
-    category: "devops",
-    slug: "visualstudiocode",
-    proficiency: "Expert",
-    description:
-      "Custom configurations, remote SSH debugging, extension ecosystems.",
-  },
-
-  // Row 3 / Cloud, DevOps & CS Core
-  {
-    id: "vercel",
-    name: "Vercel",
-    category: "devops",
-    slug: "vercel",
-    proficiency: "Expert",
-    description:
-      "Edge deployment pipelines, analytics, preview environments, domain routing.",
-  },
-  {
-    id: "Netlify",
-    name: "Netlify",
-    category: "devops",
-    slug: "netlify",
-    proficiency: "Expert",
-    description:
-      "Edge deployment pipelines, analytics, preview environments, domain routing.",
-  },
-  {
-    id: "linux",
-    name: "Linux",
-    category: "devops",
-    slug: "linux",
-    proficiency: "Advanced",
-    description:
-      "Bash scripting, systemctl services, permission models, shell utilities.",
-  },
-  {
-    id: "html",
-    name: "HTML5",
-    category: "web",
-    slug: "html5",
-    proficiency: "Expert",
-    description:
-      "Semantic markup, accessibility (a11y), DOM structure, Web APIs.",
-  },
-  {
-    id: "css",
-    name: "CSS3",
-    category: "web",
-    slug: "css3",
-    proficiency: "Expert",
-    description:
-      "Flexbox, CSS Grid, custom properties, responsive design, animations.",
-  },
-  {
-    id: "dp",
-    name: "Dynamic Prog.",
-    category: "cs",
-    customIcon: <Workflow className="w-5 h-5" />,
-    proficiency: "Expert",
-    description:
-      "Memoization, tabulations, state transitions, subproblem optimization.",
-  },
-  {
-    id: "graphs",
-    name: "Graphs & Trees",
-    category: "cs",
-    customIcon: <Network className="w-5 h-5" />,
-    proficiency: "Expert",
-    description:
-      "Dijkstra, Segment Trees, Trie structures, BFS/DFS, Union-Find.",
-  },
+  // CS Fundamentals & Systems Engineering
   {
     id: "sysdesign",
-    name: "Low Level Design",
-    category: "cs",
+    name: "System Design",
     customIcon: <Layers className="w-5 h-5" />,
-    proficiency: "Proficient",
+    proficiency: "Advanced",
     description:
-      "Load balancing, caching, sharding, distributed consensus, microservices.",
+      "Distributed systems, horizontal scaling, caching strategies (Redis), load balancing, CAP theorem, microservices.",
+  },
+  {
+    id: "oops",
+    name: "OOPs",
+    customIcon: <Boxes className="w-5 h-5" />,
+    proficiency: "Expert",
+    description:
+      "Abstraction, encapsulation, inheritance, polymorphism, SOLID principles, design patterns.",
   },
   {
     id: "os",
     name: "OS & Kernel",
-    category: "cs",
     customIcon: <Cpu className="w-5 h-5" />,
     proficiency: "Advanced",
     description:
-      "Process synchronization, memory paging, deadlocks, thread scheduling.",
+      "Process scheduling, IPC, virtual memory & paging, multi-threading, synchronization & deadlocks.",
   },
   {
     id: "dbms",
     name: "DBMS Core",
-    category: "cs",
     customIcon: <Database className="w-5 h-5" />,
     proficiency: "Advanced",
     description:
-      "B+ Trees, concurrency control, WAL logs, normalization, query optimization.",
+      "B+ trees, concurrency control (2PL, MVCC), Write-Ahead Logging (WAL), relational normalization.",
   },
   {
     id: "cn",
     name: "Networks",
-    category: "cs",
     customIcon: <Globe className="w-5 h-5" />,
     proficiency: "Advanced",
     description:
-      "TCP/IP stack, HTTP/2 & HTTP/3, sockets, TLS/SSL, DNS resolution.",
+      "OSI & TCP/IP models, HTTP/1.1 vs HTTP/2/3, WebSockets, TLS/SSL handshake, DNS resolution.",
+  },
+
+  // AI & GenAI Systems
+  {
+    id: "langchain",
+    name: "LangChain",
+    customLogoUrl: "/icons/langchain.svg",
+    proficiency: "Advanced",
+    description:
+      "LLM chains, prompt templates, LCEL composition, retrieval pipelines, tool calling.",
+  },
+  {
+    id: "langgraph",
+    name: "LangGraph",
+    customLogoUrl: "/icons/langgraph.svg",
+    proficiency: "Advanced",
+    description:
+      "Cyclic agentic workflows, multi-agent coordination, human-in-the-loop, stateful graph execution.",
+  },
+  {
+    id: "rag-vector",
+    name: "RAG / Vector DB",
+    customLogoUrl: "/icons/rag-vector.svg",
+    proficiency: "Advanced",
+    description:
+      "Vector embeddings, cosine similarity, semantic search, hybrid re-ranking, chunking strategies.",
+  },
+
+  // Cloud & DevOps Infrastructure
+  {
+    id: "docker",
+    name: "Docker",
+    slug: "docker",
+    proficiency: "Advanced",
+    description:
+      "Container virtualization, multi-stage Dockerfiles, network isolation, compose orchestrations.",
+  },
+  {
+    id: "kubernetes",
+    name: "Kubernetes",
+    slug: "kubernetes",
+    proficiency: "Proficient",
+    description:
+      "Pod lifecycle, deployments, Services & Ingress, horizontal pod autoscaling (HPA), cluster architecture.",
+  },
+  {
+    id: "aws-ec2",
+    name: "AWS EC2",
+    customLogoUrl: "/icons/aws-ec2.svg",
+    proficiency: "Advanced",
+    description:
+      "Virtual compute instances, VPC networking, security groups, auto-scaling, cloud architecture.",
+  },
+  {
+    id: "aws-s3",
+    name: "AWS S3",
+    customLogoUrl: "/icons/aws-s3.svg",
+    proficiency: "Advanced",
+    description:
+      "Object storage architecture, bucket policies, CORS, lifecycle management, static asset hosting.",
+  },
+  {
+    id: "linux",
+    name: "Linux",
+    customLogoUrl: "/icons/linux.svg",
+    proficiency: "Advanced",
+    description:
+      "Shell scripting (Bash), systemctl service management, permissions & ACLs, process debugging (top/htop/strace).",
+  },
+  {
+    id: "git",
+    name: "Git",
+    slug: "git",
+    proficiency: "Expert",
+    description:
+      "Internal DAG architecture, branch & rebase strategies, merge conflict resolution, submodules.",
+  },
+  {
+    id: "github",
+    name: "GitHub",
+    slug: "github",
+    proficiency: "Expert",
+    description:
+      "CI/CD pipelines with GitHub Actions, PR review workflows, release management, security scanning.",
   },
 ];
 
-const CATEGORIES = [
-  { id: "all", label: "All", icon: <Sparkles className="w-3.5 h-3.5" /> },
-  {
-    id: "languages",
-    label: "Languages",
-    icon: <Code2 className="w-3.5 h-3.5" />,
-  },
-  { id: "web", label: "Web & DB", icon: <Monitor className="w-3.5 h-3.5" /> },
-  {
-    id: "aiml",
-    label: "AI & ML",
-    icon: <BrainCircuit className="w-3.5 h-3.5" />,
-  },
-  {
-    id: "devops",
-    label: "DevOps & Cloud",
-    icon: <Server className="w-3.5 h-3.5" />,
-  },
-  { id: "cs", label: "CS & Systems", icon: <Cpu className="w-3.5 h-3.5" /> },
-];
-
-function SkillIconBadge({
+function SkillBadge({
   skill,
-  isSelected,
-  onSelect,
   isDark,
+  align = "center",
 }: {
   skill: SkillItem;
-  isSelected: boolean;
-  onSelect: () => void;
   isDark: boolean;
+  align?: "left" | "center" | "right";
 }) {
   const [imgError, setImgError] = React.useState(false);
 
@@ -369,70 +270,56 @@ function SkillIconBadge({
         : `https://cdn.simpleicons.org/${skill.slug}`
       : null;
 
-  // Highlight only when user clicks specific skill tile
-  const isHighlighted = isSelected;
-
   return (
-    <motion.div
-      whileHover={{ scale: 1.05, y: -2 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={onSelect}
-      tabIndex={0}
-      role="button"
-      aria-label={`Skill: ${skill.name}`}
-      className={`relative group flex flex-col items-center justify-center rounded-2xl transition-all duration-300 select-none cursor-pointer p-2.5 sm:p-3 aspect-square ${
-        isHighlighted
-          ? "bg-primary/10 border border-primary shadow-[0_0_12px_rgba(56,189,248,0.2)] z-10"
-          : "bg-card/60 border border-border/70 hover:border-border hover:bg-card/90"
-      }`}
-    >
-      {/* Skill Logo */}
-      <div className="w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center relative my-auto">
+    <div className="relative group/tech">
+      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-transparent border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/40 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] flex items-center justify-center p-2 sm:p-2.5 transition-all duration-200 hover:scale-105 shadow-sm">
         {iconUrl && !imgError ? (
           <img
             src={iconUrl}
             alt={skill.name}
             onError={() => setImgError(true)}
-            className="w-full h-full object-contain transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-md"
+            className="w-full h-full object-contain transition-transform duration-200 group-hover/tech:scale-110"
             loading="lazy"
           />
         ) : skill.customIcon ? (
-          <div
-            className={`transition-colors ${
-              isHighlighted
-                ? "text-primary"
-                : "text-muted-foreground group-hover:text-foreground"
-            }`}
-          >
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground group-hover/tech:text-foreground transition-colors [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6">
             {skill.customIcon}
           </div>
         ) : (
-          <div className="w-full h-full rounded-lg bg-muted flex items-center justify-center text-xs font-mono font-bold text-muted-foreground">
-            {skill.name.slice(0, 3).toUpperCase()}
-          </div>
+          <span className="text-xs font-mono font-bold text-muted-foreground">
+            {skill.name.slice(0, 2).toUpperCase()}
+          </span>
         )}
       </div>
 
-      {/* Skill Title */}
-      <span
-        className={`text-[10px] sm:text-[11px] font-mono mt-1 font-medium truncate max-w-full text-center px-1 ${
-          isHighlighted
-            ? "text-primary font-semibold"
-            : "text-muted-foreground group-hover:text-foreground"
+      {/* Clean Tooltip with intelligent alignment preventing cutoffs */}
+      <div
+        className={`absolute -top-9 pointer-events-none opacity-0 group-hover/tech:opacity-100 transition-all duration-150 ease-out transform translate-y-1 group-hover/tech:translate-y-0 z-30 drop-shadow-md ${
+          align === "left"
+            ? "left-0 translate-x-0"
+            : align === "right"
+            ? "right-0 translate-x-0"
+            : "left-1/2 -translate-x-1/2"
         }`}
       >
-        {skill.name}
-      </span>
-    </motion.div>
+        <div className="px-2 py-0.5 rounded-md bg-zinc-900/95 dark:bg-zinc-800/95 text-white text-[10.5px] font-mono font-medium whitespace-nowrap border border-white/10 shadow-lg">
+          {skill.name}
+        </div>
+        <div
+          className={`w-1.5 h-1.5 bg-zinc-900/95 dark:bg-zinc-800/95 rotate-45 -mt-0.5 border-r border-b border-white/10 ${
+            align === "left"
+              ? "ml-3.5"
+              : align === "right"
+              ? "mr-3.5 ml-auto"
+              : "mx-auto"
+          }`}
+        />
+      </div>
+    </div>
   );
 }
 
 export function CoreSkills() {
-  const [activeCategory, setActiveCategory] = React.useState<string>("all");
-  const [selectedSkill, setSelectedSkill] = React.useState<SkillItem | null>(
-    null,
-  );
-  const [searchQuery, setSearchQuery] = React.useState<string>("");
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -448,95 +335,32 @@ export function CoreSkills() {
     preloadImages(urls);
   }, [isDark]);
 
-  const filteredSkills = React.useMemo(() => {
-    return SKILL_DATABASE.filter((skill) => {
-      const matchesCategory =
-        activeCategory === "all" || skill.category === activeCategory;
-      const matchesSearch =
-        skill.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        skill.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-  }, [activeCategory, searchQuery]);
-
   return (
     <section
-      className="py-16 px-4 max-w-3xl mx-auto w-full relative"
+      className="py-14 px-4 max-w-3xl mx-auto w-full relative"
       id="skills"
     >
-      {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold font-mono tracking-tight text-foreground flex items-center gap-2 mb-1">
-            <Code2 className="w-5 h-5 text-primary" /> Skills & Tech Stack
-          </h2>
-          <p className="text-sm text-muted-foreground font-mono mt-1">
-            Languages, frameworks, tools, and systems engineering benchmarks.
-          </p>
-        </div>
+      {/* Section Title */}
+      <h2 className="text-2xl sm:text-3xl font-bold font-sans tracking-tight text-foreground mb-6">
+        Skills &amp; Tech Stack
+      </h2>
 
-        {/* Search Input */}
-        <div className="relative w-full sm:w-56">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search skill..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-card/60 border border-border/60 rounded-xl font-mono text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+      {/* Pure Logos Row - Matching Experience Section Tech Stack Holding */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+        {SKILL_DATABASE.map((skill, idx) => (
+          <SkillBadge
+            key={skill.id}
+            skill={skill}
+            isDark={isDark}
+            align={
+              idx === 0
+                ? "left"
+                : idx === SKILL_DATABASE.length - 1
+                ? "right"
+                : "center"
+            }
           />
-        </div>
-      </div>
-
-      {/* Category Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-6">
-        {CATEGORIES.map((cat) => {
-          const isActive = activeCategory === cat.id;
-          return (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-mono text-xs transition-all duration-300 border cursor-pointer ${
-                isActive
-                  ? "bg-primary/10 border-primary/40 text-primary font-semibold shadow-sm"
-                  : "bg-card/40 border-border/30 text-muted-foreground hover:bg-card/80 hover:text-foreground"
-              }`}
-            >
-              <span
-                className={isActive ? "text-primary" : "text-muted-foreground"}
-              >
-                {cat.icon}
-              </span>
-              <span>{cat.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Tech Skill Logo Grid Container */}
-      <div className="bg-card/80 backdrop-blur-md border border-border/80 rounded-2xl p-4 sm:p-5 shadow-xl relative overflow-hidden">
-        {/* Skill Badges Grid */}
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-2.5 sm:gap-3 relative z-10">
-          {filteredSkills.map((skill) => {
-            const isSelected = selectedSkill?.id === skill.id;
-
-            return (
-              <SkillIconBadge
-                key={skill.id}
-                skill={skill}
-                isSelected={isSelected}
-                onSelect={() => setSelectedSkill(skill)}
-                isDark={isDark}
-              />
-            );
-          })}
-        </div>
-
-        {filteredSkills.length === 0 && (
-          <div className="py-12 text-center text-muted-foreground font-mono text-xs">
-            No technical skills found matching &quot;{searchQuery}&quot;
-          </div>
-        )}
+        ))}
       </div>
     </section>
   );

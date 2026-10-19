@@ -9,6 +9,7 @@ import {
   Zap,
   Layers,
   ExternalLink,
+  Star,
 } from "lucide-react";
 import { GithubIcon } from "@/components/icons/GithubIcon";
 import { motion } from "framer-motion";
@@ -54,7 +55,7 @@ export default function ProjectsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden flex flex-col justify-between font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-transparent text-foreground relative overflow-hidden flex flex-col justify-between font-sans transition-colors duration-300">
       <Spotlight />
 
       {/* Main Content Container matching Homepage width (max-w-3xl) */}
@@ -66,7 +67,7 @@ export default function ProjectsPage() {
         </div>
 
         {/* Category Filter Pills */}
-        <div className="inline-flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-card/80 border border-border/80 mb-8 backdrop-blur-md shadow-sm">
+        <div className="inline-flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-white/35 dark:bg-[#101620]/45 border border-black/[0.04] dark:border-white/[0.05] mb-8 backdrop-blur-xl shadow-sm">
           {CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat.id;
             return (
@@ -97,7 +98,7 @@ export default function ProjectsPage() {
             >
               <div
                 onClick={() => setSelectedProject(project)}
-                className="w-full bg-card/80 backdrop-blur-md border border-border/80 hover:border-primary/40 rounded-2xl p-5 md:p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 group cursor-pointer relative overflow-hidden"
+                className="w-full bg-gradient-to-br from-white/35 via-white/20 to-primary/[0.03] dark:from-[#111722]/40 dark:via-[#0c1017]/30 dark:to-[#080c12]/40 hover:from-white/45 hover:via-white/28 hover:to-primary/[0.06] dark:hover:from-[#151d2a]/50 dark:hover:via-[#0f141e]/40 dark:hover:to-[#090d14]/50 backdrop-blur-2xl border border-black/[0.04] dark:border-white/[0.05] hover:border-primary/40 dark:hover:border-primary/40 rounded-2xl p-5 md:p-6 flex flex-col justify-between transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.03)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.35)] hover:shadow-2xl hover:shadow-primary/5 group cursor-pointer relative overflow-hidden"
               >
                 {/* Top ambient hover accent */}
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -189,100 +190,148 @@ export default function ProjectsPage() {
         onOpenChange={(open) => !open && setSelectedProject(null)}
       >
         {selectedProject && (
-          <DialogContent className="w-[calc(100%-1.5rem)] max-w-3xl md:max-w-4xl bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-5 md:p-8 rounded-2xl border-t-2 border-t-primary/60 transition-all duration-300 overflow-hidden font-sans">
-            <DialogHeader className="pb-3 border-b border-border/30">
-              <DialogTitle className="text-base sm:text-lg md:text-xl font-mono flex items-start gap-2.5 text-foreground font-bold leading-snug">
-                <TerminalSquare className="w-5 h-5 md:w-6 md:h-6 text-primary shrink-0 mt-0.5" />
-                <span className="break-words font-extrabold">
-                  {selectedProject.title}
-                </span>
-              </DialogTitle>
-              <DialogDescription className="text-xs font-mono text-muted-foreground mt-1">
-                Detailed architecture breakdown, technical challenges, and key
-                impact.
-              </DialogDescription>
-            </DialogHeader>
+          <DialogContent className="w-[calc(100%-1.25rem)] max-w-3xl md:max-w-4xl bg-gradient-to-br from-white/98 via-white/96 to-slate-50/95 dark:from-[#0d1219]/98 dark:via-[#0c1017]/96 dark:to-[#080c12]/95 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-[0_25px_60px_-10px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_60px_-10px_rgba(0,0,0,0.6)] p-0 rounded-2xl overflow-hidden font-sans">
+            {/* Premium top gradient accent bar */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent z-10 pointer-events-none" />
 
-            <div className="py-3 font-sans space-y-5 text-xs max-h-[70vh] md:max-h-[75vh] overflow-y-auto pr-1 sm:pr-2 scrollbar-thin">
-              <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-border">
-                <img
-                  src={selectedProject.thumbnail}
-                  alt={selectedProject.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            {/* Scrollable body */}
+            <div className="overflow-y-auto max-h-[88vh] p-5 md:p-8 space-y-5">
+              <DialogHeader className="pb-4 border-b border-border/30">
+                {/* Category & Featured badge */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-mono font-bold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    {selectedProject.category}
+                  </span>
+                  {selectedProject.featured && (
+                    <span className="text-[10px] font-mono font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                      <Star className="w-2.5 h-2.5" /> Featured
+                    </span>
+                  )}
+                </div>
+                <DialogTitle className="text-base sm:text-lg md:text-xl font-mono flex items-start gap-2.5 text-foreground font-bold leading-snug">
+                  <TerminalSquare className="w-5 h-5 md:w-6 md:h-6 text-primary shrink-0 mt-0.5" />
+                  <span className="break-words font-extrabold">
+                    {selectedProject.title}
+                  </span>
+                </DialogTitle>
+                <DialogDescription className="text-xs font-mono text-muted-foreground mt-1">
+                  Detailed architecture breakdown, technical challenges, and key
+                  impact.
+                </DialogDescription>
+              </DialogHeader>
 
-              <div>
-                <h4 className="text-xs text-primary mb-1.5 flex items-center gap-1.5 uppercase tracking-wider font-bold">
-                  <FileText className="w-4 h-4" /> Project Overview
-                </h4>
-                <p className="text-foreground/90 leading-relaxed bg-muted/20 p-4 sm:p-5 rounded-2xl border border-border/30 break-words font-sans text-xs sm:text-sm shadow-inner">
-                  {selectedProject.description}
-                </p>
-              </div>
+              {/* Modal Body */}
+              <div className="font-mono space-y-5 text-xs">
+                {/* Thumbnail Image in Modal with hover overlay */}
+                <div className="w-full aspect-[16/9] rounded-2xl overflow-hidden border border-border/40 relative group/thumb shadow-md">
+                  <img
+                    src={selectedProject.thumbnail}
+                    alt={selectedProject.title}
+                    className="w-full h-full object-cover group-hover/thumb:scale-[1.02] transition-transform duration-500"
+                  />
+                  {/* Overlay action links */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 flex items-end p-4 gap-2">
+                    {selectedProject.live && (
+                      <a
+                        href={selectedProject.live}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 text-white border border-white/30 backdrop-blur-sm font-mono text-[11px] font-bold hover:bg-white/30 transition-all cursor-pointer"
+                      >
+                        <ExternalLink className="w-3 h-3" /> Live Demo
+                      </a>
+                    )}
+                    {selectedProject.github && (
+                      <a
+                        href={selectedProject.github}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 text-white border border-white/30 backdrop-blur-sm font-mono text-[11px] font-bold hover:bg-white/30 transition-all cursor-pointer"
+                      >
+                        <GithubIcon className="w-3 h-3" /> Source
+                      </a>
+                    )}
+                  </div>
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-                <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 sm:p-5 space-y-2 flex flex-col justify-between hover:border-primary/30 transition-colors">
-                  <h4 className="text-xs text-primary flex items-center gap-1.5 font-bold">
-                    <ShieldAlert className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0" />{" "}
-                    Engineering Challenges
+                {/* Overview */}
+                <div>
+                  <h4 className="text-xs text-primary mb-2 flex items-center gap-1.5 uppercase tracking-wider font-bold">
+                    <FileText className="w-4 h-4" /> Project Overview
                   </h4>
-                  <p className="text-[11.5px] sm:text-xs text-muted-foreground leading-relaxed break-words font-sans">
-                    {selectedProject.challenges}
+                  <p className="text-foreground/90 leading-relaxed bg-muted/20 p-4 sm:p-5 rounded-2xl border border-border/30 break-words font-sans text-xs sm:text-sm shadow-inner">
+                    {selectedProject.description}
                   </p>
                 </div>
 
-                <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 sm:p-5 space-y-2 flex flex-col justify-between hover:border-primary/30 transition-colors">
-                  <h4 className="text-xs text-primary flex items-center gap-1.5 font-bold">
-                    <Zap className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0" />{" "}
-                    Impact & Benchmark Metrics
+                {/* Challenges & Impact */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                  <div className="bg-amber-500/[0.06] border border-amber-500/20 rounded-2xl p-4 sm:p-5 space-y-2 flex flex-col justify-between hover:border-amber-500/35 transition-colors">
+                    <h4 className="text-xs text-amber-500 dark:text-amber-400 flex items-center gap-1.5 font-bold">
+                      <ShieldAlert className="w-4 h-4 shrink-0" />{" "}
+                      Engineering Challenges
+                    </h4>
+                    <p className="text-[11.5px] sm:text-xs text-muted-foreground leading-relaxed break-words font-sans">
+                      {selectedProject.challenges}
+                    </p>
+                  </div>
+
+                  <div className="bg-emerald-500/[0.06] border border-emerald-500/20 rounded-2xl p-4 sm:p-5 space-y-2 flex flex-col justify-between hover:border-emerald-500/35 transition-colors">
+                    <h4 className="text-xs text-emerald-500 dark:text-emerald-400 flex items-center gap-1.5 font-bold">
+                      <Zap className="w-4 h-4 shrink-0" />{" "}
+                      Impact & Benchmark Metrics
+                    </h4>
+                    <p className="text-[11.5px] sm:text-xs text-muted-foreground leading-relaxed break-words font-sans">
+                      {selectedProject.metrics}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Tech Stack */}
+                <div className="p-4 rounded-2xl bg-muted/15 border border-border/25">
+                  <h4 className="text-xs text-primary mb-3 font-bold flex items-center gap-1.5 uppercase tracking-wider">
+                    <Layers className="w-4 h-4" /> Technology Stack
                   </h4>
-                  <p className="text-[11.5px] sm:text-xs text-muted-foreground leading-relaxed break-words font-sans">
-                    {selectedProject.metrics}
-                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedProject.tech.map((t) => (
+                      <Badge
+                        key={t}
+                        variant="outline"
+                        className="font-mono text-[10.5px] sm:text-xs px-3 py-1 rounded-xl bg-primary/10 text-primary border-primary/20 font-bold hover:bg-primary/20 transition-colors"
+                      >
+                        {t}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-muted/15 border border-border/25">
-                <h4 className="text-xs text-primary mb-2 font-bold flex items-center gap-1.5 uppercase tracking-wider">
-                  <Layers className="w-4 h-4" /> Technology Stack
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedProject.tech.map((t) => (
-                    <Badge
-                      key={t}
-                      variant="outline"
-                      className="font-mono text-[10.5px] sm:text-xs px-3 py-1 rounded-xl bg-primary/10 text-primary border-primary/20 font-bold hover:bg-primary/20 transition-colors"
-                    >
-                      {t}
-                    </Badge>
-                  ))}
-                </div>
+              {/* Modal Footer Links */}
+              <div className="pt-3.5 border-t border-border/30 flex flex-wrap items-center justify-end gap-3 font-sans">
+                {selectedProject.github && (
+                  <a
+                    href={selectedProject.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary border border-border text-secondary-foreground font-mono text-xs font-bold hover:bg-secondary/80 hover:border-border/80 transition-colors shadow-sm"
+                  >
+                    <GithubIcon className="w-4 h-4 text-primary" /> View Source
+                    Code
+                  </a>
+                )}
+                {selectedProject.live && (
+                  <a
+                    href={selectedProject.live}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-mono text-xs font-bold shadow-md hover:shadow-primary/25 transition-all"
+                  >
+                    <ExternalLink className="w-4 h-4" /> See Live Demo
+                  </a>
+                )}
               </div>
-            </div>
-
-            <div className="pt-3.5 border-t border-border/30 flex flex-wrap items-center justify-end gap-3 font-sans">
-              {selectedProject.github && (
-                <a
-                  href={selectedProject.github}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary border border-border text-secondary-foreground font-mono text-xs font-bold hover:bg-secondary/80 transition-colors"
-                >
-                  <GithubIcon className="w-4 h-4 text-primary" /> View Source
-                  Code
-                </a>
-              )}
-              {selectedProject.live && (
-                <a
-                  href={selectedProject.live}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-mono text-xs font-bold shadow-md hover:bg-primary/90 transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4" /> Open in Browser
-                </a>
-              )}
             </div>
           </DialogContent>
         )}

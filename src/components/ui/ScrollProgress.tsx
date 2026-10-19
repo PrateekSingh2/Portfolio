@@ -9,6 +9,9 @@ export function ScrollProgress() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Disable on mobile viewports (< 768px)
+    if (typeof window !== "undefined" && window.innerWidth < 768) return;
+
     const handleScroll = () => {
       const totalHeight =
         document.documentElement.scrollHeight - window.innerHeight;
@@ -41,7 +44,7 @@ export function ScrollProgress() {
 
   return (
     <div
-      className={`fixed right-3 sm:right-5 top-1/2 -translate-y-1/2 z-50 transition-all duration-300 pointer-events-none ${
+      className={`hidden md:block fixed right-3 sm:right-5 top-1/2 -translate-y-1/2 z-50 transition-all duration-300 pointer-events-none ${
         isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
       }`}
     >
@@ -65,10 +68,10 @@ export function ScrollProgress() {
                 aria-label={`Scroll depth ${Math.round((idx / (TOTAL_DASHES - 1)) * 100)}%`}
                 className={`h-[2.5px] sm:h-[3px] rounded-full transition-all duration-300 cursor-pointer ${
                   isCurrent
-                    ? "w-6 sm:w-7 bg-white/35 shadow-[0_0_3px_rgba(255,255,255,0.2)] scale-105"
+                    ? "w-6 sm:w-7 bg-foreground/60 dark:bg-white/50 shadow-sm scale-105"
                     : isFilled
-                      ? "w-4 sm:w-5 bg-white/15 hover:w-6 hover:bg-white/40"
-                      : "w-3 sm:w-3.5 bg-white/5 hover:bg-white/25 hover:w-5"
+                      ? "w-4 sm:w-5 bg-foreground/25 dark:bg-white/25 hover:w-6 hover:bg-foreground/50 dark:hover:bg-white/50"
+                      : "w-3 sm:w-3.5 bg-foreground/10 dark:bg-white/10 hover:bg-foreground/30 dark:hover:bg-white/30 hover:w-5"
                 }`}
               />
             );

@@ -10,16 +10,25 @@ export const TypewriterEffect = ({ words }: { words: string[] }) => {
 
   useEffect(() => {
     const currentWord = words[index];
-    let typingSpeed = isDeleting ? 50 : 100;
 
+    // When text is fully typed, pause for 1.5s before deleting
     if (!isDeleting && text === currentWord) {
-      typingSpeed = 2000;
-      setIsDeleting(true);
-    } else if (isDeleting && text === "") {
-      setIsDeleting(false);
-      setIndex((prev) => (prev + 1) % words.length);
-      typingSpeed = 500;
+      const pauseTimer = setTimeout(() => {
+        setIsDeleting(true);
+      }, 1500);
+      return () => clearTimeout(pauseTimer);
     }
+
+    // When text is completely deleted, brief pause then next word
+    if (isDeleting && text === "") {
+      const pauseTimer = setTimeout(() => {
+        setIsDeleting(false);
+        setIndex((prev) => (prev + 1) % words.length);
+      }, 400);
+      return () => clearTimeout(pauseTimer);
+    }
+
+    const typingSpeed = isDeleting ? 40 : 80;
 
     const timer = setTimeout(() => {
       setText((prev) =>

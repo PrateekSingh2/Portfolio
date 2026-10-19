@@ -3,18 +3,13 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import {
-  Trophy,
-  TrendingUp,
-  Star,
-  Award,
   ExternalLink,
   Activity,
-  Sparkles,
-  GraduationCap,
+  Flame,
+  CheckCircle2,
+  Trophy,
 } from "lucide-react";
 import {
   AreaChart,
@@ -24,9 +19,6 @@ import {
   Tooltip as RTooltip,
   ResponsiveContainer,
   CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
 
 async function fetchCPData() {
@@ -35,26 +27,17 @@ async function fetchCPData() {
   return res.json();
 }
 
-function StatRow({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="flex items-center justify-between py-1.5 border-b border-border/20 last:border-0 font-mono text-xs">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-semibold text-foreground/95">{value}</span>
-    </div>
-  );
-}
-
 const PLATFORM_LINKS: Record<string, string> = {
-  LeetCode: "https://leetcode.com/u/prateek_singh7/",
-  Codeforces: "https://codeforces.com/profile/RajawatPrateekSingh",
-  CodeChef: "https://www.codechef.com/users/nice_trail_87",
-  GFG: "https://www.geeksforgeeks.org/profile/rajawatprateeksingh",
+  leetcode: "https://leetcode.com/u/prateek_singh7/",
+  codeforces: "https://codeforces.com/profile/RajawatPrateekSingh",
+  codechef: "https://www.codechef.com/users/nice_trail_87",
+  gfg: "https://www.geeksforgeeks.org/profile/rajawatprateeksingh",
 };
 
 export function CPDashboard() {
-  const [activeTab, setActiveTab] = React.useState<
-    "leetcode" | "codeforces" | "codechef" | "codechef-dsa"
-  >("leetcode");
+  const [selectedPlatform, setSelectedPlatform] = React.useState<
+    "leetcode" | "codeforces" | "codechef" | "codechef-dsa" | "gfg"
+  >("codechef");
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -68,38 +51,39 @@ export function CPDashboard() {
     return {
       contentStyle: {
         background: isDark
-          ? "rgba(26, 26, 30, 0.95)"
+          ? "rgba(18, 18, 22, 0.95)"
           : "rgba(255, 255, 255, 0.95)",
-        backdropFilter: "blur(8px)",
+        backdropFilter: "blur(12px)",
         border: isDark
           ? "1px solid rgba(255, 255, 255, 0.1)"
           : "1px solid rgba(0, 0, 0, 0.1)",
-        borderRadius: 8,
-        fontSize: 11,
+        borderRadius: 10,
+        fontSize: 12,
         fontFamily: "monospace",
         color: isDark ? "#fff" : "#0f172a",
-        boxShadow: "0 10px 25px -5px rgba(0,0,0,0.15)",
+        boxShadow: "0 10px 25px -4px rgba(0,0,0,0.18)",
+        padding: "8px 12px",
       },
-      labelStyle: { color: isDark ? "#a1a1aa" : "#64748b", marginBottom: 4 },
+      labelStyle: {
+        color: isDark ? "#94a3b8" : "#64748b",
+        marginBottom: 3,
+        fontWeight: 600,
+      },
     };
   }, [isDark]);
 
   if (isLoading) {
     return (
       <section
-        className="py-16 px-4 max-w-3xl mx-auto w-full font-mono"
+        className="py-14 px-4 max-w-3xl mx-auto w-full font-sans"
         id="achievements"
       >
-        <h2 className="text-xl font-bold mb-2 text-foreground">
-          ~/competitive-programming
+        <h2 className="text-2xl sm:text-3xl font-bold font-sans tracking-tight text-foreground mb-6">
+          Competitive Programming
         </h2>
-        <p className="text-sm text-muted-foreground mb-8">
-          Loading live stats…
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-48 rounded-xl bg-muted/50" />
-          ))}
+        <div className="space-y-4">
+          <Skeleton className="h-28 rounded-2xl bg-muted/40 w-full" />
+          <Skeleton className="h-64 rounded-2xl bg-muted/40 w-full" />
         </div>
       </section>
     );
@@ -108,7 +92,7 @@ export function CPDashboard() {
   if (error || !data) {
     return (
       <section
-        className="py-16 px-4 max-w-3xl mx-auto w-full"
+        className="py-14 px-4 max-w-3xl mx-auto w-full font-sans"
         id="achievements"
       >
         <p className="text-sm text-muted-foreground font-mono">
@@ -118,43 +102,38 @@ export function CPDashboard() {
     );
   }
 
-  const easyCount = data.leetcode.easy || 0;
-  const mediumCount = data.leetcode.medium || 0;
-  const hardCount = data.leetcode.hard || 0;
-  const lcTotal = easyCount + mediumCount + hardCount;
+  // Stats calculation
+  const easyCount = data.leetcode?.easy || 0;
+  const mediumCount = data.leetcode?.medium || 0;
+  const hardCount = data.leetcode?.hard || 0;
+  const lcTotal = easyCount + mediumCount + hardCount || data.leetcode?.solved || 0;
 
-  const easyPct = lcTotal > 0 ? Math.round((easyCount / lcTotal) * 100) : 0;
-  const mediumPct = lcTotal > 0 ? Math.round((mediumCount / lcTotal) * 100) : 0;
-  const hardPct = lcTotal > 0 ? Math.round((hardCount / lcTotal) * 100) : 0;
-
-  const lcPie = [
-    { name: "Easy", value: easyCount || 1, color: "#10b981" },
-    { name: "Medium", value: mediumCount || 1, color: "#f59e0b" },
-    { name: "Hard", value: hardCount || 1, color: "#ef4444" },
-  ];
   const totalSolvedAcrossPlatforms =
     (lcTotal || 0) +
-    (data.codeforces.solved || 0) +
-    (data.gfg.problemsSolved ?? data.gfg.solved ?? 0);
-  const peakRating = Math.max(
-    data.leetcode.rating || 0,
-    data.codeforces.rating || 0,
-    data.codeforces.maxRating || 0,
-    data.codechef.rating || 0,
-    data.codechef.maxRating || 0,
-    data.codechef.dsaRating || 0,
-  );
-  const totalContestsAcrossPlatforms =
-    (data.leetcode.contests || 0) +
-    (data.codeforces.contests || 0) +
-    (data.codechef.contests || 0);
+    (data.codeforces?.solved || 0) +
+    (data.gfg?.problemsSolved ?? data.gfg?.solved ?? 0);
 
-  // Format history data to map title to name for Recharts tooltip fallback
+  const peakRating = Math.max(
+    data.leetcode?.rating || 0,
+    data.codeforces?.rating || 0,
+    data.codeforces?.maxRating || 0,
+    data.codechef?.rating || 0,
+    data.codechef?.maxRating || 0,
+    data.codechef?.dsaRating || 0
+  );
+
+  const totalContestsAcrossPlatforms =
+    (data.leetcode?.contests || 0) +
+    (data.codeforces?.contests || 0) +
+    (data.codechef?.contests || 0);
+
+  // History mapping for AreaChart
   type HistoryItem = {
     title?: string;
     rating?: number;
     [key: string]: unknown;
   };
+
   const lcHistory = (data.lcHistory || []).map((h: HistoryItem) => ({
     ...h,
     name: h.title,
@@ -173,600 +152,438 @@ export function CPDashboard() {
   }));
 
   const activeHistory =
-    activeTab === "leetcode"
+    selectedPlatform === "leetcode"
       ? lcHistory
-      : activeTab === "codeforces"
-        ? cfHistory
-        : activeTab === "codechef"
-          ? ccHistory
-          : ccDsaHistory;
+      : selectedPlatform === "codeforces"
+      ? cfHistory
+      : selectedPlatform === "codechef"
+      ? ccHistory
+      : selectedPlatform === "codechef-dsa"
+      ? ccDsaHistory
+      : [];
 
   const activeColor =
-    activeTab === "leetcode"
-      ? isDark
-        ? "#eab308"
-        : "#d97706"
-      : activeTab === "codeforces"
-        ? isDark
-          ? "#38bdf8"
-          : "#2563eb"
-        : activeTab === "codechef"
-          ? isDark
-            ? "#f97316"
-            : "#ea580c"
-          : isDark
-            ? "#10b981"
-            : "#059669";
+    selectedPlatform === "leetcode"
+      ? isDark ? "#f59e0b" : "#d97706"
+      : selectedPlatform === "codeforces"
+      ? isDark ? "#38bdf8" : "#2563eb"
+      : selectedPlatform === "codechef"
+      ? isDark ? "#f97316" : "#ea580c"
+      : selectedPlatform === "codechef-dsa"
+      ? isDark ? "#10b981" : "#059669"
+      : isDark ? "#10b981" : "#059669";
 
   return (
     <section
-      className="py-16 px-4 max-w-3xl mx-auto w-full relative"
+      className="py-14 px-4 max-w-3xl mx-auto w-full relative"
       id="achievements"
     >
-      <div className="mb-8">
-        <h2 className="text-xl font-bold font-mono mb-2 flex items-center gap-2 text-foreground">
-          <Trophy className="w-5 h-5 text-primary" /> Competitive Programming
-        </h2>
-        <p className="text-sm text-muted-foreground font-mono">
-          Real-time benchmarks and profiles across algorithmic hubs.
-        </p>
-      </div>
-
-      {/* Codolio-Inspired Top Aggregate Summary Banner */}
-      <div className="mb-8 p-5 rounded-2xl bg-card/80 border border-border/80 backdrop-blur-md shadow-lg relative overflow-hidden">
-        <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-primary via-primary/50 to-primary/10" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
-              Total Solved
-            </span>
-            <div className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-              {totalSolvedAcrossPlatforms.toLocaleString()}+
-            </div>
-          </div>
-          <div className="space-y-1 border-l border-border/20 pl-4">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
-              Peak Rating
-            </span>
-            <div className="text-2xl font-black font-mono text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-              <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-              {peakRating}
-            </div>
-          </div>
-          <div className="space-y-1 border-l border-border/20 pl-4">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
-              Contests
-            </span>
-            <div className="text-2xl font-black font-mono text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">
-              <Activity className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
-              {totalContestsAcrossPlatforms}+
-            </div>
-          </div>
-          <div className="space-y-1 border-l border-border/20 pl-4">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block font-bold">
-              Platforms
-            </span>
-            <div className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
-              <GraduationCap className="w-4 h-4 text-blue-500 dark:text-blue-400" />
-              4 Active
-            </div>
-          </div>
+      {/* Header matching Experience and Education */}
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 mb-6">
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-bold font-sans tracking-tight text-foreground">
+            Competitive Programming
+          </h2>
+          <p className="text-xs sm:text-sm text-muted-foreground font-sans mt-1">
+            Real-time algorithmic benchmarks and contest trajectories.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground self-start sm:self-auto pt-1 sm:pt-0">
+          <span className="text-foreground font-bold">1,500+</span> solved
+          <span>•</span>
+          <span className="text-foreground font-bold">{peakRating}</span> peak
+          <span>•</span>
+          <span className="text-foreground font-bold">{totalContestsAcrossPlatforms}</span> contests
         </div>
       </div>
 
-      {/* Grid Layout of Platforms */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-stretch">
-        {/* LeetCode Card */}
-        <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
-          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <CardHeader className="pb-2 pt-5 px-5">
-            <CardTitle className="text-sm font-mono flex items-center justify-between">
-              <span className="flex items-center gap-2 font-bold text-foreground">
-                <Trophy className="w-4 h-4 text-amber-500" /> LeetCode
-              </span>
-              <a
-                href={PLATFORM_LINKS.LeetCode}
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted-foreground hover:text-amber-500 transition-colors p-1 rounded-md hover:bg-amber-500/10"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
-            <div className="flex items-center gap-5 mb-4">
-              <div className="relative w-24 h-24 shrink-0 drop-shadow-sm">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={lcPie}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={28}
-                      outerRadius={38}
-                      paddingAngle={3}
-                      dataKey="value"
-                      stroke="none"
-                      cornerRadius={4}
-                    >
-                      {lcPie.map((e, i) => (
-                        <Cell key={i} fill={e.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-base font-black font-mono tracking-tight text-foreground">
-                    {lcTotal || "—"}
-                  </span>
-                  <span className="text-[7.5px] text-muted-foreground uppercase font-mono font-bold tracking-widest -mt-0.5">
-                    solved
-                  </span>
-                </div>
-              </div>
-              <div className="flex-1 space-y-2">
-                <div>
-                  <div className="flex items-center justify-between text-[11px] font-mono mb-1">
-                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>{" "}
-                      Easy
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      {easyCount}{" "}
-                      <span className="text-[10px] text-muted-foreground font-normal">
-                        ({easyPct}%)
-                      </span>
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-emerald-100 dark:bg-emerald-950/40 rounded-full overflow-hidden border border-emerald-500/20">
-                    <div
-                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                      style={{ width: `${easyPct}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-[11px] font-mono mb-1">
-                    <span className="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>{" "}
-                      Medium
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      {mediumCount}{" "}
-                      <span className="text-[10px] text-muted-foreground font-normal">
-                        ({mediumPct}%)
-                      </span>
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-amber-100 dark:bg-amber-950/40 rounded-full overflow-hidden border border-amber-500/20">
-                    <div
-                      className="h-full bg-amber-500 rounded-full transition-all duration-500"
-                      style={{ width: `${mediumPct}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-[11px] font-mono mb-1">
-                    <span className="text-red-600 dark:text-red-400 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>{" "}
-                      Hard
-                    </span>
-                    <span className="font-semibold text-foreground">
-                      {hardCount}{" "}
-                      <span className="text-[10px] text-muted-foreground font-normal">
-                        ({hardPct}%)
-                      </span>
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-red-100 dark:bg-red-950/40 rounded-full overflow-hidden border border-red-500/20">
-                    <div
-                      className="h-full bg-red-500 rounded-full transition-all duration-500"
-                      style={{ width: `${hardPct}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
+      {/* 4 Interactive Platform Selector Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-5">
+        {/* CodeChef Selector (Swapped to 1st Position) */}
+        <button
+          type="button"
+          onClick={() => setSelectedPlatform("codechef")}
+          className={`p-3.5 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group ${
+            selectedPlatform === "codechef" || selectedPlatform === "codechef-dsa"
+              ? "bg-orange-500/10 border-orange-500/50 shadow-sm"
+              : "bg-transparent border-black/[0.08] dark:border-white/[0.08] hover:border-black/25 dark:hover:border-white/25 hover:bg-black/[0.015] dark:hover:bg-white/[0.015]"
+          }`}
+        >
+          <div className="flex items-center justify-between w-full mb-1.5">
+            <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-foreground">
+              <span className="w-2 h-2 rounded-full bg-orange-500" />
+              <span>CodeChef</span>
             </div>
+            <a
+              href={PLATFORM_LINKS.codechef}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-muted-foreground hover:text-orange-500 transition-colors p-0.5"
+              aria-label="Open CodeChef Profile"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+          <div className="text-xl sm:text-2xl font-black font-mono text-orange-600 dark:text-orange-400">
+            {data.codechef?.rating || "—"}
+          </div>
+          <div className="text-[11px] font-mono text-muted-foreground truncate mt-0.5">
+            {data.codechef?.rank || "1★"} • DSA {data.codechef?.dsaRating || "—"}
+          </div>
+        </button>
 
-            <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
-              <StatRow label="Rating" value={data.leetcode.rating || "—"} />
-              <StatRow
-                label="Rank"
-                value={data.leetcode.rating >= 1600 ? "Knight" : "Coder"}
-              />
-              <StatRow
-                label="Contests Attended"
-                value={data.leetcode.contests || "—"}
-              />
-              <StatRow
-                label="Total Active Days"
-                value={
-                  data.leetcode.activeDays
-                    ? `${data.leetcode.activeDays} days`
-                    : "—"
-                }
-              />
+        {/* Codeforces Selector (2nd Position) */}
+        <button
+          type="button"
+          onClick={() => setSelectedPlatform("codeforces")}
+          className={`p-3.5 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group ${
+            selectedPlatform === "codeforces"
+              ? "bg-sky-500/10 border-sky-500/50 shadow-sm"
+              : "bg-transparent border-black/[0.08] dark:border-white/[0.08] hover:border-black/25 dark:hover:border-white/25 hover:bg-black/[0.015] dark:hover:bg-white/[0.015]"
+          }`}
+        >
+          <div className="flex items-center justify-between w-full mb-1.5">
+            <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-foreground">
+              <span className="w-2 h-2 rounded-full bg-sky-500" />
+              <span>Codeforces</span>
             </div>
-          </CardContent>
-        </Card>
+            <a
+              href={PLATFORM_LINKS.codeforces}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-muted-foreground hover:text-sky-500 transition-colors p-0.5"
+              aria-label="Open Codeforces Profile"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+          <div className="text-xl sm:text-2xl font-black font-mono text-sky-600 dark:text-sky-400">
+            {data.codeforces?.rating || "—"}
+          </div>
+          <div className="text-[11px] font-mono text-muted-foreground truncate mt-0.5 capitalize">
+            {data.codeforces?.rank || "Newbie"} • Peak {data.codeforces?.maxRating || "—"}
+          </div>
+        </button>
 
-        {/* Codeforces Card */}
-        <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
-          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <CardHeader className="pb-2 pt-5 px-5">
-            <CardTitle className="text-sm font-mono flex items-center justify-between">
-              <span className="flex items-center gap-2 font-bold text-foreground">
-                <TrendingUp className="w-4 h-4 text-blue-500 dark:text-blue-400" />{" "}
-                Codeforces
-              </span>
-              <a
-                href={PLATFORM_LINKS.Codeforces}
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted-foreground hover:text-blue-500 transition-colors p-1 rounded-md hover:bg-blue-500/10"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
-            {/* Codeforces Top Box */}
-            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-muted/40 border border-border/40 shadow-inner">
-              <div>
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
-                  Current Rating
-                </span>
-                <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400">
-                    {data.codeforces.rating || "—"}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="font-mono text-[9px] px-1 py-0 border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold uppercase"
-                  >
-                    {data.codeforces.rank || "Newbie"}
-                  </Badge>
-                </div>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  Max: {data.codeforces.maxRating || "—"}
-                </span>
-              </div>
-              <div className="border-l border-border/25 pl-3">
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
-                  Problems Solved
-                </span>
-                <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-blue-600 dark:text-blue-400">
-                    {data.codeforces.solved || "—"}
-                  </span>
-                </div>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  {data.codeforces.contests || 0} Contests
-                </span>
-              </div>
+        {/* LeetCode Selector (Swapped to 3rd Position) */}
+        <button
+          type="button"
+          onClick={() => setSelectedPlatform("leetcode")}
+          className={`p-3.5 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group ${
+            selectedPlatform === "leetcode"
+              ? "bg-amber-500/10 border-amber-500/50 shadow-sm"
+              : "bg-transparent border-black/[0.08] dark:border-white/[0.08] hover:border-black/25 dark:hover:border-white/25 hover:bg-black/[0.015] dark:hover:bg-white/[0.015]"
+          }`}
+        >
+          <div className="flex items-center justify-between w-full mb-1.5">
+            <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-foreground">
+              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <span>LeetCode</span>
             </div>
+            <a
+              href={PLATFORM_LINKS.leetcode}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-muted-foreground hover:text-amber-500 transition-colors p-0.5"
+              aria-label="Open LeetCode Profile"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+          <div className="text-xl sm:text-2xl font-black font-mono text-amber-600 dark:text-amber-400">
+            {data.leetcode?.rating || "—"}
+          </div>
+          <div className="text-[11px] font-mono text-muted-foreground truncate mt-0.5">
+            {lcTotal} solved • {data.leetcode?.rating >= 1600 ? "Knight" : "Coder"}
+          </div>
+        </button>
 
-            <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
-              <StatRow
-                label="Problems Solved"
-                value={data.codeforces.solved || "—"}
-              />
-              <StatRow
-                label="Max Rating"
-                value={data.codeforces.maxRating || "—"}
-              />
-              <StatRow
-                label="Max Rank"
-                value={data.codeforces.maxRank || "—"}
-              />
-              <StatRow
-                label="Contests Attended"
-                value={data.codeforces.contests || "—"}
-              />
+        {/* GeeksforGeeks Selector (4th Position) */}
+        <button
+          type="button"
+          onClick={() => setSelectedPlatform("gfg")}
+          className={`p-3.5 rounded-xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between group ${
+            selectedPlatform === "gfg"
+              ? "bg-emerald-500/10 border-emerald-500/50 shadow-sm"
+              : "bg-transparent border-black/[0.08] dark:border-white/[0.08] hover:border-black/25 dark:hover:border-white/25 hover:bg-black/[0.015] dark:hover:bg-white/[0.015]"
+          }`}
+        >
+          <div className="flex items-center justify-between w-full mb-1.5">
+            <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-foreground">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>GFG</span>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* CodeChef Card */}
-        <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-orange-500/40 hover:shadow-xl hover:shadow-orange-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
-          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <CardHeader className="pb-2 pt-5 px-5">
-            <CardTitle className="text-sm font-mono flex items-center justify-between">
-              <span className="flex items-center gap-2 font-bold text-foreground">
-                <Star className="w-4 h-4 text-orange-500 dark:text-orange-400 animate-pulse" />{" "}
-                CodeChef
-              </span>
-              <a
-                href={PLATFORM_LINKS.CodeChef}
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted-foreground hover:text-orange-500 transition-colors p-1 rounded-md hover:bg-orange-500/10"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
-            {/* Dual Ratings Display: CP / Starters & DSA */}
-            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-muted/40 border border-border/40 shadow-inner">
-              <div>
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
-                  Starters (CP)
-                </span>
-                <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-orange-600 dark:text-orange-400">
-                    {data.codechef.rating || "—"}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="font-mono text-[9px] px-1 py-0 border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold"
-                  >
-                    {data.codechef.rank || "1★"}
-                  </Badge>
-                </div>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  Max: {data.codechef.maxRating || "—"}
-                </span>
-              </div>
-              <div className="border-l border-border/25 pl-3">
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
-                  DSA Rating
-                </span>
-                <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">
-                    {data.codechef.dsaRating || "—"}
-                  </span>
-                </div>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  Max: {data.codechef.dsaMaxRating || "—"}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
-              <StatRow
-                label="Contests Attended"
-                value={
-                  data.codechef.contests
-                    ? `${data.codechef.contests} (${data.codechef.startersContests || 0} CP, ${data.codechef.dsaContests || 0} DSA)`
-                    : "—"
-                }
-              />
-              <StatRow
-                label="Global Rank"
-                value={
-                  data.codechef.globalRank
-                    ? `#${data.codechef.globalRank}`
-                    : "—"
-                }
-              />
-              <StatRow
-                label="Country Rank"
-                value={
-                  data.codechef.countryRank
-                    ? `#${data.codechef.countryRank}`
-                    : "—"
-                }
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* GFG Card */}
-        <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-emerald-500/40 hover:shadow-xl hover:shadow-emerald-500/5 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
-          <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <CardHeader className="pb-2 pt-5 px-5">
-            <CardTitle className="text-sm font-mono flex items-center justify-between">
-              <span className="flex items-center gap-2 font-bold text-foreground">
-                <Award className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />{" "}
-                GeeksForGeeks
-              </span>
-              <a
-                href={PLATFORM_LINKS.GFG}
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted-foreground hover:text-emerald-500 transition-colors p-1 rounded-md hover:bg-emerald-500/10"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 flex flex-col justify-between flex-1">
-            {/* GFG Top Box */}
-            <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-xl bg-muted/40 border border-border/40 shadow-inner">
-              <div>
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
-                  Coding Score
-                </span>
-                <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">
-                    {data.gfg.codingScore ?? data.gfg.rating ?? "—"}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="font-mono text-[9px] px-1 py-0 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold"
-                  >
-                    Coder
-                  </Badge>
-                </div>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  GeeksforGeeks
-                </span>
-              </div>
-              <div className="border-l border-border/25 pl-3">
-                <span className="text-[9.5px] text-muted-foreground font-mono block mb-1 uppercase tracking-wider font-bold">
-                  Practice Streak
-                </span>
-                <div className="flex items-baseline gap-1.5 mb-0.5">
-                  <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">
-                    {data.gfg.streak ? `${data.gfg.streak}d` : "—"}
-                  </span>
-                </div>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  {data.gfg.problemsSolved ?? data.gfg.solved ?? 0} Solved
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-auto space-y-1 pt-3 border-t border-border/15">
-              <StatRow
-                label="Problems Solved"
-                value={data.gfg.problemsSolved ?? data.gfg.solved ?? "—"}
-              />
-              <StatRow
-                label="Monthly Streak"
-                value={data.gfg.streak ? `${data.gfg.streak} days` : "—"}
-              />
-              <StatRow label="Rank" value="Coder" />
-            </div>
-          </CardContent>
-        </Card>
+            <a
+              href={PLATFORM_LINKS.gfg}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-muted-foreground hover:text-emerald-500 transition-colors p-0.5"
+              aria-label="Open GFG Profile"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+          <div className="text-xl sm:text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400">
+            {data.gfg?.codingScore ?? data.gfg?.rating ?? "—"}
+          </div>
+          <div className="text-[11px] font-mono text-muted-foreground truncate mt-0.5">
+            {data.gfg?.problemsSolved ?? data.gfg?.solved ?? 0} solved • {data.gfg?.streak ? `${data.gfg.streak}d 🔥` : "Active"}
+          </div>
+        </button>
       </div>
 
-      {/* Ratings Progression Chart Card */}
-      <Card className="bg-card/80 backdrop-blur-sm border-border/80 hover:border-primary/30 transition-all duration-300 p-6 shadow-lg">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <h3 className="text-sm font-bold font-mono text-foreground flex items-center gap-2">
-              <Activity className="w-4 h-4 text-primary" /> Rating Progression
-            </h3>
-            <p className="text-[11px] text-muted-foreground font-mono mt-0.5">
-              Interactive history of rated contests across platforms.
-            </p>
+      {/* Ratings Progression Plot & Platform Details */}
+      <div className="p-4 sm:p-5 rounded-2xl border border-black/10 dark:border-white/10 bg-transparent">
+        {/* Chart Top Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div className="flex items-center gap-2">
+            <Activity className="w-4 h-4 text-primary" />
+            <span className="text-xs sm:text-sm font-bold font-mono text-foreground capitalize">
+              {selectedPlatform === "gfg"
+                ? "GeeksforGeeks Overview"
+                : `${selectedPlatform.replace("-", " ")} Rating Timeline`}
+            </span>
           </div>
 
-          {/* Organized Platform Selection Tabs - Theme Optimized */}
-          <div className="flex flex-wrap bg-muted/50 p-1.5 rounded-xl border border-border/50 w-full sm:w-fit gap-1 shadow-inner backdrop-blur-sm">
-            <button
-              onClick={() => setActiveTab("leetcode")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
-                activeTab === "leetcode"
-                  ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold shadow-sm border border-amber-500/40"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
-              LeetCode
-            </button>
-            <button
-              onClick={() => setActiveTab("codeforces")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
-                activeTab === "codeforces"
-                  ? "bg-blue-500/15 text-blue-600 dark:text-blue-400 font-bold shadow-sm border border-blue-500/40"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
-              Codeforces
-            </button>
-            <button
-              onClick={() => setActiveTab("codechef")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
-                activeTab === "codechef"
-                  ? "bg-orange-500/15 text-orange-600 dark:text-orange-400 font-bold shadow-sm border border-orange-500/40"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0"></span>
-              CodeChef (CP)
-            </button>
-            <button
-              onClick={() => setActiveTab("codechef-dsa")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg transition-all cursor-pointer ${
-                activeTab === "codechef-dsa"
-                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold shadow-sm border border-emerald-500/40"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-              CodeChef (DSA)
-            </button>
-          </div>
-        </div>
-
-        <div className="h-64 w-full relative pt-2">
-          <div className="absolute top-0 left-0 text-[10px] text-muted-foreground/80 font-mono uppercase tracking-wider font-semibold">
-            Rating ↑
-          </div>
-          {activeHistory.length >= 1 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={activeHistory}
-                margin={{ top: 15, right: 10, bottom: 5, left: -10 }}
+          {/* Sub-Track Switcher (for CodeChef Starters vs DSA) */}
+          {(selectedPlatform === "codechef" || selectedPlatform === "codechef-dsa") && (
+            <div className="inline-flex items-center p-0.5 rounded-lg border border-black/10 dark:border-white/10 bg-muted/20 text-xs font-mono self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => setSelectedPlatform("codechef")}
+                className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  selectedPlatform === "codechef"
+                    ? "bg-orange-500/20 text-orange-600 dark:text-orange-400 font-bold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                <defs>
-                  <linearGradient
-                    id="colorRatingGrad"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="5%"
-                      stopColor={activeColor}
-                      stopOpacity={0.35}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor={activeColor}
-                      stopOpacity={0.0}
-                    />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={
-                    isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"
-                  }
-                  vertical={false}
-                />
-                <XAxis dataKey="title" hide={true} />
-                <YAxis
-                  stroke={isDark ? "#a1a1aa" : "#64748b"}
-                  fontSize={11}
-                  fontWeight={600}
-                  tickLine={false}
-                  axisLine={false}
-                  domain={["auto", "auto"]}
-                  tick={{
-                    fill: isDark ? "#a1a1aa" : "#64748b",
-                    fontSize: 11,
-                    fontFamily: "monospace",
-                  }}
-                  width={45}
-                />
-                <RTooltip {...tooltipStyle} />
-                <Area
-                  type="monotone"
-                  dataKey="rating"
-                  stroke={activeColor}
-                  strokeWidth={2.5}
-                  fillOpacity={1}
-                  fill="url(#colorRatingGrad)"
-                  dot={{ r: 3, fill: activeColor, strokeWidth: 0 }}
-                  activeDot={{
-                    r: 6,
-                    stroke: activeColor,
-                    strokeWidth: 2,
-                    fill: isDark ? "#111" : "#fff",
-                  }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-full flex items-center justify-center border border-dashed border-border/40 rounded-lg">
-              <span className="text-xs text-muted-foreground font-mono">
-                Insufficient contest history to plot progression.
-              </span>
+                Starters CP
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedPlatform("codechef-dsa")}
+                className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+                  selectedPlatform === "codechef-dsa"
+                    ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                DSA Track
+              </button>
             </div>
           )}
+
+          {/* Direct Profile Link */}
+          <a
+            href={
+              selectedPlatform === "codechef-dsa"
+                ? PLATFORM_LINKS.codechef
+                : PLATFORM_LINKS[selectedPlatform] || "#"
+            }
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs font-mono text-muted-foreground hover:text-foreground inline-flex items-center gap-1 self-start sm:self-auto"
+          >
+            <span>View Full Profile</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
         </div>
-      </Card>
+
+        {/* The Ratings Plot */}
+        {selectedPlatform !== "gfg" ? (
+          <div className="h-56 sm:h-64 w-full relative pt-1">
+            <div className="absolute top-0 left-0 text-[10px] text-muted-foreground/75 font-mono uppercase tracking-wider font-semibold">
+              Rating ↑
+            </div>
+            {activeHistory.length >= 1 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={activeHistory}
+                  margin={{ top: 15, right: 10, bottom: 5, left: -10 }}
+                >
+                  <defs>
+                    <linearGradient
+                      id="cpRatingGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="5%"
+                        stopColor={activeColor}
+                        stopOpacity={0.35}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor={activeColor}
+                        stopOpacity={0.0}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={
+                      isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"
+                    }
+                    vertical={false}
+                  />
+                  <XAxis dataKey="title" hide={true} />
+                  <YAxis
+                    stroke={isDark ? "#a1a1aa" : "#64748b"}
+                    fontSize={11}
+                    fontWeight={600}
+                    tickLine={false}
+                    axisLine={false}
+                    domain={["auto", "auto"]}
+                    tick={{
+                      fill: isDark ? "#a1a1aa" : "#64748b",
+                      fontSize: 11,
+                      fontFamily: "monospace",
+                    }}
+                    width={45}
+                  />
+                  <RTooltip {...tooltipStyle} />
+                  <Area
+                    type="monotone"
+                    dataKey="rating"
+                    stroke={activeColor}
+                    strokeWidth={2.2}
+                    fillOpacity={1}
+                    fill="url(#cpRatingGradient)"
+                    dot={{ r: 3, fill: activeColor, strokeWidth: 0 }}
+                    activeDot={{
+                      r: 5,
+                      stroke: activeColor,
+                      strokeWidth: 2,
+                      fill: isDark ? "#111" : "#fff",
+                    }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center border border-dashed border-border/30 rounded-xl">
+                <span className="text-xs text-muted-foreground font-mono">
+                  Contest progression history synchronizing…
+                </span>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* GFG Practice Overview */
+          <div className="h-56 sm:h-64 w-full flex flex-col justify-center items-center text-center p-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 mb-3">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <div className="text-lg font-bold font-mono text-foreground mb-1">
+              GeeksforGeeks Verified Coder
+            </div>
+            <p className="text-xs text-muted-foreground font-mono max-w-sm mb-4">
+              Regular participant in Problem of the Day (POTD) and data structure algorithm tracks with active consistency streak.
+            </p>
+            <div className="flex items-center gap-3 font-mono text-xs">
+              <span className="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold">
+                {data.gfg?.problemsSolved ?? data.gfg?.solved ?? 0} Problems Solved
+              </span>
+              <span className="px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
+                <Flame className="w-3.5 h-3.5 text-orange-500" />
+                {data.gfg?.streak ? `${data.gfg.streak}d Streak` : "Active"}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Selected Platform Quick Metrics Footer */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-4 mt-2 border-t border-border/20 text-xs font-mono">
+          {selectedPlatform === "leetcode" && (
+            <>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Easy Solved</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">{easyCount}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Medium Solved</span>
+                <span className="font-bold text-amber-600 dark:text-amber-400">{mediumCount}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Hard Solved</span>
+                <span className="font-bold text-rose-600 dark:text-rose-400">{hardCount}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Contests</span>
+                <span className="font-bold text-foreground">{data.leetcode?.contests || "—"}</span>
+              </div>
+            </>
+          )}
+
+          {selectedPlatform === "codeforces" && (
+            <>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Current Rank</span>
+                <span className="font-bold text-sky-600 dark:text-sky-400 capitalize">{data.codeforces?.rank || "Newbie"}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Max Rating</span>
+                <span className="font-bold text-foreground">{data.codeforces?.maxRating || "—"}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Problems Solved</span>
+                <span className="font-bold text-foreground">{data.codeforces?.solved || "—"}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Contests</span>
+                <span className="font-bold text-foreground">{data.codeforces?.contests || 0}</span>
+              </div>
+            </>
+          )}
+
+          {(selectedPlatform === "codechef" || selectedPlatform === "codechef-dsa") && (
+            <>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Global Rank</span>
+                <span className="font-bold text-foreground">#{data.codechef?.globalRank || "—"}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Country Rank</span>
+                <span className="font-bold text-foreground">#{data.codechef?.countryRank || "—"}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Max Rating</span>
+                <span className="font-bold text-orange-600 dark:text-orange-400">{data.codechef?.maxRating || "—"}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Total Contests</span>
+                <span className="font-bold text-foreground">{data.codechef?.contests || "—"}</span>
+              </div>
+            </>
+          )}
+
+          {selectedPlatform === "gfg" && (
+            <>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Coding Score</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">{data.gfg?.codingScore || "—"}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Problems Solved</span>
+                <span className="font-bold text-foreground">{data.gfg?.problemsSolved || "—"}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Streak</span>
+                <span className="font-bold text-foreground">{data.gfg?.streak ? `${data.gfg.streak} days` : "—"}</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-muted-foreground block">Status</span>
+                <span className="font-bold text-foreground">Active</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </section>
   );
 }
