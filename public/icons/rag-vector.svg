@@ -1,0 +1,28 @@
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ragGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="ragGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+  </defs>
+  <!-- Database Base Cylinders -->
+  <ellipse cx="12" cy="6" rx="8.5" ry="3.2" stroke="url(#ragGrad1)" stroke-width="1.6" fill="url(#ragGrad1)" fill-opacity="0.12"/>
+  <path d="M3.5 6v5.5c0 1.77 3.8 3.2 8.5 3.2s8.5-1.43 8.5-3.2V6" stroke="url(#ragGrad1)" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M3.5 11.5v5.5c0 1.77 3.8 3.2 8.5 3.2s8.5-1.43 8.5-3.2v-5.5" stroke="url(#ragGrad1)" stroke-width="1.6" stroke-linecap="round"/>
+  
+  <!-- Vector Embeddings & Similarity Search Rays -->
+  <!-- Center query vector node -->
+  <circle cx="12" cy="11.5" r="1.8" fill="url(#ragGrad2)"/>
+  <!-- Vector points in embedding space -->
+  <circle cx="7.2" cy="9.2" r="1.3" fill="#38BDF8"/>
+  <circle cx="16.8" cy="10" r="1.3" fill="#A78BFA"/>
+  <circle cx="14.5" cy="14.8" r="1.2" fill="#34D399"/>
+  <!-- Similarity connection lines -->
+  <path d="M12 11.5L7.2 9.2M12 11.5L16.8 10M12 11.5L14.5 14.8" stroke="url(#ragGrad2)" stroke-width="1.2" stroke-dasharray="1.5 1.5" stroke-linecap="round"/>
+  <!-- Top vector search spark -->
+  <path d="M12 3.2v1.6M10.8 4h2.4" stroke="#38BDF8" stroke-width="1" stroke-linecap="round"/>
+</svg>

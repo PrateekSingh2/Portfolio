@@ -18,6 +18,31 @@ export interface Project {
 
 export const PROJECTS_DATA: Project[] = [
   {
+    id: "schema-ai",
+    title: "Schema AI: AI Development & NLP Engine",
+    category: "AI/ML/DL",
+    featured: true,
+    thumbnail: "/images/projects/schema-ai.png",
+    shortDesc:
+      "Intelligent natural language to SQL/GraphQL translation engine utilizing LangGraph and Vector RAG for context-aware generative AI query outputs.",
+    description:
+      "Engineered an intelligent natural language to SQL/GraphQL translation engine utilizing LangGraph and Vector RAG for context-aware generative AI query outputs. Developed interactive database schema visualizations using React Flow and integrated enterprise-grade execution guardrails.",
+    challenges:
+      "Architecting reliable natural language to multi-dialect query compilation with context-aware schema embeddings, handling dynamic AST validation, and enforcing zero-trust execution guardrails to prevent unauthorized mutation operations.",
+    metrics:
+      "Sub-100ms translation latency with 95%+ query compilation accuracy, zero unauthorized mutation bypasses, and real-time interactive schema graph rendering.",
+    tech: [
+      "Next.js",
+      "LangGraph",
+      "Vector RAG",
+      "Python",
+      "Supabase",
+      "React Flow",
+    ],
+    github: "https://github.com/PrateekSingh2/SchemaAI",
+    live: "https://ai-schema.netlify.app/",
+  },
+  {
     id: "algolib",
     title: "AlgoLib: DSA Visualizer and Learning Platform",
     category: "WebDev",

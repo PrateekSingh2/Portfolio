@@ -1,24 +1,23 @@
 "use client";
 
 import { HeroSection } from "@/components/sections/HeroSection";
-import { EducationExperience } from "@/components/sections/EducationExperience";
-import { EngineeringSnapshot } from "@/components/sections/EngineeringSnapshot";
-import { CPDashboard } from "@/components/sections/CPDashboard";
-import { Certifications } from "@/components/sections/Certifications";
-import { CoreSkills } from "@/components/sections/CoreSkills";
 import { GithubAnalytics } from "@/components/sections/GithubAnalytics";
+import { ExperienceSection } from "@/components/sections/ExperienceSection";
+import { EducationSection } from "@/components/sections/EducationSection";
+import { CPDashboard } from "@/components/sections/CPDashboard";
+import { CoreSkills } from "@/components/sections/CoreSkills";
 import { FeaturedProjects } from "@/components/sections/FeaturedProjects";
+import { DailyQuote } from "@/components/sections/DailyQuote";
 import { Footer } from "@/components/layout/Footer";
 import { Spotlight } from "@/components/ui/Spotlight";
-import { InteractiveBackground } from "@/components/ui/InteractiveBackground";
 import { Preloader } from "@/components/ui/Preloader";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 function Divider() {
   return (
-    <div className="max-w-3xl mx-auto w-full px-4">
-      <div className="border-t border-border/20" />
+    <div className="max-w-3xl mx-auto w-full px-4 my-3 sm:my-5">
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-foreground/25 dark:via-white/20 to-transparent" />
     </div>
   );
 }
@@ -48,9 +47,8 @@ export default function Home() {
         {!booted && <Preloader onComplete={handleBootComplete} />}
       </AnimatePresence>
 
-      <div className="flex flex-col min-h-screen bg-background text-foreground relative overflow-hidden transition-colors duration-300">
+      <div className="flex flex-col min-h-screen bg-transparent text-foreground relative overflow-hidden transition-colors duration-300">
         <Spotlight />
-        <InteractiveBackground />
 
         {booted && (
           <motion.div
@@ -59,22 +57,45 @@ export default function Home() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col w-full"
           >
+            {/* 1. Hero Section */}
             <HeroSection />
-            <Divider />
-            <EducationExperience />
-            <Divider />
-            <EngineeringSnapshot />
-            <Divider />
-            <CPDashboard />
-            <Divider />
-            <CoreSkills />
-            <Divider />
+
+            {/* 2. GitHub Activity Heatmap (Directly below Hero without labels) */}
             <GithubAnalytics />
+
             <Divider />
+
+            {/* 3. Work Experience (Swapped: Experience first) */}
+            <ExperienceSection />
+
+            <Divider />
+
+            {/* 4. Education (Swapped: Education second) */}
+            <EducationSection />
+
+            <Divider />
+
+            {/* 5. Competitive Programming Dashboard */}
+            <CPDashboard />
+
+            <Divider />
+
+            {/* 6. Core Skills */}
+            <CoreSkills />
+
+            <Divider />
+
+            {/* 7. Featured Projects */}
             <FeaturedProjects />
+
             <Divider />
-            <Certifications />
+
+            {/* 8. Daily Quote */}
+            <DailyQuote />
+
             <Divider />
+
+            {/* 9. Footer */}
             <Footer />
           </motion.div>
         )}
