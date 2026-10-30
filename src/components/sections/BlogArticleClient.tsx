@@ -16,6 +16,7 @@ import {
   ChevronDown,
   ChevronUp,
   ListOrdered,
+  Eye,
 } from "lucide-react";
 import Prism from "prismjs";
 import "prismjs/components/prism-python";
@@ -61,7 +62,10 @@ function tokenizeToLines(code: string, grammar?: Prism.Grammar): CodeToken[][] {
       for (let i = 0; i < parts.length; i++) {
         if (i > 0) lines.push([]);
         if (parts[i]) {
-          lines[lines.length - 1].push({ type: token.type || parentType, content: parts[i] });
+          lines[lines.length - 1].push({
+            type: token.type || parentType,
+            content: parts[i],
+          });
         }
       }
     } else {
@@ -138,7 +142,8 @@ function CodeBlock({ className, children, node, inline, ...props }: any) {
   const meta: string = node?.data?.meta || "";
   if (meta) {
     const titleMatch =
-      /title=["']([^"']+)["']/.exec(meta) || /filename=["']([^"']+)["']/.exec(meta);
+      /title=["']([^"']+)["']/.exec(meta) ||
+      /filename=["']([^"']+)["']/.exec(meta);
     if (titleMatch) {
       title = titleMatch[1];
     } else if (meta.startsWith(":")) {
@@ -197,7 +202,8 @@ function CodeBlock({ className, children, node, inline, ...props }: any) {
   };
 
   const displayLanguage =
-    languageLabels[lang.toLowerCase()] || (lang ? lang.toUpperCase() : "Markdown");
+    languageLabels[lang.toLowerCase()] ||
+    (lang ? lang.toUpperCase() : "Markdown");
 
   const handleCopy = () => {
     navigator.clipboard.writeText(rawCodeString);
@@ -229,7 +235,9 @@ function CodeBlock({ className, children, node, inline, ...props }: any) {
         {/* Left: Chevron Down + Language */}
         <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-200 font-semibold text-xs sm:text-sm shrink-0">
           <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" />
-          <span className="truncate max-w-[90px] sm:max-w-none">{displayLanguage}</span>
+          <span className="truncate max-w-[90px] sm:max-w-none">
+            {displayLanguage}
+          </span>
         </div>
 
         {/* Center: Title of the snippet */}
@@ -273,15 +281,13 @@ function CodeBlock({ className, children, node, inline, ...props }: any) {
                 </span>
               )}
               <span className="table-cell whitespace-pre font-mono text-xs sm:text-[13px] leading-relaxed">
-                {line.length === 0 ? (
-                  "\u00A0"
-                ) : (
-                  line.map((tok, tIdx) => (
-                    <span key={tIdx} className={getTokenClass(tok.type)}>
-                      {tok.content}
-                    </span>
-                  ))
-                )}
+                {line.length === 0
+                  ? "\u00A0"
+                  : line.map((tok, tIdx) => (
+                      <span key={tIdx} className={getTokenClass(tok.type)}>
+                        {tok.content}
+                      </span>
+                    ))}
               </span>
             </div>
           ))}
@@ -291,11 +297,27 @@ function CodeBlock({ className, children, node, inline, ...props }: any) {
   );
 }
 
+// Helper to recursively extract pure text from React nodes
+function getNodeText(node: React.ReactNode): string {
+  if (node == null) return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(getNodeText).join("");
+  if (
+    React.isValidElement(node) &&
+    node.props &&
+    (node.props as { children?: React.ReactNode }).children
+  ) {
+    return getNodeText((node.props as { children?: React.ReactNode }).children);
+  }
+  return "";
+}
+
 // Slugify heading for anchor tags
 function slugify(text: string) {
   return text
     .toLowerCase()
     .replace(/[^\w\s-]/g, "")
+    .trim()
     .replace(/\s+/g, "-");
 }
 
@@ -304,7 +326,42 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
   const [copiedLink, setCopiedLink] = React.useState(false);
   const [isContentExpanded, setIsContentExpanded] = React.useState(true);
   const [isMobileTocOpen, setIsMobileTocOpen] = React.useState(false);
+  const [views, setViews] = React.useState<number | null>(null);
   const tocContainerRef = React.useRef<HTMLDivElement>(null);
+
+  // Track and update article-specific view counter (deduplicated per session)
+  React.useEffect(() => {
+    if (!post?.slug || typeof window === "undefined") return;
+
+    const storageKey = `portfolio_article_viewed_${post.slug}`;
+    const hasViewed = sessionStorage.getItem(storageKey);
+
+    if (!hasViewed) {
+      sessionStorage.setItem(storageKey, "true");
+      fetch(`/api/blog/${encodeURIComponent(post.slug)}/views`, {
+        method: "POST",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (typeof data?.views === "number") setViews(data.views);
+        })
+        .catch(() => {
+          fetch(`/api/blog/${encodeURIComponent(post.slug)}/views`)
+            .then((res) => res.json())
+            .then((data) => {
+              if (typeof data?.views === "number") setViews(data.views);
+            })
+            .catch(() => setViews(null));
+        });
+    } else {
+      fetch(`/api/blog/${encodeURIComponent(post.slug)}/views`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (typeof data?.views === "number") setViews(data.views);
+        })
+        .catch(() => setViews(null));
+    }
+  }, [post?.slug]);
 
   // Total word count calculation
   const wordCount = React.useMemo(() => {
@@ -317,10 +374,11 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
   const tableOfContents = React.useMemo(() => {
     if (!post?.content) return [];
     const headings: { level: number; text: string; id: string }[] = [];
-    const lines = post.content.split("\n");
+    const lines = post.content.split(/\r?\n/);
 
     for (const line of lines) {
-      const match = /^(#{2,3})\s+(.+)$/.exec(line);
+      const trimmed = line.trim();
+      const match = /^(#{2,3})\s+(.+)$/.exec(trimmed);
       if (match) {
         const level = match[1].length;
         const text = match[2].trim().replace(/\*\*/g, "").replace(/`/g, "");
@@ -329,7 +387,7 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
       }
     }
     return headings;
-  }, [post?.content]);
+  }, [post.content]);
 
   // Group headings into parent H2 and internal H3 subheadings
   const groupedHeadings = React.useMemo(() => {
@@ -387,13 +445,16 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
       if (!container) return;
 
       // If at the very first heading, smoothly scroll container to top
-      if (tableOfContents.length > 0 && activeSection === tableOfContents[0].id) {
+      if (
+        tableOfContents.length > 0 &&
+        activeSection === tableOfContents[0].id
+      ) {
         container.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
 
       const activeLink = container.querySelector<HTMLElement>(
-        `[href="#${activeSection}"]`
+        `[href="#${activeSection}"]`,
       );
       if (!activeLink) return;
 
@@ -515,7 +576,9 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
               {post.readingTime && (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.07] shrink-0">
                   <Clock className="w-3.5 h-3.5 text-muted-foreground/70" />
-                  <span>{post.readingTime.replace(/\s*read\s*/i, "").trim()}</span>
+                  <span>
+                    {post.readingTime.replace(/\s*read\s*/i, "").trim()}
+                  </span>
                 </span>
               )}
 
@@ -526,6 +589,17 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
                   <span>{wordCount.toLocaleString()} words</span>
                 </span>
               )}
+
+              {/* Article View Counter */}
+              <span
+                title="Article views"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.07] shrink-0"
+              >
+                <Eye className="w-3.5 h-3.5 text-muted-foreground/70" />
+                <span>
+                  {views !== null ? `${views.toLocaleString()} views` : "..."}
+                </span>
+              </span>
             </div>
           </div>
         </header>
@@ -620,7 +694,7 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
                   );
                 },
                 h2({ children }) {
-                  const text = String(children);
+                  const text = getNodeText(children);
                   const id = slugify(text);
                   return (
                     <h2
@@ -639,7 +713,7 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
                   );
                 },
                 h3({ children }) {
-                  const text = String(children);
+                  const text = getNodeText(children);
                   const id = slugify(text);
                   return (
                     <h3
@@ -760,11 +834,13 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
                   {groupedHeadings.length > 0 ? (
                     <nav className="space-y-1">
                       {groupedHeadings.map((group) => {
-                        const isDirectParentActive = activeSection === group.parent.id;
+                        const isDirectParentActive =
+                          activeSection === group.parent.id;
                         const isSubActive = group.subheadings.some(
-                          (sub) => sub.id === activeSection
+                          (sub) => sub.id === activeSection,
                         );
-                        const isGroupActive = isDirectParentActive || isSubActive;
+                        const isGroupActive =
+                          isDirectParentActive || isSubActive;
 
                         return (
                           <div key={group.parent.id} className="space-y-0.5">
@@ -775,8 +851,8 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
                                 isDirectParentActive
                                   ? "border-primary text-primary font-semibold bg-primary/5"
                                   : isGroupActive
-                                  ? "border-primary/50 text-foreground font-medium"
-                                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
+                                    ? "border-primary/50 text-foreground font-medium"
+                                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30"
                               }`}
                             >
                               {group.parent.text}
@@ -786,7 +862,8 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
                             {isGroupActive && group.subheadings.length > 0 && (
                               <div className="pl-3.5 border-l border-black/5 dark:border-white/5 ml-2.5 my-1 space-y-0.5">
                                 {group.subheadings.map((sub) => {
-                                  const isCurrentSubActive = activeSection === sub.id;
+                                  const isCurrentSubActive =
+                                    activeSection === sub.id;
                                   return (
                                     <a
                                       key={sub.id}

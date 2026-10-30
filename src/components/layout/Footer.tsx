@@ -1,42 +1,50 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { Terminal, Eye } from "lucide-react";
 import { GithubIcon } from "@/components/icons/GithubIcon";
 import { WaterText } from "@/components/ui/WaterText";
 
 export function Footer() {
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
   const year = new Date().getFullYear();
   const [visits, setVisits] = React.useState<number | null>(null);
 
   React.useEffect(() => {
+    // Only fetch and increment visits counter on the home page
+    if (!isHomePage) return;
+
     // Only increment once per browser tab/session
-    const hasVisited = typeof window !== "undefined" && sessionStorage.getItem("portfolio_visited");
+    const hasVisited =
+      typeof window !== "undefined" &&
+      sessionStorage.getItem("portfolio_home_visited");
 
     if (!hasVisited) {
       if (typeof window !== "undefined") {
-        sessionStorage.setItem("portfolio_visited", "true");
+        sessionStorage.setItem("portfolio_home_visited", "true");
       }
       fetch("/api/visits", { method: "POST" })
         .then((res) => res.json())
         .then((data) => {
-          if (typeof data.visits === "number") setVisits(data.visits);
+          if (typeof data?.visits === "number") setVisits(data.visits);
         })
         .catch(() => {
           fetch("/api/visits")
             .then((r) => r.json())
-            .then((d) => setVisits(d.visits))
+            .then((d) => setVisits(d?.visits ?? null))
             .catch(() => setVisits(null));
         });
     } else {
       fetch("/api/visits")
         .then((res) => res.json())
         .then((data) => {
-          if (typeof data.visits === "number") setVisits(data.visits);
+          if (typeof data?.visits === "number") setVisits(data.visits);
         })
         .catch(() => setVisits(null));
     }
-  }, []);
+  }, [isHomePage]);
 
   return (
     <footer className="mt-6 sm:mt-10 pb-4 px-4 w-full overflow-hidden flex flex-col items-center">
@@ -48,16 +56,18 @@ export function Footer() {
         </div>
 
         <div className="flex items-center gap-2.5 text-[11px] font-mono text-muted-foreground">
-          {/* Small Realtime Visit Counter (Eye + Count only) */}
-          <div
-            title="Total visits"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-black/[0.04] dark:border-white/[0.05] bg-white/35 dark:bg-[#101620]/45 backdrop-blur-md shadow-xs text-muted-foreground"
-          >
-            <Eye className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-foreground font-semibold">
-              {visits !== null ? visits.toLocaleString() : "..."}
-            </span>
-          </div>
+          {/* Small Realtime Visit Counter (Eye + Count only) - Only displayed on Home Page */}
+          {isHomePage && (
+            <div
+              title="Total visits"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-black/[0.04] dark:border-white/[0.05] bg-white/35 dark:bg-[#101620]/45 backdrop-blur-md shadow-xs text-muted-foreground"
+            >
+              <Eye className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-foreground font-semibold">
+                {visits !== null ? visits.toLocaleString() : "..."}
+              </span>
+            </div>
+          )}
 
           <a
             href="https://github.com/PrateekSingh2/Portfolio"

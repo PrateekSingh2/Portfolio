@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 
-const RTDB_URL =
-  "https://algolib-e0567-default-rtdb.asia-southeast1.firebasedatabase.app/Portfolio/Visits.json";
+const RTDB_BASE =
+  process.env.FIREBASE_RTDB_URL?.replace(/\/+$/, "") ||
+  "https://algolib-e0567-default-rtdb.asia-southeast1.firebasedatabase.app";
+const RTDB_URL = `${RTDB_BASE}/Portfolio/Visits.json`;
 
 export async function GET() {
   try {
