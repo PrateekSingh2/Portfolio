@@ -4,85 +4,102 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  Search,
-  Tag,
-  BookOpen,
-  CornerDownLeft,
-  Calendar,
-  X,
-} from "lucide-react";
+import { Search, Tag, X, FileText } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
 import { BlogPost } from "@/lib/blogs";
 
-export function BlogListClient({
-  initialPosts,
-}: {
-  initialPosts: BlogPost[];
-}) {
+export function BlogListClient({ initialPosts }: { initialPosts: BlogPost[] }) {
   const router = useRouter();
   const [posts] = React.useState<BlogPost[]>(initialPosts);
+
+  // Command Palette Popup Modal State
   const [openSearch, setOpenSearch] = React.useState(false);
   const [modalSearch, setModalSearch] = React.useState("");
   const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const [expandedTags, setExpandedTags] = React.useState<Record<string, boolean>>({});
+  const [expandedTags, setExpandedTags] = React.useState<
+    Record<string, boolean>
+  >({});
+
   const modalInputRef = React.useRef<HTMLInputElement>(null);
+  const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
   const toggleTags = (slug: string) => {
     setExpandedTags((prev) => ({ ...prev, [slug]: !prev[slug] }));
   };
+
+  const closeModal = React.useCallback(() => {
+    setOpenSearch(false);
+    setModalSearch("");
+    setSelectedIndex(0);
+  }, []);
 
   // Global Ctrl + K / Cmd + K keyboard listener
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpenSearch((prev) => !prev);
+        setOpenSearch((prev) => {
+          if (prev) {
+            setModalSearch("");
+            setSelectedIndex(0);
+          }
+          return !prev;
+        });
       }
       if (e.key === "Escape") {
-        setOpenSearch(false);
+        closeModal();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [closeModal]);
 
-  // Auto focus input when modal opens
+  // Auto focus search input when modal opens
   React.useEffect(() => {
     if (openSearch) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         modalInputRef.current?.focus();
+        modalInputRef.current?.select();
       }, 50);
-    } else {
-      setModalSearch("");
-      setSelectedIndex(0);
+      return () => clearTimeout(timer);
     }
   }, [openSearch]);
 
   // Filter posts in modal search
   const modalFilteredPosts = React.useMemo(() => {
-    if (!modalSearch.trim()) return posts;
-    const q = modalSearch.toLowerCase();
+    const q = modalSearch.trim().toLowerCase();
+    if (!q) return posts;
     return posts.filter(
-      (p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.excerpt.toLowerCase().includes(q) ||
-        p.tags.some((t) => t.toLowerCase().includes(q))
+      (post) =>
+        post.title.toLowerCase().includes(q) ||
+        post.excerpt.toLowerCase().includes(q) ||
+        post.tags?.some((t) => t.toLowerCase().includes(q)) ||
+        post.author.toLowerCase().includes(q),
     );
   }, [posts, modalSearch]);
 
-  // Keyboard navigation within the GitHub-style search dialog
+  // Auto-scroll selected item into view when navigating with Arrow keys
+  React.useEffect(() => {
+    if (itemRefs.current[selectedIndex]) {
+      itemRefs.current[selectedIndex]?.scrollIntoView({
+        block: "nearest",
+        behavior: "smooth",
+      });
+    }
+  }, [selectedIndex]);
+
+  // Keyboard navigation within the search dialog
   const handleModalKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedIndex((prev) =>
-        prev < modalFilteredPosts.length - 1 ? prev + 1 : 0
+        prev < modalFilteredPosts.length - 1 ? prev + 1 : 0,
       );
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIndex((prev) =>
-        prev > 0 ? prev - 1 : modalFilteredPosts.length - 1
+        prev > 0 ? prev - 1 : modalFilteredPosts.length - 1,
       );
     } else if (e.key === "Enter") {
       e.preventDefault();
@@ -97,13 +114,15 @@ export function BlogListClient({
   return (
     <div className="min-h-screen flex flex-col justify-between pt-24 sm:pt-28 px-4 font-sans">
       <div className="max-w-3xl mx-auto w-full">
-        {/* Top Header: Heading "Blog Posts" with Small GitHub-style Search Button */}
+        {/* ================================================================= */}
+        {/* Top Header: Heading "Blog Posts" with Small Compact Search Button */}
+        {/* ================================================================= */}
         <div className="flex items-center justify-between gap-4 mb-8 pb-3 border-b border-black/[0.08] dark:border-white/[0.08]">
           <h1 className="text-2xl sm:text-3xl font-bold font-sans tracking-tight text-foreground">
             Blog Posts
           </h1>
 
-          {/* Small compact search button on the side with Ctrl + K shortcut badge */}
+          {/* Compact search button with Ctrl + K shortcut badge */}
           <button
             type="button"
             onClick={() => setOpenSearch(true)}
@@ -121,20 +140,20 @@ export function BlogListClient({
           </button>
         </div>
 
-        {/* Article List directly placed on the page without box wrapper */}
+        {/* ================================================================= */}
+        {/* Article List directly placed on the page                          */}
+        {/* ================================================================= */}
         {posts.length > 0 ? (
           <div>
-            {posts.map((post, idx) => (
+            {posts.map((post) => (
               <React.Fragment key={post.slug}>
                 <article className="py-2">
                   {/* Title */}
                   <h2 className="text-xl sm:text-2xl font-bold font-sans tracking-tight text-foreground hover:text-primary transition-colors">
-                    <Link href={`/blog/${post.slug}`}>
-                      {post.title}
-                    </Link>
+                    <Link href={`/blog/${post.slug}`}>{post.title}</Link>
                   </h2>
 
-                  {/* Author Avatar (User Photo), Name, Published Date */}
+                  {/* Author Avatar, Name, Published Date */}
                   <div className="flex items-center flex-wrap gap-x-2 gap-y-1 mt-2 mb-2.5 text-xs sm:text-[13px] font-sans text-muted-foreground">
                     <Link
                       href="/#hero"
@@ -156,6 +175,12 @@ export function BlogListClient({
                     </Link>
                     <span>•</span>
                     <span>published on {post.publishedAt}</span>
+                    {post.readingTime && (
+                      <>
+                        <span>•</span>
+                        <span>{post.readingTime} read</span>
+                      </>
+                    )}
                   </div>
 
                   {/* Desktop view (sm and up): clean excerpt without inline 'show more' */}
@@ -185,7 +210,9 @@ export function BlogListClient({
                       className="text-sky-600 dark:text-sky-400 font-semibold hover:underline shrink-0 flex items-center gap-1 group"
                     >
                       <span>Read Article</span>
-                      <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+                      <span className="transition-transform duration-200 group-hover:translate-x-0.5">
+                        →
+                      </span>
                     </Link>
 
                     {/* Mobile-optimized Tag row: show 1st tag + (+X) pile button */}
@@ -240,21 +267,23 @@ export function BlogListClient({
         )}
       </div>
 
-      {/* GitHub-Style Command Palette Search Modal */}
+      {/* ================================================================= */}
+      {/* Sleek, Featherlight Command Palette Modal (Ctrl + K)              */}
+      {/* ================================================================= */}
       {openSearch && (
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-start justify-center pt-20 sm:pt-28 px-4 animate-in fade-in-0 duration-150"
-          onClick={() => setOpenSearch(false)}
+          className="fixed inset-0 z-50 bg-black/50 dark:bg-black/75 backdrop-blur-xs flex items-start justify-center pt-20 sm:pt-28 px-4 animate-in fade-in-0 duration-150"
+          onClick={closeModal}
         >
           <div
-            className="w-full max-w-xl rounded-2xl border border-black/15 dark:border-white/15 bg-white dark:bg-[#0c1017] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 flex flex-col"
+            className="w-full max-w-lg rounded-2xl border border-black/12 dark:border-white/12 bg-white/95 dark:bg-[#0c1017]/95 backdrop-blur-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Search Input Header */}
-            <div className="flex items-center gap-3 px-4 py-3.5 border-b border-black/[0.08] dark:border-white/[0.08] bg-black/[0.01] dark:bg-white/[0.02]">
-              <Search className="w-4 h-4 text-primary shrink-0" />
+            {/* Minimalist Search Input Header */}
+            <div className="flex items-center gap-3 px-3.5 py-3 border-b border-black/[0.08] dark:border-white/[0.08]">
+              <Search className="w-4 h-4 text-muted-foreground/70 shrink-0 ml-1" />
               <input
                 ref={modalInputRef}
                 type="text"
@@ -264,121 +293,115 @@ export function BlogListClient({
                   setSelectedIndex(0);
                 }}
                 onKeyDown={handleModalKeyDown}
-                placeholder="Type to search articles, topics, or tags..."
-                className="w-full bg-transparent text-sm font-mono text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
+                placeholder="Search articles..."
+                aria-label="Search articles"
+                className="w-full bg-transparent text-sm font-sans text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
               />
               {modalSearch && (
                 <button
                   type="button"
-                  onClick={() => setModalSearch("")}
-                  className="text-muted-foreground hover:text-foreground cursor-pointer p-0.5"
+                  onClick={() => {
+                    setModalSearch("");
+                    setSelectedIndex(0);
+                    modalInputRef.current?.focus();
+                  }}
+                  className="p-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                  title="Clear input"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
-              <button
-                type="button"
-                onClick={() => setOpenSearch(false)}
-                className="px-1.5 py-0.5 rounded border border-black/10 dark:border-white/10 bg-black/[0.04] dark:bg-white/[0.06] text-[10px] font-mono text-muted-foreground hover:text-foreground cursor-pointer"
+              <kbd
+                onClick={closeModal}
+                className="px-1.5 py-0.5 rounded border border-black/10 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.05] text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors cursor-pointer select-none"
               >
                 esc
-              </button>
+              </kbd>
             </div>
 
-            {/* Modal Results List */}
-            <div className="max-h-80 overflow-y-auto p-2 space-y-1 font-sans">
+            {/* Uncluttered Results List */}
+            <div className="max-h-72 overflow-y-auto p-1.5 space-y-0.5 font-sans">
               {modalFilteredPosts.length > 0 ? (
                 modalFilteredPosts.map((item, idx) => {
                   const isSelected = idx === selectedIndex;
                   return (
                     <div
                       key={item.slug}
+                      ref={(el) => {
+                        itemRefs.current[idx] = el;
+                      }}
                       onMouseEnter={() => setSelectedIndex(idx)}
                       onClick={() => {
                         setOpenSearch(false);
                         router.push(`/blog/${item.slug}`);
                       }}
-                      className={`flex items-start justify-between gap-3 p-3 rounded-xl cursor-pointer transition-colors ${
+                      className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
                         isSelected
-                          ? "bg-primary/10 border border-primary/20 text-foreground"
-                          : "hover:bg-black/[0.02] dark:hover:bg-white/[0.03] text-muted-foreground border border-transparent"
+                          ? "bg-black/[0.05] dark:bg-white/[0.08] text-foreground"
+                          : "hover:bg-black/[0.02] dark:hover:bg-white/[0.03] text-muted-foreground"
                       }`}
                     >
-                      <div className="flex items-start gap-2.5 min-w-0">
-                        <BookOpen
-                          className={`w-4 h-4 mt-0.5 shrink-0 ${
-                            isSelected ? "text-primary" : "text-muted-foreground"
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <FileText
+                          className={`w-4 h-4 shrink-0 transition-colors ${
+                            isSelected
+                              ? "text-primary"
+                              : "text-muted-foreground/60"
                           }`}
                         />
-                        <div className="min-w-0">
-                          <h4
-                            className={`text-sm font-semibold truncate ${
-                              isSelected
-                                ? "text-primary"
-                                : "text-foreground"
-                            }`}
-                          >
-                            {item.title}
-                          </h4>
-                          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5 font-sans">
-                            {item.excerpt}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1.5 text-[11px] font-mono text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              {item.publishedAt}
-                            </span>
-                            <span>•</span>
-                            <span>{item.tags.join(", ")}</span>
-                          </div>
-                        </div>
+                        <span
+                          className={`text-sm font-medium truncate ${
+                            isSelected
+                              ? "text-foreground font-semibold"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {item.title}
+                        </span>
                       </div>
 
-                      <div className="flex items-center gap-1 shrink-0 pt-0.5 text-muted-foreground">
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[11px] font-mono text-muted-foreground/60 hidden sm:inline">
+                          {item.publishedAt}
+                        </span>
                         {isSelected && (
-                          <span className="text-[10px] font-mono flex items-center gap-1 text-primary">
-                            Jump <CornerDownLeft className="w-3 h-3" />
-                          </span>
+                          <kbd className="px-1.5 py-0.5 rounded border border-black/10 dark:border-white/15 bg-black/[0.04] dark:bg-white/[0.08] text-[10px] font-mono text-foreground">
+                            ↵
+                          </kbd>
                         )}
                       </div>
                     </div>
                   );
                 })
               ) : (
-                <div className="py-10 text-center font-mono text-xs text-muted-foreground">
-                  No blog articles matching &ldquo;{modalSearch}&rdquo;
+                <div className="py-8 text-center font-mono text-xs text-muted-foreground">
+                  No articles matching &ldquo;{modalSearch}&rdquo;
                 </div>
               )}
             </div>
 
-            {/* Modal Keyboard Navigation Footer (GitHub style) */}
-            <div className="px-4 py-2 border-t border-black/[0.06] dark:border-white/[0.06] bg-black/[0.015] dark:bg-white/[0.015] flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+            {/* Featherlight Minimalist Footer */}
+            <div className="px-3.5 py-2 border-t border-black/[0.06] dark:border-white/[0.06] bg-black/[0.01] dark:bg-white/[0.015] flex items-center justify-between text-[11px] font-mono text-muted-foreground/60 select-none">
               <div className="flex items-center gap-3">
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1 rounded bg-black/[0.05] dark:bg-white/[0.08] border border-black/10 dark:border-white/10 text-[9px]">
+                  <kbd className="px-1 rounded bg-black/5 dark:bg-white/10 text-[9px]">
                     ↑
                   </kbd>
-                  <kbd className="px-1 rounded bg-black/[0.05] dark:bg-white/[0.08] border border-black/10 dark:border-white/10 text-[9px]">
+                  <kbd className="px-1 rounded bg-black/5 dark:bg-white/10 text-[9px]">
                     ↓
                   </kbd>{" "}
                   navigate
                 </span>
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1.5 rounded bg-black/[0.05] dark:bg-white/[0.08] border border-black/10 dark:border-white/10 text-[9px]">
+                  <kbd className="px-1.5 rounded bg-black/5 dark:bg-white/10 text-[9px]">
                     ↵
                   </kbd>{" "}
-                  select
-                </span>
-                <span className="flex items-center gap-1">
-                  <kbd className="px-1 rounded bg-black/[0.05] dark:bg-white/[0.08] border border-black/10 dark:border-white/10 text-[9px]">
-                    esc
-                  </kbd>{" "}
-                  close
+                  open
                 </span>
               </div>
-              <span className="text-[10px] hidden sm:inline">
-                {modalFilteredPosts.length} article
-                {modalFilteredPosts.length === 1 ? "" : "s"}
+              <span className="text-[10px]">
+                {modalFilteredPosts.length}{" "}
+                {modalFilteredPosts.length === 1 ? "result" : "results"}
               </span>
             </div>
           </div>

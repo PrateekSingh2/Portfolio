@@ -375,9 +375,16 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
     if (!post?.content) return [];
     const headings: { level: number; text: string; id: string }[] = [];
     const lines = post.content.split(/\r?\n/);
+    let inCodeBlock = false;
 
     for (const line of lines) {
       const trimmed = line.trim();
+      if (trimmed.startsWith("```")) {
+        inCodeBlock = !inCodeBlock;
+        continue;
+      }
+      if (inCodeBlock) continue;
+
       const match = /^(#{2,3})\s+(.+)$/.exec(trimmed);
       if (match) {
         const level = match[1].length;
@@ -679,6 +686,7 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
                   if (!src) return null;
                   return (
                     <span className="block my-6 rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] shadow-sm">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={src}
                         alt={alt || "Article illustration"}

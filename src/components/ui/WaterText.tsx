@@ -23,9 +23,9 @@ export function WaterText() {
   const turbulenceRef = React.useRef<SVGFETurbulenceElement>(null);
   const displacementRef = React.useRef<SVGFEDisplacementMapElement>(null);
 
-  // Animate dynamic water turbulence for living, undulating fluid waves
+  // Animate dynamic water turbulence for living fluid waves
   React.useEffect(() => {
-    let startTime = performance.now();
+    const startTime = performance.now();
 
     const loop = (time: number) => {
       const elapsed = (time - startTime) * 0.002;
@@ -44,7 +44,7 @@ export function WaterText() {
             size: r.size + 4,
             opacity: r.opacity - 0.02,
           }))
-          .filter((r) => r.opacity > 0 && r.size < r.maxSize)
+          .filter((r) => r.opacity > 0 && r.size < r.maxSize),
       );
 
       animFrameRef.current = requestAnimationFrame(loop);
@@ -117,7 +117,8 @@ export function WaterText() {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
-      className="relative w-full overflow-hidden py-3 sm:py-5 select-none cursor-pointer flex items-center justify-center"
+      /* Height is restricted to 75% of text font size, showing 75% of the name and cutting through the lower 25% from below */
+      className="relative w-full overflow-hidden select-none cursor-pointer flex flex-col items-center justify-start h-[clamp(1.35rem,5.7vw,4.9rem)]"
     >
       {/* Dynamic SVG Water Turbulence Distortion Filter */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
@@ -149,17 +150,17 @@ export function WaterText() {
         </defs>
       </svg>
 
-      {/* Layer 1: Base Translucent Text (Sized to fit 100% on all viewports) */}
+      {/* Layer 1: Base Translucent Text (Top half visible, bottom submerged/hidden) */}
       <h2
-        className="w-full text-center font-black tracking-tight uppercase leading-none font-sans text-foreground/[0.07] dark:text-white/[0.06] text-[clamp(1.75rem,7.5vw,6.5rem)] whitespace-nowrap transition-colors duration-300"
+        className="w-full text-center font-black tracking-tight uppercase leading-none font-sans text-foreground/[0.08] dark:text-white/[0.07] text-[clamp(1.75rem,7.5vw,6.5rem)] whitespace-nowrap transition-colors duration-300 pointer-events-none"
         aria-hidden="true"
       >
         PRATEEK SINGH
       </h2>
 
-      {/* Layer 2: Interactive Fluid Water Refraction (Masked strictly to cursor area) */}
+      {/* Layer 2: Interactive Fluid Water Refraction (Masked to cursor area) */}
       <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-150"
+        className="absolute inset-0 flex items-start justify-center pointer-events-none transition-opacity duration-150"
         style={{
           opacity: isHovered ? 1 : 0,
           WebkitMaskImage: isHovered

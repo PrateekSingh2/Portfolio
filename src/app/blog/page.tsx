@@ -16,9 +16,9 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/profile.png",
-        width: 800,
-        height: 800,
+        url: "/api/og?title=Technical Articles & Engineering Deep Dives&type=blog&desc=Distributed systems, database schema migrations, observability architectures, and algorithmic problem solving.",
+        width: 1200,
+        height: 630,
         alt: "Prateek Singh Technical Blog",
       },
     ],
@@ -28,7 +28,9 @@ export const metadata: Metadata = {
     title: "Blog Posts | Prateek Singh",
     description:
       "Technical articles on distributed systems, database migrations, and algorithmic problem solving.",
-    images: ["/images/profile.png"],
+    images: [
+      "/api/og?title=Technical Articles & Engineering Deep Dives&type=blog&desc=Distributed systems, database schema migrations, observability architectures, and algorithmic problem solving.",
+    ],
   },
 };
 

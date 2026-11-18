@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { HeroBlueprint } from "@/components/ui/HeroBlueprint";
+import Image from "next/image";
 
 function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -29,16 +30,17 @@ export function HeroSection() {
   const [greeting, setGreeting] = React.useState("Good day");
 
   React.useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour >= 4 && hour < 12) {
-      setGreeting("Good morning");
-    } else if (hour >= 12 && hour < 17) {
-      setGreeting("Good afternoon");
-    } else if (hour >= 17 && hour < 22) {
-      setGreeting("Good evening");
-    } else {
-      setGreeting("Good evening");
-    }
+    const timer = setTimeout(() => {
+      const hour = new Date().getHours();
+      if (hour >= 4 && hour < 12) {
+        setGreeting("Good morning");
+      } else if (hour >= 12 && hour < 17) {
+        setGreeting("Good afternoon");
+      } else {
+        setGreeting("Good evening");
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleCopyEmail = (e: React.MouseEvent) => {
@@ -81,9 +83,12 @@ export function HeroSection() {
 
             {/* Circular Frame */}
             <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full p-1 bg-card/70 backdrop-blur-md border-2 border-border/60 shadow-xl group-hover:scale-105 group-hover:border-primary/50 transition-all duration-300 overflow-hidden">
-              <img
+              <Image
                 src="/images/profile.png"
                 alt="Prateek Singh"
+                width={128}
+                height={128}
+                priority
                 className="w-full h-full object-cover object-center rounded-full select-none"
               />
             </div>
@@ -123,13 +128,24 @@ export function HeroSection() {
           <li className="flex items-start gap-2.5">
             <span className="w-1.5 h-1.5 rounded-full bg-primary/70 shrink-0 mt-2.5" />
             <span>
-              I’m <strong className="text-foreground font-semibold">Prateek Singh</strong> - an <span className="italic underline">AI Engineer</span> &amp; <span className="italic underline">System Engineer</span> specializing in high-performance backends, low-level architecture design, and distributed scalability.
+              I’m{" "}
+              <strong className="text-foreground font-semibold">
+                Prateek Singh
+              </strong>{" "}
+              - an <span className="italic underline">AI</span> &amp;{" "}
+              <span className="italic underline">System Engineer</span>{" "}
+              specializing in high-performance backends, low-level architecture
+              design, and distributed scalability.
             </span>
           </li>
           <li className="flex items-start gap-2.5">
             <span className="w-1.5 h-1.5 rounded-full bg-primary/70 shrink-0 mt-2.5" />
             <span>
-              Passionate about exploring <span className="italic underline">Cloud</span> &amp; <span className="italic underline">System Design</span> challenges, turning ideas into reality through resilient, thoughtfully crafted software with low-latency architectures.
+              Passionate about exploring{" "}
+              <span className="italic underline">Cloud</span> &amp;{" "}
+              <span className="italic underline">System Design</span>{" "}
+              challenges, turning ideas into reality through resilient,
+              thoughtfully crafted software with low-latency architectures.
             </span>
           </li>
         </ul>
@@ -160,7 +176,8 @@ export function HeroSection() {
               aria-label="Copy Email"
               className={cn(
                 "p-2.5 flex items-center justify-center text-muted-foreground hover:text-foreground hover:scale-110 active:scale-90 transition-all duration-200 cursor-pointer rounded-xl bg-transparent hover:bg-black/[0.04] dark:hover:bg-white/[0.06] border border-black/10 dark:border-white/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary shadow-none",
-                copied && "text-emerald-500 hover:text-emerald-500 scale-105 border-emerald-500/40 bg-emerald-500/10",
+                copied &&
+                  "text-emerald-500 hover:text-emerald-500 scale-105 border-emerald-500/40 bg-emerald-500/10",
               )}
             >
               {copied ? (

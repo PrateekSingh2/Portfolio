@@ -23,12 +23,15 @@ export function CatFollower() {
   );
   const pathname = usePathname();
 
-  // Hide completely on /article, /article/:slug, /blog, /blog/:slug on ANY device
+  // Hide completely on /article, /article/:slug, /blog, /blog/:slug, /cli on ANY device
   const isArticlePage =
     pathname === "/article" ||
     pathname?.startsWith("/article/") ||
     pathname === "/blog" ||
-    pathname?.startsWith("/blog/");
+    pathname?.startsWith("/blog/") ||
+    pathname === "/cli" ||
+    pathname?.startsWith("/cli/") ||
+    pathname === "/terminal";
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const sleepBubbleRef = React.useRef<HTMLDivElement>(null);

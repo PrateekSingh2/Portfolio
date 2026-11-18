@@ -28,6 +28,11 @@ export async function generateMetadata({
   }
 
   const postUrl = `${siteUrl}/blog/${slug}`;
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(
+    post.title,
+  )}&desc=${encodeURIComponent(post.excerpt)}&tags=${encodeURIComponent(
+    post.tags.join(","),
+  )}&readTime=${encodeURIComponent(post.readingTime || "")}&type=blog`;
 
   return {
     title: post.title,
@@ -57,9 +62,9 @@ export async function generateMetadata({
       tags: post.tags,
       images: [
         {
-          url: "/images/profile.png",
-          width: 800,
-          height: 800,
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
           alt: post.title,
         },
       ],
@@ -68,7 +73,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
-      images: ["/images/profile.png"],
+      images: [ogImageUrl],
       creator: "@RajawatPrateek",
     },
   };

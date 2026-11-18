@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/terminal",
+        destination: "/cli",
+        permanent: true,
+      },
+      {
         source: "/article",
         destination: "/blog",
         permanent: true,

@@ -9,6 +9,7 @@ import { Providers } from "@/components/providers/Providers";
 import { InteractiveBackground } from "@/components/ui/InteractiveBackground";
 import { CatFollower } from "@/components/ui/CatFollower";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
+import { DeveloperTerminal } from "@/components/ui/DeveloperTerminal";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,7 +32,8 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://prateeksingh.dev";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Prateek Singh | Software Systems Engineer & Competitive Programmer",
+    default:
+      "Prateek Singh | Software Systems Engineer & Competitive Programmer",
     template: "%s | Prateek Singh",
   },
   description:
@@ -78,9 +80,9 @@ export const metadata: Metadata = {
       "Explore software systems, engineering case studies, competitive programming trajectories, and technical articles by Prateek Singh.",
     images: [
       {
-        url: "/images/profile.png",
-        width: 800,
-        height: 800,
+        url: "/api/og",
+        width: 1200,
+        height: 630,
         alt: "Prateek Singh - Software Systems Engineer",
       },
     ],
@@ -90,7 +92,7 @@ export const metadata: Metadata = {
     title: "Prateek Singh | Software Systems Engineer",
     description:
       "Software Systems Engineer & Competitive Programmer. Systems architecture, algorithms, and technical engineering journal.",
-    images: ["/images/profile.png"],
+    images: ["/api/og"],
   },
   icons: {
     icon: "/icon.jpg",
@@ -162,13 +164,16 @@ export default function RootLayout({
             <CatFollower />
           </div>
           <ScrollToTop />
+          <DeveloperTerminal />
           <TooltipProvider>
             <div className="hidden md:block">
               <ScrollProgress />
             </div>
             <Navbar />
 
-            <main className="flex-1 flex flex-col overflow-x-clip">{children}</main>
+            <main className="flex-1 flex flex-col overflow-x-clip">
+              {children}
+            </main>
           </TooltipProvider>
         </Providers>
       </body>
