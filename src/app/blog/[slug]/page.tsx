@@ -28,7 +28,7 @@ export async function generateMetadata({
   }
 
   const postUrl = `${siteUrl}/blog/${slug}`;
-  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(
+  const ogImageUrl = `/api/og?title=${encodeURIComponent(
     post.title,
   )}&desc=${encodeURIComponent(post.excerpt)}&tags=${encodeURIComponent(
     post.tags.join(","),

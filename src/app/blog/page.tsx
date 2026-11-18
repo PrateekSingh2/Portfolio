@@ -4,6 +4,8 @@ import { BlogListClient } from "@/components/sections/BlogListClient";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://prateeksingh.dev";
 
+const ogUrl = `/api/og?title=${encodeURIComponent("Technical Articles & Engineering Deep Dives")}&type=blog&desc=${encodeURIComponent("Distributed systems, database schema migrations, observability architectures, and algorithmic problem solving.")}`;
+
 export const metadata: Metadata = {
   title: "Blog Posts",
   description:
@@ -16,7 +18,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/api/og?title=Technical Articles & Engineering Deep Dives&type=blog&desc=Distributed systems, database schema migrations, observability architectures, and algorithmic problem solving.",
+        url: ogUrl,
         width: 1200,
         height: 630,
         alt: "Prateek Singh Technical Blog",
@@ -28,9 +30,7 @@ export const metadata: Metadata = {
     title: "Blog Posts | Prateek Singh",
     description:
       "Technical articles on distributed systems, database migrations, and algorithmic problem solving.",
-    images: [
-      "/api/og?title=Technical Articles & Engineering Deep Dives&type=blog&desc=Distributed systems, database schema migrations, observability architectures, and algorithmic problem solving.",
-    ],
+    images: [ogUrl],
   },
 };
 

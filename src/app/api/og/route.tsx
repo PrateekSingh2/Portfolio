@@ -1,8 +1,6 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
-export const runtime = "edge";
-
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -55,10 +53,8 @@ export async function GET(req: NextRequest) {
           justifyContent: "space-between",
           backgroundColor: "#070b13",
           backgroundImage:
-            "radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.14) 0%, transparent 40%), radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 45%)",
+            "linear-gradient(135deg, #070b13 0%, #0c1322 50%, #070b13 100%)",
           padding: "54px 64px",
-          fontFamily:
-            "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           position: "relative",
           border: "1px solid rgba(255, 255, 255, 0.1)",
         }}
@@ -70,8 +66,10 @@ export async function GET(req: NextRequest) {
             top: 0,
             left: 0,
             right: 0,
-            height: 4,
-            background: `linear-gradient(90deg, ${badgeColor}, #6366f1, #06b6d4)`,
+            width: "100%",
+            height: "4px",
+            display: "flex",
+            backgroundImage: `linear-gradient(90deg, ${badgeColor}, #6366f1, #06b6d4)`,
           }}
         />
 
@@ -129,7 +127,6 @@ export async function GET(req: NextRequest) {
                 style={{
                   color: "#64748b",
                   fontSize: "13px",
-                  fontFamily: "monospace",
                 }}
               >
                 prateekdev.me
@@ -144,25 +141,25 @@ export async function GET(req: NextRequest) {
               alignItems: "center",
               gap: "8px",
               padding: "6px 14px",
-              borderRadius: "999px",
+              borderRadius: "9999px",
               backgroundColor: "rgba(255, 255, 255, 0.05)",
               border: `1px solid ${badgeColor}40`,
               color: badgeColor,
               fontSize: "12px",
               fontWeight: 700,
               letterSpacing: "0.08em",
-              fontFamily: "monospace",
             }}
           >
             <div
               style={{
                 width: "8px",
                 height: "8px",
-                borderRadius: "50%",
+                borderRadius: "4px",
                 backgroundColor: badgeColor,
+                display: "flex",
               }}
             />
-            {badgeLabel}
+            <span style={{ display: "flex" }}>{badgeLabel}</span>
           </div>
         </div>
 
@@ -185,7 +182,7 @@ export async function GET(req: NextRequest) {
               letterSpacing: "-0.03em",
               lineHeight: 1.15,
               margin: 0,
-              textWrap: "balance",
+              display: "flex",
             }}
           >
             {title}
@@ -201,6 +198,7 @@ export async function GET(req: NextRequest) {
                 margin: 0,
                 maxHeight: "60px",
                 overflow: "hidden",
+                display: "flex",
               }}
             >
               {desc}
@@ -220,6 +218,8 @@ export async function GET(req: NextRequest) {
               <div
                 key={idx}
                 style={{
+                  display: "flex",
+                  alignItems: "center",
                   padding: "6px 14px",
                   borderRadius: "8px",
                   backgroundColor: "rgba(255, 255, 255, 0.06)",
@@ -227,7 +227,6 @@ export async function GET(req: NextRequest) {
                   color: "#cbd5e1",
                   fontSize: "13px",
                   fontWeight: 600,
-                  fontFamily: "monospace",
                 }}
               >
                 #{tag}
@@ -259,7 +258,7 @@ export async function GET(req: NextRequest) {
               style={{
                 width: "44px",
                 height: "44px",
-                borderRadius: "50%",
+                borderRadius: "22px",
                 backgroundColor: "rgba(56, 189, 248, 0.2)",
                 border: "2px solid rgba(56, 189, 248, 0.4)",
                 display: "flex",
@@ -274,7 +273,12 @@ export async function GET(req: NextRequest) {
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <span
-                style={{ color: "#f1f5f9", fontSize: "15px", fontWeight: 700 }}
+                style={{
+                  color: "#f1f5f9",
+                  fontSize: "15px",
+                  fontWeight: 700,
+                  display: "flex",
+                }}
               >
                 Prateek Singh
               </span>
@@ -282,15 +286,15 @@ export async function GET(req: NextRequest) {
                 style={{
                   color: "#64748b",
                   fontSize: "12px",
-                  fontFamily: "monospace",
+                  display: "flex",
                 }}
               >
-                AI Engineer &amp; Systems Architect • CodeChef 3★
+                AI Engineer &amp; Systems Architect • CodeChef 3-Star
               </span>
             </div>
           </div>
 
-          {readTime && (
+          {readTime ? (
             <div
               style={{
                 display: "flex",
@@ -298,16 +302,15 @@ export async function GET(req: NextRequest) {
                 gap: "6px",
                 color: "#94a3b8",
                 fontSize: "13px",
-                fontFamily: "monospace",
                 backgroundColor: "rgba(255, 255, 255, 0.04)",
                 padding: "6px 12px",
                 borderRadius: "6px",
                 border: "1px solid rgba(255, 255, 255, 0.08)",
               }}
             >
-              ⏱ {readTime}
+              <span style={{ display: "flex" }}>{readTime} read</span>
             </div>
-          )}
+          ) : null}
         </div>
       </div>,
       {
