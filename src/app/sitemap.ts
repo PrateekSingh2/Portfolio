@@ -2,8 +2,7 @@ import { MetadataRoute } from "next";
 import { getAllBlogPosts } from "@/lib/blogs";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://prateeksingh.dev";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://prateekdev.me";
 
   const posts = getAllBlogPosts();
 
@@ -21,8 +20,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     return {
       url: `${baseUrl}/blog/${post.slug}`,
       lastModified: dateStr,
-      changeFrequency: "monthly" as const,
-      priority: 0.85,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
     };
   });
 
@@ -37,13 +36,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/projects`,
       lastModified: new Date().toISOString(),
       changeFrequency: "weekly" as const,
-      priority: 0.8,
+      priority: 0.85,
     },
     {
       url: `${baseUrl}/blog`,
       lastModified: new Date().toISOString(),
       changeFrequency: "daily" as const,
-      priority: 0.9,
+      priority: 0.95,
+    },
+    {
+      url: `${baseUrl}/cli`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/contact`,

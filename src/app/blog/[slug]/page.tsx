@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getBlogPostBySlug, getAllBlogSlugs } from "@/lib/blogs";
 import { BlogArticleClient } from "@/components/sections/BlogArticleClient";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://prateeksingh.dev";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://prateekdev.me";
 
 // Pre-render all blog slugs statically for instant load & SEO indexation
 export async function generateStaticParams() {
@@ -28,7 +28,7 @@ export async function generateMetadata({
   }
 
   const postUrl = `${siteUrl}/blog/${slug}`;
-  const ogImageUrl = `/api/og?title=${encodeURIComponent(
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(
     post.title,
   )}&desc=${encodeURIComponent(post.excerpt)}&tags=${encodeURIComponent(
     post.tags.join(","),
@@ -43,6 +43,7 @@ export async function generateMetadata({
       "System Architecture",
       "Algorithms",
       "Prateek Singh",
+      "AgentEO",
     ],
     authors: [{ name: post.author, url: siteUrl }],
     creator: post.author,
@@ -58,13 +59,17 @@ export async function generateMetadata({
       description: post.excerpt,
       siteName: "Prateek Singh | Engineering Journal",
       publishedTime: post.publishedAt,
+      modifiedTime: post.publishedAt,
       authors: [post.author],
+      section: "Software Engineering",
       tags: post.tags,
       images: [
         {
           url: ogImageUrl,
+          secureUrl: ogImageUrl,
           width: 1200,
           height: 630,
+          type: "image/png",
           alt: post.title,
         },
       ],
@@ -91,32 +96,56 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  // Schema.org BlogPosting structured data for Google Rich Results
-  const blogPostingJsonLd = {
+  const postUrl = `${siteUrl}/blog/${slug}`;
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(
+    post.title,
+  )}&desc=${encodeURIComponent(post.excerpt)}&tags=${encodeURIComponent(
+    post.tags.join(","),
+  )}&readTime=${encodeURIComponent(post.readingTime || "")}&type=blog`;
+
+  // Schema.org TechArticle & BlogPosting structured data for Google Rich Results & AI Search Engine Crawlers (AgentEO)
+  const techArticleJsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
+    "@type": ["BlogPosting", "TechArticle"],
     headline: post.title,
+    alternativeHeadline: post.excerpt,
     description: post.excerpt,
-    image: `${siteUrl}/images/profile.png`,
+    image: [ogImageUrl],
     author: {
       "@type": "Person",
       name: post.author,
       url: siteUrl,
+      sameAs: [
+        "https://github.com/PrateekSingh2",
+        "https://leetcode.com/u/prateek_singh7/",
+        "https://www.codechef.com/users/nice_trail_87",
+        "https://codeforces.com/profile/RajawatPrateekSingh",
+        "https://www.geeksforgeeks.org/profile/rajawatprateeksingh",
+      ],
+    },
+    publisher: {
+      "@type": "Person",
+      name: "Prateek Singh",
+      url: siteUrl,
+      image: `${siteUrl}/images/profile.png`,
     },
     datePublished: post.publishedAt,
     dateModified: post.publishedAt,
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${siteUrl}/blog/${slug}`,
+      "@id": postUrl,
     },
     keywords: post.tags.join(", "),
+    proficiencyLevel: "Expert",
+    inLanguage: "en-US",
+    articleSection: "Software Engineering & Distributed Systems",
   };
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(techArticleJsonLd) }}
       />
       <BlogArticleClient post={post} />
     </>

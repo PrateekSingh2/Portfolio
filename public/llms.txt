@@ -1,0 +1,40 @@
+# Prateek Singh — Engineering Portfolio & Technical Journal
+
+> High-performance backend systems, distributed architectures, stateful LLM pipelines & competitive programming.
+
+## Overview
+- **Name:** Prateek Singh
+- **Role:** Software Systems Engineer & AI Systems Builder
+- **Domain:** https://prateekdev.me
+- **Specializations:** Distributed Systems, High-Concurrency Backends, LangGraph State Machines, AST Parsing, Query Optimization, Algorithms & Data Structures.
+- **Competitive Programming Achievements:** CodeChef 3-Star (Rating 1600+), LeetCode Knight (Top 4.8%, 700+ solved), Codeforces Specialist.
+
+## Key Projects
+- **SchemaAI:** Autonomous Natural Language to SQL & GraphQL middleware with AST query pruning, dynamic LangGraph state machine, vector schema embeddings, and zero-trust mutation guardrails.
+  - Link: https://prateekdev.me/projects
+  - Tech: Python, FastAPI, LangGraph, Qdrant Vector DB, AST Engine, Next.js.
+- **AlgoLib:** Real-time algorithmic visualizer and data structure benchmark suite with live telemetry.
+  - Link: https://prateekdev.me/projects
+- **Portfolio Developer CLI:** Authentic Unix-style interactive browser terminal with live DNS probing, HTTP proxy curl telemetry, and 60 FPS matrix digital rain.
+  - Route: https://prateekdev.me/cli
+
+## Technical Articles & Research
+- **Building SchemaAI: Natural Language to SQL & GraphQL Engine:**
+  - URL: https://prateekdev.me/blog/building-schema-ai-natural-language-sql-graphql-engine
+  - Summary: Deep dive into schema bloat, AST syntax tree manipulation, preventing SQL injection and destructive DDL mutations, dynamic graph-based query generation, and sub-100ms vector pruning.
+  - Key Topics: Python, LangGraph, AST, Vector DB, Security Guardrails, SQL, GraphQL.
+- **My First Tech Interview Experience: Generative AI Internship:**
+  - URL: https://prateekdev.me/blog/my-first-tech-interview-experience-generative-ai-internship
+  - Summary: Complete breakdown of modern software engineering interview rounds, system design questions, vector retrieval mechanics, live coding under pressure, and mental models for engineering success.
+  - Key Topics: Tech Interviews, Generative AI, System Design, Vector Retrieval, Career Growth.
+
+## Profiles & Contact
+- **Website:** https://prateekdev.me
+- **Blog:** https://prateekdev.me/blog
+- **Interactive CLI:** https://prateekdev.me/cli
+- **GitHub:** https://github.com/PrateekSingh2
+- **LeetCode:** https://leetcode.com/u/prateek_singh7/
+- **CodeChef:** https://www.codechef.com/users/nice_trail_87
+- **Codeforces:** https://codeforces.com/profile/RajawatPrateekSingh
+- **LinkedIn:** https://www.linkedin.com/in/prateek-singh-rajawat/
+- **Email:** prateeksinghrajawat2006@gmail.com

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { getAllBlogPosts } from "@/lib/blogs";
 import { BlogListClient } from "@/components/sections/BlogListClient";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://prateeksingh.dev";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://prateekdev.me";
 
-const ogUrl = `/api/og?title=${encodeURIComponent("Technical Articles & Engineering Deep Dives")}&type=blog&desc=${encodeURIComponent("Distributed systems, database schema migrations, observability architectures, and algorithmic problem solving.")}`;
+const ogUrl = `${siteUrl}/api/og?title=${encodeURIComponent("Technical Articles & Engineering Deep Dives")}&type=blog&desc=${encodeURIComponent("Distributed systems, database schema migrations, observability architectures, and algorithmic problem solving.")}`;
 
 export const metadata: Metadata = {
   title: "Blog Posts",
@@ -19,8 +19,10 @@ export const metadata: Metadata = {
     images: [
       {
         url: ogUrl,
+        secureUrl: ogUrl,
         width: 1200,
         height: 630,
+        type: "image/png",
         alt: "Prateek Singh Technical Blog",
       },
     ],

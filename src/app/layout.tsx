@@ -27,7 +27,7 @@ const caveat = Caveat({
   weight: ["600", "700"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://prateeksingh.dev";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://prateekdev.me";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     template: "%s | Prateek Singh",
   },
   description:
-    "Personal portfolio and engineering journal of Prateek Singh. Specializing in high-performance backend systems, distributed architectures, and competitive programming (CodeChef 3★, LeetCode Knight).",
+    "Personal portfolio and engineering journal of Prateek Singh. Specializing in high-performance backend systems, distributed architectures, and competitive programming (CodeChef 3-Star, LeetCode Knight).",
   keywords: [
     "Prateek Singh",
     "Prateek Singh Portfolio",
@@ -80,9 +80,11 @@ export const metadata: Metadata = {
       "Explore software systems, engineering case studies, competitive programming trajectories, and technical articles by Prateek Singh.",
     images: [
       {
-        url: "/api/og",
+        url: `${siteUrl}/api/og`,
+        secureUrl: `${siteUrl}/api/og`,
         width: 1200,
         height: 630,
+        type: "image/png",
         alt: "Prateek Singh - Software Systems Engineer",
       },
     ],
@@ -92,7 +94,7 @@ export const metadata: Metadata = {
     title: "Prateek Singh | Software Systems Engineer",
     description:
       "Software Systems Engineer & Competitive Programmer. Systems architecture, algorithms, and technical engineering journal.",
-    images: ["/api/og"],
+    images: [`${siteUrl}/api/og`],
   },
   icons: {
     icon: "/icon.jpg",

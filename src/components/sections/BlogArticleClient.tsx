@@ -496,7 +496,11 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
 
   return (
     <div className="min-h-screen flex flex-col justify-between pt-20 sm:pt-28 px-3.5 sm:px-6 font-sans overflow-x-clip">
-      <div className="max-w-5xl mx-auto w-full">
+      <article
+        itemScope
+        itemType="https://schema.org/TechArticle"
+        className="max-w-5xl mx-auto w-full"
+      >
         {/* Breadcrumb Path: Home / blog / slug (clickable except current slug) */}
         <div className="flex items-center justify-between mb-6 gap-2 sm:gap-3">
           <nav
@@ -545,7 +549,10 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
 
         {/* Post Hero Header */}
         <header className="mb-6 sm:mb-8 pb-5 sm:pb-6 border-b border-black/[0.06] dark:border-white/[0.08]">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-foreground font-sans leading-tight sm:leading-snug break-words mb-4 sm:mb-5">
+          <h1
+            itemProp="headline"
+            className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-foreground font-sans leading-tight sm:leading-snug break-words mb-4 sm:mb-5"
+          >
             {post.title}
           </h1>
 
@@ -566,8 +573,13 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
                   className="object-cover w-full h-full"
                 />
               </div>
-              <span className="font-semibold text-foreground group-hover:text-primary transition-colors text-[13px]">
-                {post.author}
+              <span
+                itemProp="author"
+                itemScope
+                itemType="https://schema.org/Person"
+                className="font-semibold text-foreground group-hover:text-primary transition-colors text-[13px]"
+              >
+                <span itemProp="name">{post.author}</span>
               </span>
             </Link>
 
@@ -576,7 +588,9 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
               {/* Published Date */}
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.07] shrink-0">
                 <Calendar className="w-3.5 h-3.5 text-muted-foreground/70" />
-                <span>{post.publishedAt}</span>
+                <time itemProp="datePublished" dateTime={post.publishedAt}>
+                  {post.publishedAt}
+                </time>
               </span>
 
               {/* Reading Time */}
@@ -677,7 +691,10 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
         {/* Two-Column Layout: Main Content + Sticky Expandable Side Panel */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-10 items-start relative">
           {/* Main Markdown Article Column */}
-          <main className="min-w-0 prose dark:prose-invert max-w-none prose-neutral font-sans leading-relaxed text-foreground/90 pb-16">
+          <main
+            itemProp="articleBody"
+            className="min-w-0 prose dark:prose-invert max-w-none prose-neutral font-sans leading-relaxed text-foreground/90 pb-16"
+          >
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
@@ -902,7 +919,7 @@ export function BlogArticleClient({ post }: { post: BlogPost }) {
             </div>
           </aside>
         </div>
-      </div>
+      </article>
 
       <Footer />
     </div>
